@@ -13,4 +13,12 @@ mkShell {
     project.haskell-env
     (lib.optional (enable-hie) project.hie)
   ];
+
+   shellHook = ''
+    export HIE_HOOGLE_DATABASE="${project.haskell-env}/share/doc/hoogle/index.html";
+    export NIX_GHC="${project.haskell-env}/bin/ghc"
+    export NIX_GHCPKG="${project.haskell-env}/bin/ghc-pkg"
+    export NIX_GHC_DOCDIR="${project.haskell-env}/share/doc/ghc/html"
+    export NIX_GHC_LIBDIR=$( $NIX_GHC --print-libdir )
+  '';
 }

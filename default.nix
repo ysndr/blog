@@ -17,13 +17,22 @@ in
 with pkgs;
 let
 
-  hie = (hies-pkgs { }).hie86;
 
-  haskell-env = (haskellPackages.ghcWithPackages (ps: with ps; [
+  # ------------- Haskell ----------------
+  # for build usage only
+  hies = (hies-pkgs { inherit pkgs; }).hies;
+
+  #
+  hie = (hies-pkgs { inherit pkgs; }).hie84;
+
+
+  haskellPackages' = haskellPackages.extend( self: super: {
+    
+  });
+  haskell-env = (haskellPackages'.ghcWithHoogle (hp: with hp; [
     hakyll
     hakyll-sass
-    stack
-    hie
+    cabal-install
   ]));
 
 
@@ -46,5 +55,6 @@ let
 
 
 in {
-  inherit haskell-env hie generator pkgs;
+  #inherit (pkgs)  libyaml libiconv;
+  inherit haskell-env hie hies generator pkgs;
 } 
