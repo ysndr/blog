@@ -37,7 +37,7 @@ let
 
 
   # ------------ dist ---------------
-  dist = linkFarm "dist" [
+  thirdparty = linkFarm "thirdparty" [
     {
       name = "sierra";
       path = (fetchTarball "https://github.com/sierra-library/sierra/archive/3.2.0.tar.gz") + "/src";
@@ -48,7 +48,7 @@ let
   # ------------- generator -----------
   generator = callPackage ./generator {
     inherit (pkgs) stdenv; 
-    inherit haskell-env dist;
+    inherit haskell-env thirdparty;
   };
 
   # --------------- Commands ----------------

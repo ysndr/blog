@@ -2,7 +2,7 @@
 
 # Some code copied and/or modified from
 # https://utdemir.com/posts/hakyll-on-nixos.html
-{ stdenv, makeWrapper, haskell-env, dist}:
+{ stdenv, makeWrapper, haskell-env, thirdparty}:
 
 stdenv.mkDerivation {
   name = "blog-generator";
@@ -14,8 +14,8 @@ stdenv.mkDerivation {
   ];
   buildPhase = ''
     mkdir -p $out/bin
-    ghc -O2 -dynamic --make site.hs -o $out/bin/generate-site
+    ghc -O2 -dynamic --make Site.hs -o $out/bin/generate-site
 
-    wrapProgram $out/bin/generate-site --set 'DIST' '${dist}' 
+    wrapProgram $out/bin/generate-site --set 'THIRDPARTY' '${thirdparty}' 
   '';
 }
