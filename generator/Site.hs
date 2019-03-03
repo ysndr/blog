@@ -1,38 +1,40 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
-import           Data.Monoid (mappend)
-import           System.Environment (lookupEnv)
+import           Data.Monoid                    ( mappend )
+import           System.Environment             ( lookupEnv )
 import           Hakyll
-import Hakyll.Web.Sass (sassCompiler, sassCompilerWith)
-import Text.Sass.Options (
-    SassOptions (..), 
-    defaultSassOptions,
-    SassOutputStyle (..))
+import           Hakyll.Web.Sass                ( sassCompiler
+                                                , sassCompilerWith
+                                                )
+import           Text.Sass.Options              ( SassOptions(..)
+                                                , defaultSassOptions
+                                                , SassOutputStyle(..)
+                                                )
 --------------------------------------------------------------------------------
 config :: Configuration
-config = defaultConfiguration
-    { destinationDirectory = "build/site"
-    , storeDirectory = "build/_store"
-    , tmpDirectory = "build/_tmp"
-    , providerDirectory = "src"
-    }
+config = defaultConfiguration { destinationDirectory = "build/site"
+                              , storeDirectory       = "build/_store"
+                              , tmpDirectory         = "build/_tmp"
+                              , providerDirectory    = "src"
+                              }
 
 sassOptions :: Maybe FilePath -> SassOptions
-sassOptions distPath = defaultSassOptions 
-    { sassSourceMapEmbed    = True
-    , sassOutputStyle       = SassStyleCompressed
-    , sassIncludePaths      = fmap (:[]) distPath 
+sassOptions distPath = defaultSassOptions
+    { sassSourceMapEmbed = True
+    , sassOutputStyle    = SassStyleCompressed
+    , sassIncludePaths   = fmap (: []) distPath
     }
 
 --------------------------------------------------------------------------------
 main :: IO ()
-main = do 
-    compiler <- fmap sassCompilerWith $ fmap sassOptions (lookupEnv "THIRDPARTY") 
-    
+main = do
+    compiler <- fmap sassCompilerWith
+        $ fmap sassOptions (lookupEnv "THIRDPARTY")
+
     hakyllWith config $ do
-    
+
         match "images/*" $ do
-            route   idRoute
+            route idRoute
             compile copyFileCompiler
 
         -- match "css/*.css" $ do
@@ -46,14 +48,16 @@ main = do
             -- compile (compressCssItem <$> sassCompiler)
 
         match (fromList ["about.rst", "contact.markdown"]) $ do
-            route   $ setExtension "html"
-            compile $ pandocCompiler
+            route $ setExtension "html"
+            compile
+                $   pandocCompiler
                 >>= loadAndApplyTemplate "templates/default.html" defaultContext
                 >>= relativizeUrls
 
         match "posts/*" $ do
             route $ setExtension "html"
-            compile $ pandocCompiler
+            compile
+                $   pandocCompiler
                 >>= loadAndApplyTemplate "templates/post.html"    postCtx
                 >>= loadAndApplyTemplate "templates/default.html" postCtx
                 >>= relativizeUrls
@@ -63,9 +67,9 @@ main = do
             compile $ do
                 posts <- recentFirst =<< loadAll "posts/*"
                 let archiveCtx =
-                        listField "posts" postCtx (return posts) `mappend`
-                        constField "title" "Archives"            `mappend`
-                        defaultContext
+                        listField "posts" postCtx (return posts)
+                            `mappend` constField "title" "Archives"
+                            `mappend` defaultContext
 
                 makeItem ""
                     >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
@@ -78,9 +82,9 @@ main = do
             compile $ do
                 posts <- recentFirst =<< loadAll "posts/*"
                 let indexCtx =
-                        listField "posts" postCtx (return posts) `mappend`
-                        constField "title" "Home"                `mappend`
-                        defaultContext
+                        listField "posts" postCtx (return posts)
+                            `mappend` constField "title" "Home"
+                            `mappend` defaultContext
 
                 getResourceBody
                     >>= applyAsTemplate indexCtx
@@ -92,6 +96,4 @@ main = do
 
 --------------------------------------------------------------------------------
 postCtx :: Context String
-postCtx =
-    dateField "date" "%B %e, %Y" `mappend`
-    defaultContext
+postCtx = dateField "date" "%B %e, %Y" `mappend` defaultContext
