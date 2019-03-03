@@ -27,9 +27,19 @@ let
   ]));
 
 
+  # ------------ dist ---------------
+  dist = linkFarm "dist" [
+    {
+      name = "sierra";
+      path = (fetchTarball "https://github.com/sierra-library/sierra/archive/3.2.0.tar.gz") + "/src";
+    }
+  ];
+
+
+  # ------------- generator -----------
   generator = callPackage ./generator {
-    stdenv=pkgs.stdenv; 
-    inherit haskell-env;
+    inherit (pkgs) stdenv; 
+    inherit haskell-env dist;
   };
 
   # --------------- Commands ----------------
