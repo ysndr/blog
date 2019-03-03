@@ -16,13 +16,16 @@ in
 { pkgs ? pkgs' pinned, pinned ? false, enable-hie ? false }:
 with pkgs;
 let
+
+  hie = (hies-pkgs { }).hie86;
+
   haskell-env = (haskellPackages.ghcWithPackages (ps: with ps; [
     hakyll
     hakyll-sass
     stack
+    hie
   ]));
 
-  hies = (hies {inherit pkgs;}).hies;
 
   generator = callPackage ./generator {
     stdenv=pkgs.stdenv; 
@@ -33,5 +36,5 @@ let
 
 
 in {
-  inherit haskell-env hies generator pkgs;
+  inherit haskell-env hie generator pkgs;
 } 

@@ -9,6 +9,6 @@ mkShell {
     # put packages here.
     project.generator
     project.haskell-env
-    (lib.optional (enable-hie) project.hies)
+    (lib.optional (enable-hie) project.hie)
   ];
 }
