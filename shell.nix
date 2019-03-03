@@ -1,7 +1,9 @@
 # This allows overriding pkgs by passing `--arg pkgs ...`
-{ pkgs ? import <nixpkgs> {}, pinned ? false, enable-hie ? false }:
+{ pkgs ? import <nixpkgs> {}, pinned ? null, enable-hie ? false }:
 let
-  project = import ./default.nix { inherit pkgs pinned; };
+  project = import ./default.nix 
+      { inherit pinned; } //
+      (if (isNull pinned) then { inherit pkgs; } else {});
 in with project.pkgs;
 
 mkShell {

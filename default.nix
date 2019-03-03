@@ -1,19 +1,19 @@
 let
   # Look here for information about how to generate `nixpkgs-version.json`.
   #  → https://nixos.wiki/wiki/FAQ/Pinning_Nixpkgs
-  pinnedVersion = builtins.fromJSON (builtins.readFile ./.nixpkgs-version.json);
+  pinnedVersion = pin: builtins.fromJSON (builtins.readFile pin);
+  pinnedPkgs = pin:  import (builtins.fetchTarball {
+    inherit (pinnedVersion pin) url sha256;
+  }) {};
+  pkgs' = pinned: (
+    if (!isNull pinned) then pinnedPkgs pinned 
+    else import <nixpkgs> {});
+
   hies-pkgs = import (builtins.fetchTarball {
     url = "https://github.com/domenkozar/hie-nix/tarball/master";
   });
-  pinnedPkgs = import (builtins.fetchGit {
-    inherit (pinnedVersion) url rev;
-
-    ref = "nixos-unstable";
-  }) {};
-  pkgs' = pinned: (if pinned then pinnedPkgs else import <nixpkgs> {});
 in
-
-{ pkgs ? pkgs' pinned, pinned ? false, enable-hie ? false }:
+{ pkgs ? pkgs' pinned, pinned ? null, enable-hie ? false }:
 with pkgs;
 let
 
