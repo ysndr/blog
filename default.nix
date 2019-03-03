@@ -2,7 +2,7 @@ let
   # Look here for information about how to generate `nixpkgs-version.json`.
   #  → https://nixos.wiki/wiki/FAQ/Pinning_Nixpkgs
   pinnedVersion = builtins.fromJSON (builtins.readFile ./.nixpkgs-version.json);
-  hies = import (builtins.fetchTarball {
+  hies-pkgs = import (builtins.fetchTarball {
     url = "https://github.com/domenkozar/hie-nix/tarball/master";
   });
   pinnedPkgs = import (builtins.fetchGit {
