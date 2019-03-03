@@ -27,7 +27,7 @@ sassOptions distPath = defaultSassOptions
 --------------------------------------------------------------------------------
 main :: IO ()
 main = do 
-    compiler <- fmap sassCompilerWith $ fmap sassOptions (lookupEnv "DIST") 
+    compiler <- fmap sassCompilerWith $ fmap sassOptions (lookupEnv "THIRDPARTY") 
     
     hakyllWith config $ do
     
