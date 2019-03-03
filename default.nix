@@ -18,6 +18,7 @@ with pkgs;
 let
   haskell-env = (haskellPackages.ghcWithPackages (ps: with ps; [
     hakyll
+    hakyll-sass
     stack
   ]));
 
