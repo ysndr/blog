@@ -28,8 +28,7 @@ sassOptions distPath = defaultSassOptions
 --------------------------------------------------------------------------------
 main :: IO ()
 main = do
-    compiler <- fmap sassCompilerWith
-        $ fmap sassOptions (lookupEnv "THIRDPARTY")
+    sassCompiler <- sassCompilerWith . sassOptions <$> lookupEnv "THIRDPARTY"
 
     hakyllWith config $ do
 
@@ -43,9 +42,7 @@ main = do
 
         match (fromRegex "^css/[^_].*\\.scss") $ do
             route $ setExtension "css"
-            -- let compressCssItem = fmap compressCss
-            compile (compiler)
-            -- compile (compressCssItem <$> sassCompiler)
+            compile sassCompiler
 
         match (fromList ["about.rst", "contact.markdown"]) $ do
             route $ setExtension "html"
