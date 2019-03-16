@@ -27,11 +27,14 @@ let
 
 
   haskellPackages' = haskellPackages.extend( self: super: {
-    
+      hakyll-sass-new = self.callCabal2nix "hakyll-sass" (builtins.fetchTarball {
+        url = "http://hackage.haskell.org/package/hakyll-sass-0.2.4/hakyll-sass-0.2.4.tar.gz";
+      }) {};
   });
   haskell-env = (haskellPackages'.ghcWithHoogle (hp: with hp; [
+    stack
     hakyll
-    hakyll-sass
+    hakyll-sass-new
     cabal-install
   ]));
 
@@ -39,8 +42,8 @@ let
   # ------------ dist ---------------
   thirdparty = linkFarm "thirdparty" [
     {
-      name = "sierra";
-      path = (fetchTarball "https://github.com/sierra-library/sierra/archive/3.2.0.tar.gz") + "/src";
+      name = "bulma";
+      path = (fetchTarball "https://github.com/jgthms/bulma/archive/0.7.4.tar.gz") + "/sass";
     }
   ];
 
