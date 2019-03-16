@@ -28,8 +28,7 @@ sassOptions distPath = defaultSassOptions
 --------------------------------------------------------------------------------
 main :: IO ()
 main = do
-    sassCompiler <- sassCompilerWith . sassOptions <$> lookupEnv "THIRDPARTY"
-
+    sassCompiler <- fmap (sassCompilerWith . sassOptions) (lookupEnv "THIRDPARTY")
     hakyllWith config $ do
 
         match "images/*" $ do
