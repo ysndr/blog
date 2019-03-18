@@ -92,4 +92,16 @@ main = do
 
 --------------------------------------------------------------------------------
 postCtx :: Context String
-postCtx = dateField "date" "%B %e, %Y" <> defaultContext
+postCtx = 
+    dateField "date" "%B %e, %Y" 
+    <> peekField 50 "peak" "posts-content"
+    <> defaultContext
+-------------------------------------------------------------------------------
+peekField ::                Int           -- ^ length to peak
+                         -> String           -- ^ Key to use
+                         -> Snapshot         -- ^ Snapshot to load
+                         -> Context String   -- ^ Resulting context
+peekField length key snapshot = field key $ \item -> do
+    body <- itemBody <$> loadSnapshot (itemIdentifier item) snapshot
+    return (peak body)
+    where peak = T.unpack . T.unwords . take length . T.words . T.pack
