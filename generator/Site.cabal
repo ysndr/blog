@@ -58,6 +58,7 @@ executable Site
 
   -- Other library packages from which modules are imported.
   build-depends:       base >=4.11 && <4.12,
+                       text >= 1.2.3,
                        hakyll >=4.12 && <4.13,
                        hakyll-sass >=0.2 && <0.3,
                        hsass >=0.7 && <0.8

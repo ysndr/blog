@@ -1,11 +1,15 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 import           Data.Monoid                    ( mappend )
+import           Data.Maybe                     ( fromJust )
+import           Control.Applicative            ( empty , (<|>) ) 
+import           Control.Monad                  ( (>=>)
+                                                , (<=<)
+                                                )
 import           System.Environment             ( lookupEnv )
 import           Hakyll
-import           Hakyll.Web.Sass                ( sassCompiler
-                                                , sassCompilerWith
-                                                )
+import qualified Data.Text                     as T
+import           Hakyll.Web.Sass                ( sassCompilerWith )
 import           Text.Sass.Options              ( SassOptions(..)
                                                 , defaultSassOptions
                                                 , SassOutputStyle(..)
@@ -28,16 +32,34 @@ sassOptions distPath = defaultSassOptions
 --------------------------------------------------------------------------------
 main :: IO ()
 main = do
-    sassCompiler <- fmap (sassCompilerWith . sassOptions) (lookupEnv "THIRDPARTY")
+    sassCompiler <- fmap (sassCompilerWith . sassOptions)
+                         (lookupEnv "THIRDPARTY")
     hakyllWith config $ do
+
+        tags <- buildTags "posts/*" (fromCapture "tags/*.html")
+
+        tagsRules tags $ \tag pattern -> do
+            let title = "Posts tagged \"" ++ tag ++ "\""
+            let ctx   = postCtxWithTags tags
+
+            route idRoute
+            compile $ do
+                posts <- recentFirst =<< loadAll pattern
+
+                let tagsCtx =
+                        constField "title" title
+                            <> listField "posts" ctx (return posts)
+                            <> defaultContext
+
+                makeItem ""
+                    >>= loadAndApplyTemplate "templates/tag.html"     tagsCtx
+                    >>= loadAndApplyTemplate "templates/default.html" tagsCtx
+                    >>= relativizeUrls
+
 
         match "images/*" $ do
             route idRoute
             compile copyFileCompiler
-
-        -- match "css/*.css" $ do
-        --     route   idRoute
-        --     compile compressCssCompiler
 
         match (fromRegex "^css/[^_].*\\.scss") $ do
             route $ setExtension "css"
@@ -51,19 +73,23 @@ main = do
                 >>= relativizeUrls
 
         match "posts/*" $ do
+            let postCtx' = postCtxWithTags tags
             route $ setExtension "html"
             compile
                 $   pandocCompiler
-                >>= loadAndApplyTemplate "templates/post.html"    postCtx
-                >>= loadAndApplyTemplate "templates/default.html" postCtx
+                >>= saveSnapshot "posts-content"
+                >>= loadAndApplyTemplate "templates/post.html" postCtx'
+                >>= saveSnapshot "posts-rendered"
+                >>= loadAndApplyTemplate "templates/default.html" postCtx'
                 >>= relativizeUrls
 
         create ["archive.html"] $ do
             route idRoute
             compile $ do
                 posts <- recentFirst =<< loadAll "posts/*"
+                let ctx = postCtxWithTags tags
                 let archiveCtx =
-                        listField "posts" postCtx (return posts)
+                        listField "posts" ctx (return posts)
                             <> constField "title" "Archives"
                             <> defaultContext
 
@@ -77,8 +103,9 @@ main = do
             route idRoute
             compile $ do
                 posts <- recentFirst =<< loadAll "posts/*"
+                let ctx = postCtxWithTags tags
                 let indexCtx =
-                        listField "posts" postCtx (return posts)
+                        listField "posts" ctx (return posts)
                             <> constField "title" "Home"
                             <> defaultContext
 
@@ -89,18 +116,49 @@ main = do
 
         match "templates/*" $ compile templateBodyCompiler
 
-
+        match "html/*.html" $ do
+            route idRoute
+            compile copyFileCompiler
 --------------------------------------------------------------------------------
+
+
+postCtxWithTags :: Tags -> Context String
+postCtxWithTags tags = listFieldWith "tags" (tagCtx tags) mkPostTags <> postCtx 
+ where
+    
+    tagCtx :: Tags -> Context String
+    tagCtx tags = field "name" (return . itemBody) 
+               <> field "url" mkTagUrl
+
+    mkTagUrl    -- unwrap the maybe that gets returned when
+                -- seaching the route of the id of the tag 
+                -- (or something like that)
+        :: Item String          -- ^ a tag name
+        -> Compiler FilePath    -- ^ corresponding tag page url
+    mkTagUrl   = ((<$>) fromJust . getRoute . tagsMakeId tags . itemBody)
+
+    mkPostTags  -- resolve the item's tags
+                -- if it has tags apply them to makeItem (phrasing?)
+                -- else return empty to suppress rendering
+        :: Item String               -- a post
+        -> Compiler [Item String]    -- the tags for a given post
+    mkPostTags item = (getTags . itemIdentifier $ item)
+        >>= \tags' -> if null tags' then empty 
+                      else (return tags') >>= (mapM makeItem)
+
+                      
 postCtx :: Context String
-postCtx = 
-    dateField "date" "%B %e, %Y" 
-    <> peekField 50 "peak" "posts-content"
-    <> defaultContext
+postCtx =
+    dateField "date" "%B %e, %Y"
+        <> teaserField "teaser" "posts-content"
+        <> peekField 50 "peek" "posts-content"
+        <> defaultContext
 -------------------------------------------------------------------------------
-peekField ::                Int           -- ^ length to peak
-                         -> String           -- ^ Key to use
-                         -> Snapshot         -- ^ Snapshot to load
-                         -> Context String   -- ^ Resulting context
+peekField
+    :: Int              -- ^ length to peak
+    -> String           -- ^ Key to use
+    -> Snapshot         -- ^ Snapshot to load
+    -> Context String   -- ^ Resulting context
 peekField length key snapshot = field key $ \item -> do
     body <- itemBody <$> loadSnapshot (itemIdentifier item) snapshot
     return (peak body)
