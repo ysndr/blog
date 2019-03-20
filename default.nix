@@ -2,9 +2,11 @@ let
   # Look here for information about how to generate `nixpkgs-version.json`.
   #  → https://nixos.wiki/wiki/FAQ/Pinning_Nixpkgs
   pinnedVersion = pin: builtins.fromJSON (builtins.readFile pin);
-  pinnedPkgs = pin:  import (builtins.fetchTarball {
-    inherit (pinnedVersion pin) url sha256;
-  }) {};
+  pinnedPkgs = pin: let pin' = (pinnedVersion pin); in 
+    import (builtins.fetchTarball {
+      inherit (pin') url sha256;
+      name = "nixpkgs-${pin'.date}";
+    }) {};
   pkgs' = pinned: (
     if (!isNull pinned) then pinnedPkgs pinned 
     else import <nixpkgs> {});
