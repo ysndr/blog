@@ -134,8 +134,8 @@ postCtxWithTags tags = listFieldWith "tags" (tagCtx tags) mkPostTags <> postCtx
                 -- seaching the route of the id of the tag 
                 -- (or something like that)
         :: Item String          -- ^ a tag name
-        -> Compiler FilePath    -- ^ corresponding tag page url
-    mkTagUrl   = ((<$>) fromJust . getRoute . tagsMakeId tags . itemBody)
+        -> Compiler String    -- ^ corresponding tag page url
+    mkTagUrl item = toUrl <$> ((<$>) fromJust . getRoute . tagsMakeId tags . itemBody $ item) 
 
     mkPostTags  -- resolve the item's tags
                 -- if it has tags apply them to makeItem (phrasing?)
@@ -146,7 +146,7 @@ postCtxWithTags tags = listFieldWith "tags" (tagCtx tags) mkPostTags <> postCtx
         >>= \tags' -> if null tags' then empty 
                       else (return tags') >>= (mapM makeItem)
 
-                      
+
 postCtx :: Context String
 postCtx =
     dateField "date" "%B %e, %Y"
