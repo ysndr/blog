@@ -61,7 +61,8 @@ executable Site
                        text >= 1.2.3,
                        hakyll >=4.12 && <4.13,
                        hakyll-sass >=0.2 && <0.3,
-                       hsass >=0.7 && <0.8
+                       hsass >=0.7 && <0.8,
+                       blaze-html
 
   -- Directories containing source files.
   hs-source-dirs:      .

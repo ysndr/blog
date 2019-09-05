@@ -34,6 +34,8 @@ let
       }) {};
   });
   haskell-env = (haskellPackages'.ghcWithHoogle (hp: with hp; [
+    text
+    blaze-html
     stack
     hakyll
     hakyll-sass-new
