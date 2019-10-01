@@ -53,7 +53,7 @@ main = do
                     >>= relativizeUrls
 
 
-        match "images/*" $ do
+        match "assets/images/*" $ do
             route idRoute
             compile copyFileCompiler
 

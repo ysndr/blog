@@ -1,0 +1,35 @@
+<section class="section">
+    <div class="container">
+        $for(posts)$
+        <div class="box">
+            <article class="media">
+                <div class="media-content">
+                    <div class="header has-text-justified">
+                        <a href="$url$">
+                            <h1 class="title">$title$</h1>
+                            <h2 class="subtitle">Posted on: $date$</h2>
+                        </a>
+                        $if(tags)$
+                        <p>Tags:
+                            $for(tags)$
+                            <a href="$url$">$name$</a>$sep$,
+                            $endfor$
+                        </p>
+                        $endif$
+                        <p class="description"><i>$description$</i></p>
+
+                    </div>
+                    $if(teaser)$
+                    <div class="content">
+                        <hr>
+                        <p class="peek">$teaser$<a href="$url$"> ... read more</a></p>
+                    </div>
+                    $endif$
+                </div>
+            </article>
+        </div>
+        $endfor$
+    </div>
+
+
+</section>

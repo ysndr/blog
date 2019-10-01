@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Hakyll Blog - $title$</title>
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+
+<body>
+  <!-- statesm for some dynamic styling -->
+  <input type="checkbox" id="nav-toggle-state" />
+
+
+  <header>
+    <div class="container has-text-centered">
+      <div>
+        <a class="" href="/">
+          <img src="/images/logo.svg" width="112" height="28">
+        </a>
+      </div>
+
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+       
+          <a class="navbar-item" href="/">
+            Home
+          </a>
+
+          <a class="navbar-item" href="/archive.html">
+            Articles
+          </a>
+
+          <a class="navbar-item" href="/contact.html">
+              Contact
+          </a>
+
+          <div class="navbar-item has-dropdown is-hoverable">
+            <label for="navbar-toggle-dropdown-more" class="navbar-link">
+              <a>
+                More
+              </a>
+            </label>
+
+            <input type="checkbox" id="navbar-toggle-dropdown-more" class="navbar-toggle-dropdown" />
+            <div class="navbar-dropdown">
+              <a class="navbar-item">
+                About
+              </a>
+              <a class="navbar-item">
+                Jobs
+              </a>
+              <hr class="navbar-divider">
+              <a class="navbar-item" href="mailto:contact@ysndr.de">
+                Report an issue
+              </a>
+            </div>
+          </div>
+
+    </nav>
+    </div>
+
+  </header>
+
+  <main>
+    $body$
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns content">
+        <div class="column">
+          <div class="">
+            <div class="media-content">
+              <p><b>About Me</b></p>
+              <p>Hi I'm Yannik.</p>
+              <p>I love programming and finding solutions to problems no one has. I also like doing sports and trying to
+                cook.</p>
+            </div>
+          </div>
+        </div>
+        <div class="column  has-text-centered">
+          <div class="icon" height="12rem">
+            <a href="/">
+
+              <img src="/images/logo.svg" width="80px" />
+
+            </a>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="level">
+            <p class="level-item"><b>Legal</b></p>
+            <p class="level-item"><a href="/imprint.html">Imprint</a></p>
+            <p class="level-item"><a href="/about.html">About</a></p>
+            <p class="level-item"><a href="/privacy.html">Privacy</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="has-text-centered">
+        <p>Made with <a href="https://jaspervdj.be/hakyll/">Hakyll</a></p>
+      </div>
+    </div>
+
+  </footer>
+
+</body>
+
+</html>

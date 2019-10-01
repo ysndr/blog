@@ -1,0 +1,116 @@
+@charset "utf-8";
+
+// Import a Google Font
+@import url("https://fonts.googleapis.com/css?family=Nunito:400,700");
+
+// Set your brand colors
+$green: rgb(143,164,121);
+$purple: #8a4d76;
+$pink: #fa7c91;
+$brown: #757763;
+$beige-light: #d0d1cd;
+$beige-lighter: #eff0eb;
+
+// Update Bulma's global variables
+$family-sans-serif: "Baskervville", "Baskerville", "Roboto", sans-serif;
+$grey-dark: $brown;
+$grey-light: $beige-light;
+$primary: $green;
+$link: $pink;
+$light-text: #efefef;
+
+$header-color: #fff;
+
+$widescreen-enabled: false;
+$fullhd-enabled: false;
+
+// Update some of Bulma's component variables
+$body-background-color: $beige-lighter;
+$body-line-height: 1.75;
+$control-border-width: 2px;
+$input-border-color: transparent;
+
+
+// Import only what you need from Bulma
+@import "bulma/utilities/_all.sass";
+@import "bulma/base/_all.sass";
+//@import "bulma/elements/button.sass";
+@import "bulma/grid/columns.sass";
+@import "bulma/elements/container.sass";
+@import "bulma/elements/form.sass";
+@import "bulma/elements/title.sass";
+@import "bulma/elements/box.sass";
+@import "bulma/components/navbar.sass";
+@import "bulma/layout/hero.sass";
+@import "bulma/layout/section.sass";
+@import "bulma/layout/footer.sass";
+@import "bulma/components/level.sass";
+
+header {
+  background-color: $header-color;
+}
+nav {
+  display: flex;
+  justify-content: space-around;
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+footer:in-range  {
+  background-color: red;
+}
+
+#nav-toggle-state {
+  display: none;
+
+  &:checked ~ * .navbar-menu {
+    @extend .is-active;
+  }
+  &:checked ~ * .navbar-burger {
+    @extend .is-active;
+  }
+}
+
+.navbar-toggle-dropdown {
+  display: none;
+  @include touch {
+    &:checked ~ .navbar-dropdown {
+      display: block;
+    }
+
+    &:not(:checked) + .navbar-dropdown {
+      display: none;
+    }
+  }
+}
+
+.home.presenter {
+ 
+  height: 600px;
+  background-size: cover;
+  
+  @include touch {
+    height: 300px;
+  } 
+
+  .hero-body {
+    display: flex;
+    .container {
+      margin: auto;
+
+      font-weight: lighter;
+      h1 {
+        color: lighten($grey-dark, 50);
+        // font-size: 5rem;
+        font-weight: inherit;
+      }
+      h2 {
+        color: lighten($grey-light, 50);
+        // font-size: 2rem;
+        font-weight: inherit;
+      }
+    }
+  }
+}
+
+@import './code.scss';
