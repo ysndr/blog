@@ -1,11 +1,7 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
-import           Data.Monoid                    ( mappend )
 import           Data.Maybe                     ( fromJust )
-import           Control.Applicative            ( empty , (<|>) ) 
-import           Control.Monad                  ( (>=>)
-                                                , (<=<)
-                                                )
+import           Control.Applicative            ( empty ) 
 import           System.Environment             ( lookupEnv )
 import           Hakyll
 import qualified Data.Text                     as T
