@@ -7,6 +7,7 @@ env:
 jobs:
   include:
   - stage: build site
+    if: branch = release
     script:
     - nix-env -iA cachix -f https://cachix.org/api/v1/install
     - cachix use ysndr
@@ -19,5 +20,3 @@ jobs:
       keep_history: true
       target_branch: gh-pages
       local_dir: result
-      on:
-        condition: $TRAVIS_BRANCH =~ ^(staging|production)$
