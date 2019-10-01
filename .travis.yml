@@ -1,0 +1,23 @@
+language: nix
+nix: 2.2.2
+env:
+  global: #cachix and github token
+  - secure: gqR/guEzRBSgRAPmBOLEIwaYXFBZpy5NF6kCAWdmM0iV5spe60OhQLprc+h2xIk56yK1Ki6I4AkbJuYU7XsqlKD/P0jn3kysE5vCwOOXiaW/j5ecpSVoHKqMMdDo52ZijbgBlDHdN/IF5KjpZl6wEJ1/WfSt5Db8xwyMx6XEZNvzF50wD7l9LOblHCH9TLlPtfrUNI2/QIXMPcAio9OBTmgEHBeemL79h5Dal+Oo01xcxg0S1RJxDZfr068MntXLYZaERWsucJ03ualGb6KFfie3LDfERE/m8/J2sE52J7oDG4JGT0GCAMIgV5sjqOd9V+KCDwe66OjL2gIjYynSzTellrEE8B8BMaVQTfP6mRQHPdeGguSM3w9jvnpRkKvqQhREn0JUl44uAqCQEZbBw7YDisLa8jkWLU8770Id4Lm34FwQ7wr8zHvB/LvlIsvim3Excv4pRAmErGuOXz+oFuHchxV0Ph/UVYZGi+ngZrDhVU7uPsG/zrj2BtrHiqwOEC22BDEASmzMpF21cYdaU2IQCHU1CxU+83M3WsmpynKp4IDFYVUKAiy1FJL0hIrcGrg0J2WyknVcuBsUt9xv4QVZf/+QPrrj2s8vsxNSqITQwBWRzRi5WH8LEq4OR4kht/skFVmm3ofCplzH/H02QliQGbliAyXuaBn8LDCSF04=
+  - secure: lyq5HCfedskkWua0rJMl5Z4aS0drnp1xuRVRBS9tMAW1qlBuhU0yFjs4d7Pnh9THLojf46ihq6PiheDhQI5zIGjW1clJ/SMQjg+jOhUNW93xUrfOCtzGdnNUWyfQoMHTlSZILc82GfdwueijdJ9Ip+XFg6jkn48EMsm6XfY8jc2ZBETwbWFHCrg5zJ+DMraLnBjwoV1EG9yaMaTfJBK1NQOiVTFbh5f1mEy2xd0Yu4u660a6qKu4PdaHBLarpPVJ2AHifTIA6wj3x780Ut8XzY2UJZw48Wm+82wYqVVIScKJmUJ2e0RFFr7EUv5o217SQfllLhYaIcxCl5/DluKe913KbJw29hRH2xm+gLPSkIHkLVNi9LfJTwZi+K/bExC07MGFeGCvVqhznyjaC67tTGJLSZxITtxrVO/svbNVQ0kHfQJX+td41Sy7NSoz7T2TGtq9/vyffXukjTbZoX1Y22doiHlfR/NCgqkXOAOO+hWOmEQ2Xoi9V5j6ACoIJ3Wuk5FXi8nErbuMNdGlQCfftLYowZ1fOUAEMOwcz7XBcUTKqxiZoNU4VFWkOj9aVjIqFaZaTiT96ys5L2/5cWrQq6DcvzGO+VkPlfz0N3bdNye/RUcTf2iR35WOw/0x7L76EAQnNaYI/Pe78DamFDjmMlXAOpkD0OXAVdrs3WFP1A8=
+jobs:
+  include:
+  - stage: build site
+    script:
+    - nix-env -iA cachix -f https://cachix.org/api/v1/install
+    - cachix use ysndr
+    - cachix push ysndr --watch-store&
+    - nix build -f . website
+    deploy:
+      provider: pages
+      skip_cleanup: true
+      github_token: "$GITHUB_TOKEN"
+      keep_history: true
+      target_branch: gh-pages
+      local_dir: result
+      on:
+        condition: $TRAVIS_BRANCH =~ ^(staging|production)$
