@@ -7,19 +7,28 @@ env:
   
     # Cachix
     - secure: "q7JhvLaYO6vMptXisoMewcSYaUsK9gykS7ZFIozPxI0mcYuCnWVZc1u4yBaBBcBSFxeUp5hEJkJ2+USiuD2/Qm4HxL3fbaxs58qKi58c1exreLy50vsKiST2MppNH996+GG+lSOcp421+H8M3xVn0L3Bd95gKNGsoN5BxZUXQUmtEnC1EEYo4Fj+LeHdTAMVGFNKgpa1I1nxfkkkTXfeWDJdAwkcGMe0MRe7yXt+o+l+Safq7XbDcV/Iz2BSeM9QKWtxBEL/T7UBnpnQVKLOwXitq74GYeu8g/XSTkpKRharWzuJ8Iro5nN6xt59MShuGKQoCs769XBVjnAYUwrL9mObhYv5BPG2epFjil1EFyLloY0X59tYBVJj5RwOoAF9GpTcVcXcBfV196vFT8IfQ39ehxzdsk7Yd6mUrC0exRmS2AgMRffcSxSf3Rbqx+hgnMELmp64rGOfSvok1WW7aZjv6o3cu0nsJ2GUgqBkAU3hCvRErz7I5Nb/BnbtKhFgo6uxjOdVpxbGR4h7IyfZi0kfkpytiCLuYeQ1DsRr+DvlF/P2zrX7Vl0qpTMUAUTTXt7xAcGn/DofSHq8JgxuqUBjmi4FDdBWAIRWk+xBITGnvpwtC5UoqzIoEwPb7E66yWR26/ZcA3b+3ypKIS7vhqfTlUqqPM0bNl06UoBNPkg="
+
 jobs:
   include:
-  - stage: build site
-    if: branch = release
-    script:
-    - nix-env -iA cachix -f https://cachix.org/api/v1/install
-    - cachix use ysndr
-    - cachix push ysndr --watch-store&
-    - nix build -f . website
-    deploy:
-      provider: pages
-      skip_cleanup: true
-      github_token: "$GITHUB_TOKEN"
-      keep_history: true
-      target_branch: gh-pages
-      local_dir: result
+    - stage: build generator
+      script:
+      - nix-env -iA cachix -f https://cachix.org/api/v1/install
+      - cachix use ysndr
+      - cachix push ysndr --watch-store &
+      - nix-build -A generator | cachix push ysndr
+    
+    - stage: build site
+      on:
+        branch: release
+      script:
+      - nix-env -iA cachix -f https://cachix.org/api/v1/install
+      - cachix use ysndr
+      - cachix push ysndr --watch-store &
+      - nix-build -A website
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        github_token: "$GITHUB_TOKEN"
+        keep_history: true
+        target_branch: gh-pages
+        local_dir: result

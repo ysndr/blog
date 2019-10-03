@@ -70,7 +70,6 @@ let
       export NIX_GHC_LIBDIR=$( $NIX_GHC --print-libdir )
     '';
   };
-
 in {
-  inherit shell website;
+  inherit shell website generator;
 } 
