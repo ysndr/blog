@@ -1,0 +1,35 @@
+language: nix
+nix: 2.2.2
+env:
+  global: #cachix and github token
+    # Github
+    - secure: "nAE6Pg04GQhyJG4Zjma6S9B2+Qq01efeK4wq8EXtoYJ3qj2pQUPzPtJriPCrGABz9Kh2gZOV1hr9FV0FIiuSU8PSvwXeNhfyqK6UIUqummfbMaVKi6tYmzpFIXT3+2tsNa+HgDbCPIqXgPz0zNjK8OZtN3PHM4+bE89WsrnRyHM82CljHzE/pYpYfJzSeSFPbb+DSWCB4k2+0zWD45CG5M5WkY1q9BRCznnmdDdSCyqcr5omvpYc33LHJdLzkwI0pUd+vj/zPJzSa6MEGEJCjVFLL5UACKWf4mpMmsYJjDvwEPtVkp8jxxoEufPLQt0bm/nEFb36b1UBNUhIEXrxNzgKROem02pebtFxZv/ixK5XiCnyVKc8HnIdH7MDJtKAUec9sb5IDPfc1EBFauwBNxsl8kP4KN+Ubj3k+AeqKwZLtjoa72855FSIlOwN3ijJwKoH67AyXXd5clAOE+eMJ2J3dnQNwnNYYVuVeDBBGek2lyEKez/4UZ1BKFoCW1sjXL4SK9VTE1RCNf6H90YH7M2Lc/mZ7R1sTNL/8MIx7OS01Muts7cNuKXg2aBWVfyW90/Xh4BGyhxAM1ZBr4JmTKhNvIZtptuf/eQ2baKVN+ld8ECEjDGWnFUOg3o1fWJltL0PPOUnHMTh6nZZUyDRIbVieWSZGtdi0u+yi80mL4c="
+  
+    # Cachix
+    - secure: "q7JhvLaYO6vMptXisoMewcSYaUsK9gykS7ZFIozPxI0mcYuCnWVZc1u4yBaBBcBSFxeUp5hEJkJ2+USiuD2/Qm4HxL3fbaxs58qKi58c1exreLy50vsKiST2MppNH996+GG+lSOcp421+H8M3xVn0L3Bd95gKNGsoN5BxZUXQUmtEnC1EEYo4Fj+LeHdTAMVGFNKgpa1I1nxfkkkTXfeWDJdAwkcGMe0MRe7yXt+o+l+Safq7XbDcV/Iz2BSeM9QKWtxBEL/T7UBnpnQVKLOwXitq74GYeu8g/XSTkpKRharWzuJ8Iro5nN6xt59MShuGKQoCs769XBVjnAYUwrL9mObhYv5BPG2epFjil1EFyLloY0X59tYBVJj5RwOoAF9GpTcVcXcBfV196vFT8IfQ39ehxzdsk7Yd6mUrC0exRmS2AgMRffcSxSf3Rbqx+hgnMELmp64rGOfSvok1WW7aZjv6o3cu0nsJ2GUgqBkAU3hCvRErz7I5Nb/BnbtKhFgo6uxjOdVpxbGR4h7IyfZi0kfkpytiCLuYeQ1DsRr+DvlF/P2zrX7Vl0qpTMUAUTTXt7xAcGn/DofSHq8JgxuqUBjmi4FDdBWAIRWk+xBITGnvpwtC5UoqzIoEwPb7E66yWR26/ZcA3b+3ypKIS7vhqfTlUqqPM0bNl06UoBNPkg="
+
+jobs:
+  include:
+    - stage: build generator
+      script:
+      - nix-env -iA cachix -f https://cachix.org/api/v1/install
+      - cachix use ysndr
+      - cachix push ysndr --watch-store &
+      - nix-build -A generator | cachix push ysndr
+    
+    - stage: build site
+      if: branch = release
+      script:
+      - nix-env -iA cachix -f https://cachix.org/api/v1/install
+      - cachix use ysndr
+      - cachix push ysndr --watch-store &
+      - nix-build -A website
+      deploy:
+        - provider: pages
+          skip_cleanup: true
+          github_token: "$GITHUB_TOKEN"
+          keep_history: true
+          target_branch: gh-pages
+          local_dir: result
+          on:
+            branch: release
