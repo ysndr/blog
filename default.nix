@@ -49,7 +49,7 @@ let
                      then "${pkgs.glibcLocales}/lib/locale/locale-archive"
                      else "";
                      
-    THIRDPARTY = "${thirdparty}"
+    THIRDPARTY = "${thirdparty}";
 
     buildPhase = ''
       ${generator}/bin/generator build
