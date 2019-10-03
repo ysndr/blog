@@ -18,17 +18,18 @@ jobs:
       - nix-build -A generator | cachix push ysndr
     
     - stage: build site
-      on:
-        branch: release
+      if: branch = release
       script:
       - nix-env -iA cachix -f https://cachix.org/api/v1/install
       - cachix use ysndr
       - cachix push ysndr --watch-store &
       - nix-build -A website
       deploy:
-        provider: pages
-        skip_cleanup: true
-        github_token: "$GITHUB_TOKEN"
-        keep_history: true
-        target_branch: gh-pages
-        local_dir: result
+        - provider: pages
+          skip_cleanup: true
+          github_token: "$GITHUB_TOKEN"
+          keep_history: true
+          target_branch: gh-pages
+          local_dir: result
+          on:
+            branch: release
