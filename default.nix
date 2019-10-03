@@ -24,7 +24,9 @@ let
   ];
 
   # ------------- generator -----------
-  generator = (haskell.lib.justStaticExecutables (haskellPackages'.callPackage ./generator {})).overrideAttrs(old: {
+  generator = haskell.lib.justStaticExecutables (haskellPackages'.callPackage ./generator {});
+  
+  generator-with-thirdparty = generator.overrideAttrs(old: {
     nativeBuildInputs = old.nativeBuildInputs or [] ++ [makeWrapper];
     installPhase = old.installPhase + "\n" + ''
       wrapProgram $out/bin/generator --set THIRDPARTY ${thirdparty}
@@ -47,6 +49,8 @@ let
                      then "${pkgs.glibcLocales}/lib/locale/locale-archive"
                      else "";
                      
+    THIRDPARTY = "${thirdparty}"
+
     buildPhase = ''
       ${generator}/bin/generator build
     '';
@@ -71,7 +75,9 @@ let
     ];
 
     shellHook = ''
-      export HIE_HOOGLE_DATABASE="${haskell-env}/share/doc/hoogle/default.hoo";
+      export THIRDPARTY="${thirdparty}"
+
+      export HIE_HOOGLE_DATABASE="${haskell-env}/share/doc/hoogle/default.hoo"
       export NIX_GHC="${haskell-env}/bin/ghc"
       export NIX_GHCPKG="${haskell-env}/bin/ghc-pkg"
       export NIX_GHC_DOCDIR="${haskell-env}/share/doc/ghc/html"
