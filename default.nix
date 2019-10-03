@@ -39,6 +39,14 @@ let
     version = "0.1";
     buildInputs = [ generator ];
     sourceRoot = ".";
+    
+    LC_ALL="en_US.UTF-8";
+    LANG="en_US.UTF-8";
+    LANGUAGE="en_US.UTF-8";
+    LOCALE_ARCHIVE = if pkgs.stdenv.isLinux
+                     then "${pkgs.glibcLocales}/lib/locale/locale-archive"
+                     else "";
+                     
     buildPhase = ''
       ${generator}/bin/generator build
     '';
