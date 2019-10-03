@@ -24,7 +24,7 @@ let
   ];
 
   # ------------- generator -----------
-  generator = (haskellPackages'.callPackage ./generator {}).overrideAttrs(old: {
+  generator = (haskell.lib.justStaticExecutables (haskellPackages'.callPackage ./generator {})).overrideAttrs(old: {
     nativeBuildInputs = old.nativeBuildInputs or [] ++ [makeWrapper];
     installPhase = old.installPhase + "\n" + ''
       wrapProgram $out/bin/generator --set THIRDPARTY ${thirdparty}
