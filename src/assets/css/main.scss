@@ -1,116 +1,62 @@
 @charset "utf-8";
 
-// Import a Google Font
-@import url("https://fonts.googleapis.com/css?family=Nunito:400,700");
 
-// Set your brand colors
-$green: rgb(143,164,121);
-$purple: #8a4d76;
-$pink: #fa7c91;
-$brown: #757763;
-$beige-light: #d0d1cd;
-$beige-lighter: #eff0eb;
+// 1. Your custom variables and variable overwrites.
+$global-link-color: #DA7D02;
 
-// Update Bulma's global variables
-$family-sans-serif: "Baskervville", "Baskerville", "Roboto", sans-serif;
-$grey-dark: $brown;
-$grey-light: $beige-light;
-$primary: $green;
-$link: $pink;
-$light-text: #efefef;
+$global-font-family: "Fira Code";
 
-$header-color: #fff;
+// 2. Import default variables and available mixins.
+@import "uikit/scss/variables-theme.scss";
+@import "uikit/scss/mixins-theme.scss";
 
-$widescreen-enabled: false;
-$fullhd-enabled: false;
+// 3. Your custom mixin overwrites.
+@mixin hook-card() { color: #000; }
 
-// Update some of Bulma's component variables
-$body-background-color: $beige-lighter;
-$body-line-height: 1.75;
-$control-border-width: 2px;
-$input-border-color: transparent;
+@mixin hook-height-misc() {
 
-
-// Import only what you need from Bulma
-@import "bulma/utilities/_all.sass";
-@import "bulma/base/_all.sass";
-//@import "bulma/elements/button.sass";
-@import "bulma/grid/columns.sass";
-@import "bulma/elements/container.sass";
-@import "bulma/elements/form.sass";
-@import "bulma/elements/title.sass";
-@import "bulma/elements/box.sass";
-@import "bulma/components/navbar.sass";
-@import "bulma/layout/hero.sass";
-@import "bulma/layout/section.sass";
-@import "bulma/layout/footer.sass";
-@import "bulma/components/level.sass";
-
-header {
-  background-color: $header-color;
-}
-nav {
-  display: flex;
-  justify-content: space-around;
-  padding-left: 10%;
-  padding-right: 10%;
-}
-
-footer:in-range  {
-  background-color: red;
-}
-
-#nav-toggle-state {
-  display: none;
-
-  &:checked ~ * .navbar-menu {
-    @extend .is-active;
-  }
-  &:checked ~ * .navbar-burger {
-    @extend .is-active;
-  }
-}
-
-.navbar-toggle-dropdown {
-  display: none;
-  @include touch {
-    &:checked ~ .navbar-dropdown {
-      display: block;
+    .uk-height-small\@s,
+    .uk-height-small\@m,
+    .uk-height-small\@l,
+    .uk-height-small\@xl,
+    .uk-height-medium\@s,
+    .uk-height-medium\@m,
+    .uk-height-medium\@l,
+    .uk-height-medium\@xl,
+    .uk-height-large\@s,
+    .uk-height-large\@m,
+    .uk-height-large\@l,
+    .uk-height-large\@xl {
+        height: auto;
     }
-
-    &:not(:checked) + .navbar-dropdown {
-      display: none;
+    
+    @media (min-width: $breakpoint-small) {
+        .uk-height-small\@s { height: $height-small-height; }
+        .uk-height-medium\@s { height: $height-medium-height; }
+        .uk-height-large\@s { height: $height-large-height; }
     }
-  }
-}
-
-.home.presenter {
- 
-  height: 600px;
-  background-size: cover;
-  
-  @include touch {
-    height: 300px;
-  } 
-
-  .hero-body {
-    display: flex;
-    .container {
-      margin: auto;
-
-      font-weight: lighter;
-      h1 {
-        color: lighten($grey-dark, 50);
-        // font-size: 5rem;
-        font-weight: inherit;
-      }
-      h2 {
-        color: lighten($grey-light, 50);
-        // font-size: 2rem;
-        font-weight: inherit;
-      }
+    
+    @media (min-width: $breakpoint-medium) {
+        .uk-height-small\@m { height: $height-small-height; }
+        .uk-height-medium\@m { height: $height-medium-height; }
+        .uk-height-large\@m { height: $height-large-height; }
     }
-  }
-}
+    
+    @media (min-width: $breakpoint-large) {
+        .uk-height-small\@l { height: $height-small-height; }
+        .uk-height-medium\@l { height: $height-medium-height; }
+        .uk-height-large\@l { height: $height-large-height; }
+    }
+    
+    @media (min-width: $breakpoint-xlarge) {
+        .uk-height-small\@xl { height: $height-small-height; }
+        .uk-height-medium\@xl { height: $height-medium-height; }
+        .uk-height-large\@xl { height: $height-large-height; }
+    }
+} 
+
+// 4. Import UIkit.
+@import "uikit/scss/uikit-theme.scss";
+
 
 @import './code.scss';

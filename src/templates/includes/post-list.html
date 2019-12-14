@@ -1,0 +1,52 @@
+<div class="uk-container">
+    <h3>Recent Posts</h3>
+    <div class="uk-child-width-1-2@m uk-grid-medium" uk-grid="masonry: true">
+
+        $for(posts)$
+        <div>
+            <div class="uk-card uk-card-default">
+                $if(image)$
+                <div class="uk-card-media-top uk-cover-container">
+                    <img src="$image$" alt="" uk-cover>
+                    <canvas width="600" height="400"></canvas>
+                </div>
+                $endif$
+                <div>
+                    <article class="uk-article uk-card-body">
+                        <div class="media-content">
+                            <div class="header has-text-justified">
+                                <a href="$url$">
+                                    <h1 class="uk-article-title">$title$</h1>
+                                </a>
+                                <h2 class="uk-article-meta">Posted on: $date$
+                                    $if(tags)$
+                                    <p>Tags:
+                                        $for(tags)$
+                                        <a href="$url$">$name$</a>$sep$,
+                                        $endfor$
+                                    </p>
+                                    $endif$
+                                </h2>
+                                <p class="uk-text-lead"><i>$description$</i></p>
+                            </div>
+                            $if(teaser)$
+                            <hr>
+                            <p class="peek">$teaser$<a href="$url$"> ... read more</a></p>
+                            $endif$
+                        </div>
+                        <div class="uk-grid-small uk-child-width-auto" uk-grid>
+                            <div>
+                                <a class="uk-button uk-button-text" href="$url$">Read more</a>
+                            </div>
+                            <div>
+                                <a class="uk-button uk-button-text" href="#">5 Comments</a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+            </div>
+        </div>
+        $endfor$
+    </div>
+</div>

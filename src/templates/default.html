@@ -6,106 +6,142 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My Hakyll Blog - $title$</title>
-  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
 </head>
 
 <body>
-  <!-- statesm for some dynamic styling -->
-  <input type="checkbox" id="nav-toggle-state" />
+  <header id="header" class="uk-padding-left uk-padding-right uk-background-muted  uk-flex uk-flex-column">
 
+    <div class="uk-container uk-flex uk-flex-column uk-flex-middle">
 
-  <header>
-    <div class="container has-text-centered">
-      <div>
-        <a class="" href="/">
-          <img src="/images/logo.svg" width="112" height="28">
-        </a>
+      <div class="uk-container uk-flex uk-flex-center uk-margin-large-top  uk-margin-small-bottom  uk-width-small
+      uk-width-medium@s">
+        <img class="
+                 uk-width-small
+                 uk-width-medium@s
+                 uk-height-medium@s
+                 uk-height-small
+                 uk-border-circle	
+                 uk-background-cover" src="https://picsum.photos/500/500/?random"/> </div>
+          <h1><strong>yannik</strong>|sander</h1>
+
+        <p class="uk-width-2-5@s uk-width-4-5 uk-text-justify uk-text-emphasis">
+          Hej and welcome to my blog!</br>
+          I'm an ambitioned and enthusiastic software developer and student of the arcanes of cognitive computer
+          science. I enjoy learning and thinking about functional principles, AI and the philospohy of life.
+        </p>
       </div>
 
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-       
-          <a class="navbar-item" href="/">
-            Home
-          </a>
+      <hr class="uk-margin-remove-bottom" />
+  </header>
+  <header class="uk-navbar-container uk-position-z-index" style="
+    position: sticky;
+    top: 0;
+">
+    <nav class="uk-container" uk-navbar="">
 
-          <a class="navbar-item" href="/archive.html">
-            Articles
-          </a>
+      <div class="uk-navbar-center ">
+        <div class="uk-navbar-nav uk-flex-1">
 
-          <a class="navbar-item" href="/contact.html">
-              Contact
-          </a>
+          <li class="uk-logo"><a href="/">
+              <h3 class="uk-margin-remove"><strong>y</strong>|sndr</h3>
+            </a></li>
+         
+        </div>
+      </div>
 
-          <div class="navbar-item has-dropdown is-hoverable">
-            <label for="navbar-toggle-dropdown-more" class="navbar-link">
-              <a>
-                More
-              </a>
-            </label>
+      <div class="uk-navbar-left">
+        <ul class="uk-navbar-nav">
+          <li>
+            <a><span uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Menu</span></a>
+            <div class="uk-navbar-dropdown"
+              uk-drop="boundary: nav; boundary-align: true; pos: bottom-justify; offset: 0">
 
-            <input type="checkbox" id="navbar-toggle-dropdown-more" class="navbar-toggle-dropdown" />
-            <div class="navbar-dropdown">
-              <a class="navbar-item">
-                About
-              </a>
-              <a class="navbar-item">
-                Jobs
-              </a>
-              <hr class="navbar-divider">
-              <a class="navbar-item" href="mailto:contact@ysndr.de">
-                Report an issue
-              </a>
+              <div class="uk-navbar-dropdown-grid uk-child-width-1-3@m uk-child-width-1-1" uk-grid>
+                <div>
+                  <ul class="uk-nav uk-navbar-dropdown-nav">
+                    <li class="uk-nav-header">Who?</li>
+                    <li><a href="#">About Me</a></li>
+                    <li><a href="#">CV</a></li>
+                    <li class="uk-nav-divider"></li>
+                    <li>--icons--</li>
+                  </ul>
+                </div>
+                <div>
+                  <ul class="uk-nav uk-navbar-dropdown-nav">
+                    <li class="uk-nav-header">What?</li>
+                    <li><a href="#">Projects</a></li>
+                    <li class="uk-nav-divider"></li>
+                    <li>project a</li>
+                    <li>project b</li>
+                  </ul>
+                </div>
+                <div>
+                  <ul class="uk-nav uk-navbar-dropdown-nav">
+                    <li class="uk-nav-header">Posts</li>
+                    <li><a href="#">Archive</a></li>
+                    <li class="uk-nav-divider"></li>
+                    <li><a href="https://github.com/ysndr/blog"><span uk-icon="git-branch" /> current rev.: cf7363d</a></li>
+
+                  </ul>
+                </div>
+              </div>
+
+
             </div>
-          </div>
-
+        </ul>
+      </div>
     </nav>
-    </div>
 
   </header>
 
-  <main>
+  <main class="uk-container">
     $body$
   </main>
 
-  <footer class="footer">
-    <div class="container">
-      <div class="columns content">
-        <div class="column">
+
+  <footer class="uk-section uk-section-secondary ">
+    <div class="uk-container">
+      <div class="uk-grid-medium uk-child-width-1-3@m uk-child-width-1-1" uk-grid>
+        <div>
           <div class="">
-            <div class="media-content">
-              <p><b>About Me</b></p>
-              <p>Hi I'm Yannik.</p>
-              <p>I love programming and finding solutions to problems no one has. I also like doing sports and trying to
-                cook.</p>
-            </div>
+            <h3 class="">Contact</h3>
+            <p><span uk-icon="mail" /> <a href="mailto:contact@ysndr.de">contact@ysndr.de</a></p>
+            <p><span uk-icon="github" /> <a href="https://github.com/ysndr">ysndr</a></p>
+            <p><span uk-icon="linkedin" /> <a href="https://linkedin.com/in/yannik-sander">yannik-sander</a></p>
           </div>
         </div>
-        <div class="column  has-text-centered">
-          <div class="icon" height="12rem">
-            <a href="/">
-
-              <img src="/images/logo.svg" width="80px" />
-
-            </a>
+        <div>
+          <div class="">
+            <h3 class="">Legal</h3>
+            <p><span uk-icon="check" /> <span href="mailto:contact@ysndr.de">No analytics are used here your data is
+                safe :)</span></p>
+            <p><span uk-icon="check" /> <span href="https://github.com/ysndr">The content of this blog is licensed under
+                CC0 terms if not otherwise noted</span></p>
           </div>
         </div>
-
-        <div class="column">
-          <div class="level">
-            <p class="level-item"><b>Legal</b></p>
-            <p class="level-item"><a href="/imprint.html">Imprint</a></p>
-            <p class="level-item"><a href="/about.html">About</a></p>
-            <p class="level-item"><a href="/privacy.html">Privacy</a></p>
+        <div>
+          <div class="">
+            <h3 class="">About this blog</h3>
+            <p>Built with <span uk-icon="code" /> and <span uk-icon="heart" /> using <a
+                href="https://jaspervdj.be/hakyll/">Hakyll</a></p>
+            <p><a href="https://builtwithnix.org" rel="nofollow"><img src=https://builtwithnix.org/badge.svg"
+                  style="max-width:100%;"></a></p>
+            <p class="uk-text-muted"><span uk-icon="history" /> last updated: 2019-12-12</p>
+            <p class="uk-text-muted"><span uk-icon="git-branch" /> <a href="https://github.com/ysndr/blog">cf7363d</a>
+            </p>
           </div>
         </div>
-      </div>
-      <div class="has-text-centered">
-        <p>Made with <a href="https://jaspervdj.be/hakyll/">Hakyll</a></p>
       </div>
     </div>
 
+    </div>
+    </div>
   </footer>
 
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit-icons.min.js"></script>
 </body>
 
 </html>

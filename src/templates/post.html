@@ -1,18 +1,3 @@
-<article >
-    <section class="section header">
-        <div class="container">
-        <h1 class="title">$title$</h1>
-        <h2 class="subtitle">
-            Posted $if(author)$ by $author$ $endif$ on $date$
-            $if(author)$
-            by $author$
-            $endif$</h2>
-            $if(tags)$
-            <p>Tags: $tags$</p>
-            $endif$
-    </div>
-    </section>
-    <section class="section">
-        <div class="container">$body$</div>
-    </section>
-</article>
+<section class="uk-section">
+    $partial("templates/includes/article.html")$
+</section>
