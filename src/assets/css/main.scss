@@ -4,7 +4,7 @@
 // 1. Your custom variables and variable overwrites.
 $global-link-color: #DA7D02;
 
-$global-font-family: "Fira Code";
+$global-font-family: "Fira Code", monospace, monospace;
 
 // 2. Import default variables and available mixins.
 @import "uikit/scss/variables-theme.scss";
@@ -13,22 +13,33 @@ $global-font-family: "Fira Code";
 // 3. Your custom mixin overwrites.
 @mixin hook-card() { color: #000; }
 
+@mixin hook-text-lead() {
+    font-size: $global-small-font-size;
+
+    @media (min-width: $breakpoint-medium) {
+        font-size: $global-medium-font-size;
+    }
+    @media (min-width: $breakpoint-large) {
+        font-size: $global-large-font-size;
+    }
+}
+
 @mixin hook-height-misc() {
 
-    .uk-height-small\@s,
-    .uk-height-small\@m,
-    .uk-height-small\@l,
-    .uk-height-small\@xl,
-    .uk-height-medium\@s,
-    .uk-height-medium\@m,
-    .uk-height-medium\@l,
-    .uk-height-medium\@xl,
-    .uk-height-large\@s,
-    .uk-height-large\@m,
-    .uk-height-large\@l,
-    .uk-height-large\@xl {
-        height: auto;
-    }
+    // .uk-height-small\@s,
+    // .uk-height-small\@m,
+    // .uk-height-small\@l,
+    // .uk-height-small\@xl,
+    // .uk-height-medium\@s,
+    // .uk-height-medium\@m,
+    // .uk-height-medium\@l,
+    // .uk-height-medium\@xl,
+    // .uk-height-large\@s,
+    // .uk-height-large\@m,
+    // .uk-height-large\@l,
+    // .uk-height-large\@xl {
+    //     height:auto;
+    // }
     
     @media (min-width: $breakpoint-small) {
         .uk-height-small\@s { height: $height-small-height; }
