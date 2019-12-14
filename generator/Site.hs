@@ -57,7 +57,7 @@ main = do
             route idRoute
             compile copyFileCompiler
 
-        match (fromRegex "^css/[^_].*\\.scss") $ do
+        match (fromRegex "^assets/css/[^_].*\\.scss") $ do
             route $ setExtension "css"
             compile sassCompiler
 
@@ -101,7 +101,7 @@ main = do
                 posts <- recentFirst =<< loadAll "posts/*"
                 let ctx = postCtxWithTags tags
                 let indexCtx =
-                        listField "posts" ctx (return posts)
+                        listField "posts" ctx (return $ take 5 posts)
                             <> constField "title" "Home"
                             <> defaultContext
 
@@ -111,6 +111,8 @@ main = do
                     >>= relativizeUrls
 
         match "templates/*" $ compile templateBodyCompiler
+        match "templates/includes/*" $ compile templateBodyCompiler
+        
 
         match "html/*.html" $ do
             route idRoute
