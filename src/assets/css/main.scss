@@ -71,3 +71,7 @@ $global-font-family: "Fira Code", monospace, monospace;
 
 
 @import './code.scss';
+
+.mjx-chtml.MJXc-display {
+    overflow: scroll;
+}
