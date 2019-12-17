@@ -1,5 +1,6 @@
 @charset "utf-8";
 
+@import './code.scss';
 
 // 1. Your custom variables and variable overwrites.
 $global-link-color: #DA7D02;
@@ -70,7 +71,6 @@ $global-font-family: "Fira Code", monospace, monospace;
 @import "uikit/scss/uikit-theme.scss";
 
 
-@import './code.scss';
 
 .mjx-chtml.MJXc-display {
     overflow: scroll;
