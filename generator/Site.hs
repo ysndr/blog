@@ -3,8 +3,11 @@
 import           Data.Maybe                     ( fromJust )
 import           Control.Applicative            ( empty ) 
 import           System.Environment             ( lookupEnv )
+import           System.Process
 import           Hakyll
 import qualified Data.Text                     as T
+import Data.Char                                (isSpace)
+import Data.List                                (dropWhileEnd)
 import           Hakyll.Web.Sass                ( sassCompilerWith )
 import           Text.Sass.Options              ( SassOptions(..)
                                                 , defaultSassOptions
@@ -45,7 +48,7 @@ main = do
                 let tagsCtx =
                         constField "title" title
                             <> listField "posts" ctx (return posts)
-                            <> defaultContext
+                            <> customBaseContext
 
                 makeItem ""
                     >>= loadAndApplyTemplate "templates/tag.html"     tagsCtx
@@ -65,7 +68,7 @@ main = do
             route $ setExtension "html"
             compile
                 $   pandocCompiler
-                >>= loadAndApplyTemplate "templates/default.html" defaultContext
+                >>= loadAndApplyTemplate "templates/default.html" customBaseContext
                 >>= relativizeUrls
 
         match "posts/*" $ do
@@ -87,7 +90,7 @@ main = do
                 let archiveCtx =
                         listField "posts" ctx (return posts)
                             <> constField "title" "Archives"
-                            <> defaultContext
+                            <> customBaseContext
 
                 makeItem ""
                     >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
@@ -101,9 +104,9 @@ main = do
                 posts <- recentFirst =<< loadAll "posts/*"
                 let ctx = postCtxWithTags tags
                 let indexCtx =
-                        listField "posts" ctx (return $ take 5 posts)
+                        listField "posts" ctx (return $ take 6 posts)
                             <> constField "title" "Home"
-                            <> defaultContext
+                            <> customBaseContext
 
                 getResourceBody
                     >>= applyAsTemplate indexCtx
@@ -119,6 +122,10 @@ main = do
             compile copyFileCompiler
 --------------------------------------------------------------------------------
 
+customBaseContext :: Context String
+customBaseContext = headVersionField "git-head-commit" False
+                 <> headVersionField "git-head-commit-hash" True
+                 <> defaultContext 
 
 postCtxWithTags :: Tags -> Context String
 postCtxWithTags tags = listFieldWith "tags" (tagCtx tags) mkPostTags <> postCtx 
@@ -150,7 +157,10 @@ postCtx =
     dateField "date" "%B %e, %Y"
         <> teaserField "teaser" "posts-content"
         <> peekField 50 "peek" "posts-content"
-        <> defaultContext
+        <> pathField "sourcefile"
+        <> versionField "git-commit" False 
+        <> versionField "git-commit-hash" True
+        <> customBaseContext
 -------------------------------------------------------------------------------
 peekField
     :: Int              -- ^ length to peak
@@ -161,3 +171,19 @@ peekField length key snapshot = field key $ \item -> do
     body <- itemBody <$> loadSnapshot (itemIdentifier item) snapshot
     return (peak body)
     where peak = T.unpack . T.unwords . take length . T.words . T.pack
+
+-------------------------------------------------------------------------------
+getGitVersion :: Bool -> FilePath -> IO String
+getGitVersion hashOnly path = trim <$> readProcess "git" ["log", "-1", (if  hashOnly then "--format=%h" else "--format=%h (%ai) %s"), "--", path] ""
+  where
+    trim = dropWhileEnd isSpace
+
+-- Field that contains the latest commit hash that hash touched the current item.
+versionField :: String -> Bool -> Context String
+versionField name hashOnly= field name $ \item -> unsafeCompiler $ do
+    let path = toFilePath $ itemIdentifier item
+    getGitVersion hashOnly path
+
+-- Field that contains the commit hash of HEAD.
+headVersionField :: String -> Bool -> Context String
+headVersionField name hashOnly = field name $ \_ -> unsafeCompiler $ getGitVersion hashOnly "."
