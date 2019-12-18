@@ -162,6 +162,7 @@ postCtx tags category =  dateField "date" "%B %e, %Y"
         <> boolField "isPost" (\_ -> True)
         <> teaserField "teaser" "posts-content"
         <> peekField 50 "peek" "posts-content"
+        <> readTimeField "read-time" "posts-content"
         <> pathField "sourcefile"
         <> versionField "git-commit" False 
         <> versionField "git-commit-hash" True
@@ -192,3 +193,9 @@ versionField name hashOnly= field name $ \item -> unsafeCompiler $ do
 -- Field that contains the commit hash of HEAD.
 headVersionField :: String -> Bool -> Context String
 headVersionField name hashOnly = field name $ \_ -> unsafeCompiler $ getGitVersion hashOnly "."
+
+readTimeField :: String -> Snapshot -> Context String
+readTimeField name snapshot = field name $ \item -> do
+    body <- itemBody <$> loadSnapshot (itemIdentifier item) snapshot
+    let words = length (T.words . T.pack $ body)
+    return $ show $ div words 200
