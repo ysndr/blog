@@ -89,7 +89,7 @@ main = do
                 let ctx = postCtxWithTags tags
                 let archiveCtx =
                         listField "posts" ctx (return posts)
-                            <> constField "title" "Archives"
+                            <> constField "title" "Archive"
                             <> customBaseContext
 
                 makeItem ""
