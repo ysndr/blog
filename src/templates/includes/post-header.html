@@ -12,13 +12,16 @@
     </div>
     <div
       class="uk-container uk-flex uk-flex-column uk-flex-center uk-width-2-5@s uk-width-1-1 uk-text-muted uk-text-small">
-      <ul class="uk-list uk-list-divider">
+      <ul class="uk-list">
         <li>
-          Posted on <span class="uk-text-emphasis">$date$</span>
+          <span uk-icon="calendar"></span> $date$
+        </li>
+        <li>
+          <span uk-icon="clock"></span> $read-time$ Minutes
         </li>
         $if(tags)$
         <li>
-          <p>Tags:
+          <p><span uk-icon="bookmark"></span>
             $for(tags)$
             <a class="uk-text-emphasis uk-link-text" href="$url$">$name$</a>$sep$,
             $endfor$
@@ -26,7 +29,7 @@
         </li>
         $endif$
         <li>
-          Updated in <span class="uk-text-emphasis"><a href="https://github.com/ysndr/blog/commit/$git-commit-hash$">$git-commit$</a></span>
+          <span uk-icon="git-branch"></span><a href="https://github.com/ysndr/blog/commit/$git-commit-hash$">$git-commit$</a>
         </li>
 
       </ul>
