@@ -10,30 +10,12 @@
 </head>
 
 <body>
-  <header id="header" class="uk-padding-left uk-padding-right uk-background-muted  uk-flex uk-flex-column">
-
-    <div class="uk-container uk-flex uk-flex-column uk-flex-middle">
-
-      <div class="uk-container uk-flex uk-flex-center uk-margin-large-top  uk-margin-small-bottom">
-        <img class="
-                 uk-width-small
-                 uk-width-medium@s
-                 uk-height-small
-                 uk-height-medium@s
-                 uk-border-circle	
-                 uk-background-cover" src="https://picsum.photos/500/500/?random"/>
-      </div>
-          <h1><strong>yannik</strong>|sander</h1>
-
-        <p class="uk-width-2-5@s uk-width-4-5 uk-text-justify uk-text-emphasis">
-          Hej and welcome to my blog!</br>
-          I'm an ambitioned and enthusiastic software developer and student of the arcanes of cognitive computer
-          science. I enjoy learning and thinking about functional principles, AI and the philospohy of life.
-        </p>
-      </div>
-
-      <hr class="uk-margin-remove-bottom" />
-  </header>
+  
+  $if(isPost)$
+  $partial("templates/includes/post-header.html")$
+  $else$
+  $partial("templates/includes/header.html")$
+  $endif$
   <header class="uk-navbar-container uk-position-z-index" style="
     position: sticky;
     top: 0;

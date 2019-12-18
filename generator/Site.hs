@@ -153,8 +153,8 @@ postCtxWithTags tags = listFieldWith "tags" (tagCtx tags) mkPostTags <> postCtx
 
 
 postCtx :: Context String
-postCtx =
-    dateField "date" "%B %e, %Y"
+postCtx =  dateField "date" "%B %e, %Y"
+        <> boolField "isPost" (\_ -> True)
         <> teaserField "teaser" "posts-content"
         <> peekField 50 "peek" "posts-content"
         <> pathField "sourcefile"
