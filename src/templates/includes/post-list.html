@@ -1,10 +1,10 @@
 <div class="uk-container">
     <h3>Recent Posts</h3>
-    <div class="uk-child-width-1-2@m uk-grid-medium" uk-grid="masonry: true">
+    <div class="uk-child-width-1-3@m uk-grid-medium" uk-grid="masonry: true">
 
         $for(posts)$
         <div>
-            <div class="uk-card uk-card-default">
+            <div class="uk-card uk-card-default uk-card-hover">
                 $if(image)$
                 <div class="uk-card-media-top uk-cover-container">
                     <img src="$image$" alt="" uk-cover>
@@ -15,9 +15,11 @@
                     <article class="uk-article uk-card-body">
                         <div class="media-content">
                             <div class="header has-text-justified">
-                                <a href="$url$">
-                                    <h1 class="uk-article-title">$title$</h1>
-                                </a>
+                                <h1 class="uk-article-title">
+                                    <a class="uk-link-heading" href="$url$">
+                                        $title$
+                                    </a>
+                                </h1>
                                 <h2 class="uk-article-meta">Posted on: $date$
                                     $if(tags)$
                                     <p>Tags:
@@ -37,9 +39,6 @@
                         <div class="uk-grid-small uk-child-width-auto" uk-grid>
                             <div>
                                 <a class="uk-button uk-button-text" href="$url$">Read more</a>
-                            </div>
-                            <div>
-                                <a class="uk-button uk-button-text" href="#">5 Comments</a>
                             </div>
                         </div>
                     </article>
