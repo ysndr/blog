@@ -27,6 +27,8 @@ sassOptions distPath = defaultSassOptions
     , sassOutputStyle    = SassStyleCompressed
     , sassIncludePaths   = fmap (: []) distPath
     }
+--------------------------------------------------------------------------------
+postsGlob = "posts/**"
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -35,11 +37,12 @@ main = do
                          (lookupEnv "THIRDPARTY")
     hakyllWith config $ do
 
-        tags <- buildTags "posts/*" (fromCapture "tags/*.html")
+        tags <- buildTags postsGlob (fromCapture "tags/*.html")
+        categories <- buildCategories postsGlob (fromCapture "posts/*.html")
 
         tagsRules tags $ \tag pattern -> do
             let title = "Posts tagged \"" ++ tag ++ "\""
-            let ctx   = postCtxWithTags tags
+            let ctx   = postCtx tags categories
 
             route idRoute
             compile $ do
@@ -48,6 +51,7 @@ main = do
                 let tagsCtx =
                         constField "title" title
                             <> listField "posts" ctx (return posts)
+                            <> constField "tag" tag
                             <> customBaseContext
 
                 makeItem ""
@@ -71,8 +75,8 @@ main = do
                 >>= loadAndApplyTemplate "templates/default.html" customBaseContext
                 >>= relativizeUrls
 
-        match "posts/*" $ do
-            let postCtx' = postCtxWithTags tags
+        match postsGlob $ do
+            let postCtx' = postCtx tags categories
             route $ setExtension "html"
             compile
                 $   pandocCompiler
@@ -85,8 +89,8 @@ main = do
         create ["archive.html"] $ do
             route idRoute
             compile $ do
-                posts <- recentFirst =<< loadAll "posts/*"
-                let ctx = postCtxWithTags tags
+                posts <- recentFirst =<< loadAll postsGlob
+                let ctx = postCtx tags categories
                 let archiveCtx =
                         listField "posts" ctx (return posts)
                             <> constField "title" "Archive"
@@ -101,8 +105,8 @@ main = do
         match "index.html" $ do
             route idRoute
             compile $ do
-                posts <- recentFirst =<< loadAll "posts/*"
-                let ctx = postCtxWithTags tags
+                posts <- recentFirst =<< loadAll postsGlob
+                let ctx = postCtx tags categories
                 let indexCtx =
                         listField "posts" ctx (return $ take 6 posts)
                             <> constField "title" "Home"
@@ -127,8 +131,8 @@ customBaseContext = headVersionField "git-head-commit" False
                  <> headVersionField "git-head-commit-hash" True
                  <> defaultContext 
 
-postCtxWithTags :: Tags -> Context String
-postCtxWithTags tags = listFieldWith "tags" (tagCtx tags) mkPostTags <> postCtx 
+allTagsField :: String -> Tags -> Context String
+allTagsField name tags = listFieldWith name (tagCtx tags) mkPostTags 
  where
     
     tagCtx :: Tags -> Context String
@@ -151,9 +155,10 @@ postCtxWithTags tags = listFieldWith "tags" (tagCtx tags) mkPostTags <> postCtx
         >>= \tags' -> if null tags' then empty 
                       else (return tags') >>= (mapM makeItem)
 
-
-postCtx :: Context String
-postCtx =  dateField "date" "%B %e, %Y"
+postCtx :: Tags -> Tags -> Context String
+postCtx tags category =  dateField "date" "%B %e, %Y"
+        <> allTagsField "tags" tags
+        <> allTagsField "category" category
         <> boolField "isPost" (\_ -> True)
         <> teaserField "teaser" "posts-content"
         <> peekField 50 "peek" "posts-content"
