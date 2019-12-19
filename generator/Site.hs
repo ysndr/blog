@@ -197,6 +197,9 @@ versionField name hashOnly= field name $ \item -> unsafeCompiler $ do
 headVersionField :: String -> Bool -> Context String
 headVersionField name hashOnly = field name $ \_ -> unsafeCompiler $ getGitVersion hashOnly "."
 
+-- Field that naïvely determines the reading time 
+-- by assuming an average of 200 words per minute of reading velocity and 
+-- dividing the actual number of words by  this average
 readTimeField :: String -> Snapshot -> Context String
 readTimeField name snapshot = field name $ \item -> do
     body <- itemBody <$> loadSnapshot (itemIdentifier item) snapshot
