@@ -1,4 +1,7 @@
 <section class="uk-section">
     <h3>All Posts</h3>
+    $for(years)$
+    <h4 class="uk-heading-line"><span>$year$</span></h4>
     $partial("templates/includes/post-list.html")$
+    $endfor$
 </section>

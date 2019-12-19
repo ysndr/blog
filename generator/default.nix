@@ -5,6 +5,6 @@ mkDerivation {
   src = ./.;
   isLibrary = false;
   isExecutable = true;
-  executableHaskellDepends = [ base process hakyll hakyll-sass hsass text ];
+  executableHaskellDepends = [ base process time hakyll hakyll-sass hsass text ];
   license = stdenv.lib.licenses.mit;
 }

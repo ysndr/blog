@@ -7,7 +7,10 @@ import           System.Process
 import           Hakyll
 import qualified Data.Text                     as T
 import Data.Char                                (isSpace)
-import Data.List                                (dropWhileEnd)
+import Data.List                                (dropWhileEnd,groupBy)
+import Data.Time.Calendar
+import           Data.Time.Clock                (UTCTime (..))
+import           Data.Time.Locale.Compat        (defaultTimeLocale)
 import           Hakyll.Web.Sass                ( sassCompilerWith )
 import           Text.Sass.Options              ( SassOptions(..)
                                                 , defaultSassOptions
@@ -91,8 +94,8 @@ main = do
             compile $ do
                 posts <- recentFirst =<< loadAll postsGlob
                 let ctx = postCtx tags categories
-                let archiveCtx =
-                        listField "posts" ctx (return posts)
+                let archiveCtx = listField "posts" ctx (return posts)
+                            <> publishedGroupField "years" posts ctx 
                             <> constField "title" "Archive"
                             <> customBaseContext
 
@@ -199,3 +202,32 @@ readTimeField name snapshot = field name $ \item -> do
     body <- itemBody <$> loadSnapshot (itemIdentifier item) snapshot
     let words = length (T.words . T.pack $ body)
     return $ show $ div words 200
+
+publishedGroupField :: String           -- name
+                    -> [Item String]    -- posts
+                    -> Context String   -- Post context
+                    -> Context String   -- output context
+publishedGroupField name posts postContext = listField name groupCtx $ do
+    tuples <- sequence $ fmap extractYear $ posts
+    let grouped = groupByYear tuples 
+    let merged = fmap merge $ grouped
+    let itemized = fmap makeItem $ merged
+    
+    sequence itemized
+
+    
+    where groupCtx = field "year" (return . show . fst . itemBody) 
+                  <> listFieldWith "posts" postContext (return . snd . itemBody)
+
+          merge :: [(Integer, [Item String])]  -> (Integer, [Item String])
+          merge gs = let conv (year, acc) (_, toAcc) = (year, toAcc ++ acc)
+                      in  foldr conv (head gs) (tail gs)
+        
+          
+          groupByYear = groupBy (\(y, _) (y', _) -> y == y')
+          
+          extractYear :: Item a -> Compiler (Integer,  [Item a])
+          extractYear = \item -> do
+             time <- getItemUTC defaultTimeLocale (itemIdentifier item)
+             let    (year, _, _) = (toGregorian . utctDay) time             
+             return (year, [item])
