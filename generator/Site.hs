@@ -4,10 +4,11 @@ import           Data.Maybe                     ( fromJust )
 import           Control.Applicative            ( empty ) 
 import           System.Environment             ( lookupEnv )
 import           System.Process
+import           System.FilePath.Posix          ( takeFileName )
 import           Hakyll
 import qualified Data.Text                     as T
 import Data.Char                                (isSpace)
-import Data.List                                (dropWhileEnd,groupBy)
+import Data.List                                (dropWhileEnd,groupBy, isPrefixOf)
 import Data.Time.Calendar
 import           Data.Time.Clock                (UTCTime (..))
 import           Data.Time.Locale.Compat        (defaultTimeLocale)
@@ -18,11 +19,19 @@ import           Text.Sass.Options              ( SassOptions(..)
                                                 )
 --------------------------------------------------------------------------------
 config :: Configuration
-config = defaultConfiguration { destinationDirectory = "build/site"
-                              , storeDirectory       = "build/_store"
-                              , tmpDirectory         = "build/_tmp"
-                              , providerDirectory    = "src"
-                              }
+config = defaultConfiguration { 
+    destinationDirectory = "build/site"
+    , storeDirectory       = "build/_store"
+    , tmpDirectory         = "build/_tmp"
+    , providerDirectory    = "src"
+    , ignoreFile           = ignoreFile'
+  } where 
+      ignoreFile' path
+        | "."    `isPrefixOf` fileName = True
+        | otherwise                      = False
+        where
+          fileName = takeFileName path
+                              
 
 sassOptions :: Maybe FilePath -> SassOptions
 sassOptions distPath = defaultSassOptions

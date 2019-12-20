@@ -58,6 +58,10 @@ executable generator
 
   -- Other library packages from which modules are imported.
   build-depends:        base ^>=4.12.0.0,
+                        filepath ^>= 1.4.2.1,
+                        process ^>= 1.6.5.0,
+                        time ^>= 1.8.0.2,
+                        time-locale-compat ^>= 0.1.1.5,
                         hakyll ^>=4.12.5.2,
                         text ^>=1.2.3.1,
                         hakyll-sass ^>=0.2.4,
