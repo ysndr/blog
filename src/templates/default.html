@@ -11,10 +11,11 @@
 
 <body>
   
-  $if(isPost)$
+  
+  $if(item-type-post)$
   $partial("templates/includes/post-header.html")$
   $else$
-  $partial("templates/includes/header.html")$
+  $partial("templates/includes/default-header.html")$
   $endif$
   <header class="uk-navbar-container uk-position-z-index" style="
     position: sticky;

@@ -171,7 +171,7 @@ postCtx :: Tags -> Tags -> Context String
 postCtx tags category =  dateField "date" "%B %e, %Y"
         <> allTagsField "tags" tags
         <> allTagsField "category" category
-        <> boolField "isPost" (\_ -> True)
+        <> boolField "item-type-post" (\_ -> True)
         <> teaserField "teaser" "posts-content"
         <> peekField 50 "peek" "posts-content"
         <> readTimeField "read-time" "posts-content"
