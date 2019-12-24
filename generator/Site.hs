@@ -192,7 +192,7 @@ peekField length key snapshot = field key $ \item -> do
 
 -------------------------------------------------------------------------------
 getGitVersion :: Bool -> FilePath -> IO String
-getGitVersion hashOnly path = trim <$> readProcess "git" ["log", "-1", (if  hashOnly then "--format=%h" else "--format=%h (%ai) %s"), "--", path] ""
+getGitVersion hashOnly path = trim <$> readProcess "git" ["log", "-1", (if  hashOnly then "--format=%h" else "--format=%h (%ai) %s"), "--", "src/"++path] ""
   where
     trim = dropWhileEnd isSpace
 
