@@ -82,4 +82,7 @@ let
   };
 in {
   inherit shell website generator generate-website ;
+  ci = {
+    compile = generate-website;
+  }
 } 

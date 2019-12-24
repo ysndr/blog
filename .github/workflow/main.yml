@@ -1,0 +1,34 @@
+name: "Build Site and Deploy"
+
+on:
+  push:
+    branches:	
+      - release
+
+jobs:
+  buid-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Nix
+      uses: cachix/install-nix-action@v6
+    - name: Compile Document
+      run: $(nix-build -A ci.compile --no-out-link)
+      name: Deploy
+      if: success()
+      uses: crazy-max/ghaction-github-pages@v1
+      with:
+        target_branch: gh-pages
+        build_dir: build/_site
+        committer_name: github-ci
+        committer-email: notifications+ci-blog@ysndr.de
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  always-run:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Be friendly
+      run: |
+            echo "This is just here to prevent failure if the commit is not supposed to be build."
+            echo "Don't mind, have a joke :)"
+            echo "$(curl -Ss https://icanhazdadjoke.com/)"
