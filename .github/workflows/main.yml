@@ -14,7 +14,7 @@ jobs:
       uses: cachix/install-nix-action@v6
     - name: Compile Document
       run: $(nix-build -A ci.compile --no-out-link)
-      name: Deploy
+    - name: Deploy
       if: success()
       uses: crazy-max/ghaction-github-pages@v1
       with:
