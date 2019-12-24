@@ -1,11 +1,19 @@
 let
   all-hies = import (builtins.fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
+
 in
 {pkgs ? import (if pin == false then <nixpkgs> else pin) {},
  pin ? ./nixpkgs.nix, ... }:
 with pkgs;
 let
 
+  # -------------- Utils -------------
+  nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+      pkgs=pkgs;
+  };
+  script = {...} @ args: nur.repos.ysndr.lib.wrap ({
+    shell = true;
+  } // args);
 
   # ------------- Haskell ------------
   hie = all-hies.selection { selector = p: { inherit (p) ghc865; }; };
@@ -38,31 +46,15 @@ let
   });
 
   # --------------- Commands ----------------
-  website = stdenv.mkDerivation {
-    name = "ysndr.de";
-    src = ./src;
-    phases = [ "unpackPhase" "buildPhase" "installPhase"];
-    version = "0.1";
-    buildInputs = [ generator ];
-    sourceRoot = ".";
-    
-    LC_ALL="en_US.UTF-8";
-    LANG="en_US.UTF-8";
-    LANGUAGE="en_US.UTF-8";
-    LOCALE_ARCHIVE = if pkgs.stdenv.isLinux
-                     then "${pkgs.glibcLocales}/lib/locale/locale-archive"
-                     else "";
-                     
-    THIRDPARTY = "${thirdparty}";
 
-    buildPhase = ''
-      ${generator}/bin/generator build
+  generate-website = script {
+    name = "generate-website"; 
+    paths = [generator-with-thirdparty git];
+
+    script = ''
+      generator rebuild
     '';
-    installPhase = ''
-      mkdir $out
-      cp -r build/site/* $out
-    '';
-   };
+  };
 
   # ---------------- Shell ------------------
   haskell-env = haskellPackages'.ghcWithHoogle (
@@ -89,5 +81,5 @@ let
     '';
   };
 in {
-  inherit shell website generator;
+  inherit shell website generator generate-website ;
 } 
