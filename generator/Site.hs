@@ -4,6 +4,7 @@ import           Data.Maybe                     ( fromJust )
 import           Control.Applicative            ( empty ) 
 import           System.Environment             ( lookupEnv )
 import           System.Process
+import           System.Exit                    ( ExitCode(..) )
 import           System.FilePath.Posix          ( takeFileName )
 import           Hakyll
 import qualified Data.Text                     as T
@@ -192,7 +193,19 @@ peekField length key snapshot = field key $ \item -> do
 
 -------------------------------------------------------------------------------
 getGitVersion :: Bool -> FilePath -> IO String
-getGitVersion hashOnly path = trim <$> readProcess "git" ["log", "-1", (if  hashOnly then "--format=%h" else "--format=%h (%ai) %s"), "--", "src/"++path] ""
+getGitVersion hashOnly path = do 
+    (status, stdout, _) <- readProcessWithExitCode "git" [
+        "log",
+        "-1", 
+        ( if hashOnly then "--format=%h" 
+                    else "--format=%h: %s" ),
+        "--",
+        "src/"++path] ""
+
+    return $ case status  of
+        ExitSuccess -> trim stdout
+        _           -> ""
+
   where
     trim = dropWhileEnd isSpace
 
