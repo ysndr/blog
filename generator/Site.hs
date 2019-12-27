@@ -81,7 +81,7 @@ main = do
             route $ setExtension "css"
             compile sassCompiler
 
-        match (fromList ["about.rst", "contact.markdown"]) $ do
+        match (fromList ["about.md", "contact.markdown"]) $ do
             route $ setExtension "html"
             compile
                 $   pandocCompiler
