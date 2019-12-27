@@ -85,6 +85,7 @@ main = do
             route $ setExtension "html"
             compile
                 $   pandocCompiler
+                >>= loadAndApplyTemplate "templates/page.html" customBaseContext
                 >>= loadAndApplyTemplate "templates/default.html" customBaseContext
                 >>= relativizeUrls
 
