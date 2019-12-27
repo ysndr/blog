@@ -14,6 +14,8 @@ jobs:
       uses: cachix/install-nix-action@v6
     - name: Compile Document
       run: $(nix-build -A ci.compile --no-out-link)
+    - name: Disable Jekyll rendering
+      run: touch build/site/.nojekyll
     - name: Deploy
       if: success()
       uses: crazy-max/ghaction-github-pages@v1
