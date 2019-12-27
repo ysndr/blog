@@ -142,6 +142,8 @@ main = do
 customBaseContext :: Context String
 customBaseContext = headVersionField "git-head-commit" False
                  <> headVersionField "git-head-commit-hash" True
+                 <> constField "item-type" "default"
+                 <> concatField "concat"
                  <> defaultContext 
 
 allTagsField :: String -> Tags -> Context String
@@ -172,7 +174,7 @@ postCtx :: Tags -> Tags -> Context String
 postCtx tags category =  dateField "date" "%B %e, %Y"
         <> allTagsField "tags" tags
         <> allTagsField "category" category
-        <> boolField "item-type-post" (\_ -> True)
+        <> constField "item-type" "post"
         <> teaserField "teaser" "posts-content"
         <> peekField 50 "peek" "posts-content"
         <> readTimeField "read-time" "posts-content"
@@ -256,3 +258,5 @@ publishedGroupField name posts postContext = listField name groupCtx $ do
              time <- getItemUTC defaultTimeLocale (itemIdentifier item)
              let    (year, _, _) = (toGregorian . utctDay) time             
              return (year, [item])
+
+concatField name = functionField name (\args item -> return $ concat args)

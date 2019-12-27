@@ -10,13 +10,8 @@
 </head>
 
 <body>
-  
-  
-  $if(item-type-post)$
-  $partial("templates/includes/post-header.html")$
-  $else$
-  $partial("templates/includes/default-header.html")$
-  $endif$
+  $partial(concat("templates/includes/",item-type, "-header.html"))$
+
   <header class="uk-navbar-container uk-position-z-index" style="
     position: sticky;
     top: 0;
