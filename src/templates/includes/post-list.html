@@ -19,14 +19,23 @@
                                         $title$
                                     </a>
                                 </h1>
-                                <h2 class="uk-article-meta">Posted on: $date$
-                                    $if(tags)$
-                                    <p>Tags:
-                                        $for(tags)$
-                                        <a href="$url$">$name$</a>$sep$,
-                                        $endfor$
-                                    </p>
-                                    $endif$
+                                <h2 class="uk-article-meta">
+                                    <ul class="uk-list">
+                                        <li>
+                                          <span uk-icon="calendar"></span> $date$
+                                        </li>
+                                        <li>
+                                          <span uk-icon="clock"></span> $read-time$ Minutes
+                                        </li>
+                                        $if(tags)$
+                                        <li>
+                                          <p><span uk-icon="bookmark"></span>
+                                            $for(tags)$
+                                            <a class="uk-text-emphasis uk-link-text" href="$url$">$name$</a>$sep$,
+                                            $endfor$
+                                          </p>
+                                        </li>
+                                        $endif$
                                 </h2>
                                 <p class="uk-text-lead"><i>$description$</i></p>
                             </div>
