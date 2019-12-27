@@ -140,8 +140,9 @@ main = do
 --------------------------------------------------------------------------------
 
 customBaseContext :: Context String
-customBaseContext = headVersionField "git-head-commit" False
-                 <> headVersionField "git-head-commit-hash" True
+customBaseContext = headVersionField "git-head-commit" Commit
+                 <> headVersionField "git-head-commit-hash" Hash
+                 <> headVersionField "git-head-commit-full" Full
                  <> constField "item-type" "default"
                  <> concatField "concat"
                  <> defaultContext 
@@ -179,8 +180,8 @@ postCtx tags category =  dateField "date" "%B %e, %Y"
         <> peekField 50 "peek" "posts-content"
         <> readTimeField "read-time" "posts-content"
         <> pathField "sourcefile"
-        <> versionField "git-commit" False 
-        <> versionField "git-commit-hash" True
+        <> versionField "git-commit" Commit 
+        <> versionField "git-commit-hash" Hash
         <> customBaseContext
 -------------------------------------------------------------------------------
 peekField
@@ -194,13 +195,22 @@ peekField length key snapshot = field key $ \item -> do
     where peak = T.unpack . T.unwords . take length . T.words . T.pack
 
 -------------------------------------------------------------------------------
-getGitVersion :: Bool -> FilePath -> IO String
-getGitVersion hashOnly path = do 
+data GitVersionContent = Hash | Commit | Full 
+     deriving (Eq, Read)
+
+instance Show GitVersionContent where 
+    show content = case content of 
+        Hash -> "%h"
+        Commit -> "%h: %s" 
+        Full -> "%h: %s (%ai)"
+
+
+getGitVersion :: GitVersionContent -> FilePath -> IO String
+getGitVersion content path = do 
     (status, stdout, _) <- readProcessWithExitCode "git" [
         "log",
         "-1", 
-        ( if hashOnly then "--format=%h" 
-                    else "--format=%h: %s" ),
+        "--format=" ++ (show content),
         "--",
         "src/"++path] ""
 
@@ -212,14 +222,14 @@ getGitVersion hashOnly path = do
     trim = dropWhileEnd isSpace
 
 -- Field that contains the latest commit hash that hash touched the current item.
-versionField :: String -> Bool -> Context String
-versionField name hashOnly= field name $ \item -> unsafeCompiler $ do
+versionField :: String -> GitVersionContent -> Context String
+versionField name content = field name $ \item -> unsafeCompiler $ do
     let path = toFilePath $ itemIdentifier item
-    getGitVersion hashOnly path
+    getGitVersion content  path
 
 -- Field that contains the commit hash of HEAD.
-headVersionField :: String -> Bool -> Context String
-headVersionField name hashOnly = field name $ \_ -> unsafeCompiler $ getGitVersion hashOnly "."
+headVersionField :: String -> GitVersionContent -> Context String
+headVersionField name content  = field name $ \_ -> unsafeCompiler $ getGitVersion content  "."
 
 -- Field that naïvely determines the reading time 
 -- by assuming an average of 200 words per minute of reading velocity and 
