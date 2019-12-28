@@ -25,7 +25,7 @@ jobs:
         committer_name: github-ci
         committer-email: notifications+ci-blog@ysndr.de
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
   always-run:
     runs-on: ubuntu-latest
     steps:
