@@ -1,5 +1,15 @@
-<article class="uk-article">
 
+<article class="uk-article">
+    $if(image)$
+    <div class="uk-background-fixed uk-background-center-center  uk-background-cover uk-height-medium uk-height-large@s  uk-height-xxlarge@m y-width-screen" style="background-image: url($image$);">
+        <!-- <div class="uk-overlay uk-overlay-default uk-position-bottom">
+            <p class="uk-text-lead uk-container"><i>$description$</i></p>
+        </div> -->
+    
+    </div>
+    $else$
+    $endif$
+    
     <p class="uk-text-lead"><i>$description$</i></p>
     <p>$body$</p>
 
