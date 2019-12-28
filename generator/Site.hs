@@ -43,6 +43,9 @@ sassOptions distPath = defaultSassOptions
 --------------------------------------------------------------------------------
 postsGlob = "posts/**"
 
+root :: String
+root = "https://ysndr.github.io/blog"
+
 --------------------------------------------------------------------------------
 main :: IO ()
 main = do
@@ -138,6 +141,27 @@ main = do
         match "html/*.html" $ do
             route idRoute
             compile copyFileCompiler
+
+        create ["sitemap.xml"] $ do
+            route idRoute
+            compile $ do
+                -- load and sort the posts
+                posts <- recentFirst =<< loadAll "posts/*"
+    
+                -- load individual pages from a list (globs DO NOT work here)
+                singlePages <- loadAll (fromList ["about.rst", "contact.markdown"])
+    
+                -- mappend the posts and singlePages together
+                let pages = posts <> singlePages
+                    -- create the `pages` field with the postCtx
+                    -- and return the `pages` value for it
+                    sitemapCtx = 
+                        constField "root" root <> 
+                        listField "pages" (postCtx tags categories) (return pages)
+    
+                -- make the item and apply our sitemap template
+                makeItem ""
+                    >>= loadAndApplyTemplate "templates/sitemap.xml" sitemapCtx
 --------------------------------------------------------------------------------
 
 customBaseContext :: Context String
@@ -146,6 +170,7 @@ customBaseContext = headVersionField "git-head-commit" Commit
                  <> headVersionField "git-head-commit-full" Full
                  <> constField "item-type" "default"
                  <> concatField "concat"
+                 <> constField "root" root 
                  <> defaultContext 
 
 allTagsField :: String -> Tags -> Context String
