@@ -74,6 +74,13 @@ $global-xxlarge-font-size: 2.125rem;
     padding-left: $padding-padding;
     border-left: 2px solid $global-muted-color;
 }
+
+@mixin hook-base-code {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
 // 4. Import UIkit.
 @import "uikit/scss/uikit-theme.scss";
 
@@ -86,6 +93,20 @@ pre {
     border: none;
     border-left: 4px solid $global-primary-background;
     background-color: $global-muted-background;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    
+    >main {
+        flex-grow: 1;
+    }
+}
+
+body {
+    overflow-x: hidden;
 }
 
 .mjx-chtml.MJXc-display {

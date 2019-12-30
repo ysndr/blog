@@ -1,40 +1,43 @@
-<header id="header" class="uk-container uk-container-expand uk-background-muted  uk-flex uk-flex-column uk-flex-middle">
+<header id="header" class="">
+  <div class="uk-container uk-container-expand uk-background-muted  uk-flex uk-flex-column uk-flex-middle">
 
-  <div class="uk-flex uk-padding uk-flex-middle uk-width-5-6@s uk-width-1-1 uk-flex-wrap">
-    <div class="uk-container uk-flex uk-flex-right uk-flex-middle uk-width-expand@s uk-width-1-1">
-      <span class="uk-text-right">
-        <h1 class="uk-article-title">$title$</h1>
-        <p>$if(subtitle)$$subtitle$$endif$</p>
-      </span>
-    </div>
-    <div class="uk-visible@s uk-width-auto">
-      <hr class="uk-divider-vertical uk-margin-left uk-margin-right">
-    </div>
-    <div
-      class="uk-container uk-flex uk-flex-column uk-flex-center uk-width-2-5@s uk-width-1-1 uk-text-muted uk-text-small">
-      <ul class="uk-list">
-        <li>
-          <span uk-icon="calendar"></span> $date$
-        </li>
-        <li>
-          <span uk-icon="clock"></span> $read-time$ Minutes
-        </li>
-        $if(tags)$
-        <li>
-          <p><span uk-icon="bookmark"></span>
-            $for(tags)$
-            <a class="uk-text-emphasis uk-link-text" href="$url$">$name$</a>$sep$,
-            $endfor$
-          </p>
-        </li>
-        $endif$
-        <li>
-          <span uk-icon="git-branch"></span> <a href="https://github.com/ysndr/blog/commit/$git-commit-hash$">$git-commit$</a>
-        </li>
+    <div class="uk-flex uk-flex-middle uk-width-5-6@s uk-width-1-1 uk-flex-wrap uk-margin-large-top uk-margin-medium-bottom">
+      <div class="uk-container uk-flex uk-flex-right uk-flex-middle uk-width-expand@s uk-width-1-1">
+        <span class="uk-text-right">
+          <h1 class="uk-article-title">$title$</h1>
+          <p>$if(subtitle)$$subtitle$$endif$</p>
+        </span>
+      </div>
+      <div class="uk-visible@s uk-width-auto">
+        <hr class="uk-divider-vertical uk-margin-left uk-margin-right">
+      </div>
+      <div
+        class="uk-container uk-flex uk-flex-column uk-flex-center uk-width-2-5@s uk-width-1-1 uk-text-muted uk-text-small">
+        <ul class="uk-list">
+          <li>
+            <span uk-icon="calendar"></span> $date$
+          </li>
+          <li>
+            <span uk-icon="clock"></span> $read-time$ Minutes
+          </li>
+          $if(tags)$
+          <li>
+            <p><span uk-icon="bookmark"></span>
+              $for(tags)$
+              <a class="uk-text-emphasis uk-link-text" href="$url$">$name$</a>$sep$,
+              $endfor$
+            </p>
+          </li>
+          $endif$
+          <li>
+            <span uk-icon="git-branch"></span> <a
+              href="https://github.com/ysndr/blog/commit/$git-commit-hash$">$git-commit$</a>
+          </li>
 
-      </ul>
+        </ul>
+      </div>
     </div>
+    <hr class="uk-width-1-1" />
   </div>
 
-  <hr class="uk-margin-remove-bottom" />
 </header>
