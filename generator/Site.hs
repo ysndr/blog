@@ -18,6 +18,12 @@ import           Text.Sass.Options              ( SassOptions(..)
                                                 , defaultSassOptions
                                                 , SassOutputStyle(..)
                                                 )
+import           Text.Pandoc.Options            ( WriterOptions (..) )
+import           Text.Pandoc.Readers            ( readHtml )
+import           Text.Pandoc.Writers            ( writeHtml5String )
+import           Text.Pandoc                    ( runPure )
+
+
 --------------------------------------------------------------------------------
 config :: Configuration
 config = defaultConfiguration { 
@@ -205,6 +211,7 @@ postCtx tags category =  dateField "date" "%B %e, %Y"
         <> teaserField "teaser" "posts-content"
         <> peekField 50 "peek" "posts-content"
         <> readTimeField "read-time" "posts-content"
+        <> tocField "toc" "posts-content"
         <> pathField "sourcefile"
         <> versionField "git-commit" Commit 
         <> versionField "git-commit-hash" Hash
@@ -295,4 +302,21 @@ publishedGroupField name posts postContext = listField name groupCtx $ do
              let    (year, _, _) = (toGregorian . utctDay) time             
              return (year, [item])
 
+concatField :: String -> Context String
 concatField name = functionField name (\args item -> return $ concat args)
+
+tocField :: String -> String -> Context String
+tocField name snapshot = field name $ \item -> do 
+    body <- loadSnapshot (itemIdentifier item) snapshot
+    
+    let writerOptions = defaultHakyllWriterOptions
+            {
+              writerTableOfContents = True
+            , writerTemplate = Just "$table-of-contents$"
+            } 
+        toc = case (runPure $ readHtml defaultHakyllReaderOptions (T.pack $ itemBody body))
+               >>= \pandoc -> runPure ( writeHtml5String writerOptions pandoc) of
+                        Left err    -> fail $ ""
+                        Right item' -> T.unpack item'
+
+    return $ toc
