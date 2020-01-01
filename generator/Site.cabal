@@ -63,6 +63,7 @@ executable generator
                         time ^>= 1.8.0.2,
                         time-locale-compat ^>= 0.1.1.5,
                         hakyll ^>=4.12.5.2,
+                        hakyll-images ^>= 0.4.2,
                         text ^>=1.2.3.1,
                         hakyll-sass ^>=0.2.4,
                         hsass ^>=0.8.0,

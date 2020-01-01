@@ -7,6 +7,9 @@ import           System.Process
 import           System.Exit                    ( ExitCode(..) )
 import           System.FilePath.Posix          ( takeFileName )
 import           Hakyll
+import Hakyll.Images                            ( loadImage
+                                                , compressJpgCompiler
+                                                )
 import qualified Data.Text                     as T
 import Data.Char                                (isSpace)
 import Data.List                                (dropWhileEnd,groupBy, isPrefixOf)
@@ -47,7 +50,8 @@ sassOptions distPath = defaultSassOptions
     , sassIncludePaths   = fmap (: []) distPath
     }
 --------------------------------------------------------------------------------
-postsGlob = "posts/**"
+postsGlob = "posts/**.md"
+jpgs = "**.jpg" .||. "**.jpeg"
 
 root :: String
 root = "https://ysndr.github.io/blog"
@@ -82,9 +86,15 @@ main = do
                     >>= relativizeUrls
 
 
-        match "assets/images/*" $ do
+        match jpgs $ do
             route idRoute
-            compile copyFileCompiler
+            compile $ loadImage
+                >>= compressJpgCompiler 50
+
+        match ("posts/**" .&&. complement postsGlob .&&. complement jpgs) $ do
+            route idRoute
+            compile $ copyFileCompiler
+
 
         match (fromRegex "^assets/css/[^_].*\\.scss") $ do
             route $ setExtension "css"
@@ -140,9 +150,7 @@ main = do
                     >>= loadAndApplyTemplate "templates/default.html" indexCtx
                     >>= relativizeUrls
 
-        match "templates/*" $ compile templateBodyCompiler
-        match "templates/includes/*" $ compile templateBodyCompiler
-        
+        match "templates/**" $ compile templateBodyCompiler
 
         match "html/*.html" $ do
             route idRoute
