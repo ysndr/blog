@@ -21,21 +21,25 @@
                                 </h1>
                                 <h2 class="uk-article-meta">
                                     <ul class="uk-list">
-                                        <li>
-                                          <span uk-icon="calendar"></span> $date$
+                                        <li class="uk-flex">
+                                            <span class="uk-margin-small-right uk-flex-none" uk-icon="calendar"></span>
+                                            $date$
                                         </li>
-                                        <li>
-                                          <span uk-icon="clock"></span> $read-time$ Minutes
+                                        <li class="uk-flex">
+                                            <span class="uk-margin-small-right uk-flex-none" uk-icon="clock"></span>
+                                            $read-time$ Minutes
                                         </li>
                                         $if(tags)$
-                                        <li>
-                                          <p><span uk-icon="bookmark"></span>
+                                        <li class="uk-flex-inline" style="overflow-wrap: break-word;">
+                                            <span class="uk-margin-small-right uk-flex-none " uk-icon="bookmark"></span>
                                             $for(tags)$
-                                            <a class="uk-text-emphasis uk-link-text" href="$url$">$name$</a>$sep$,
-                                            $endfor$
-                                          </p>
+                                            <span>
+                                                <a class="uk-text-emphasis uk-link-text" href="$url$">$name$</a>$sep$,
+                                                $endfor$
+                                            </span>
                                         </li>
                                         $endif$
+                                    <ul>
                                 </h2>
                                 <p class="uk-text-lead"><i>$description$</i></p>
                             </div>
