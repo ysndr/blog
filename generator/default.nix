@@ -1,10 +1,10 @@
-{ mkDerivation, base, filepath, process, hakyll, hakyll-sass, hsass, stdenv, text, time}:
+{ mkDerivation, base, filepath, process, hakyll, hakyll-sass, hsass, stdenv, text, time, pandoc}:
 mkDerivation {
   pname = "Site";
   version = "0.1.0.0";
   src = ./.;
   isLibrary = false;
   isExecutable = true;
-  executableHaskellDepends = [ base filepath process time hakyll hakyll-sass hsass text ];
+  executableHaskellDepends = [ base filepath process time hakyll hakyll-sass hsass text pandoc ];
   license = stdenv.lib.licenses.mit;
 }

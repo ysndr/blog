@@ -65,7 +65,8 @@ executable generator
                         hakyll ^>=4.12.5.2,
                         text ^>=1.2.3.1,
                         hakyll-sass ^>=0.2.4,
-                        hsass ^>=0.8.0
+                        hsass ^>=0.8.0,
+                        pandoc ^>=2.7.3
 
   -- Directories containing source files.
   -- hs-source-dirs:
