@@ -177,7 +177,7 @@ main = do
                 makeItem ""
                     >>= loadAndApplyTemplate "templates/sitemap.xml" sitemapCtx
 
-        create "CNAME" $ do
+        create ["CNAME"] $ do
             route idRoute
             compile $ makeItem root
 --------------------------------------------------------------------------------
