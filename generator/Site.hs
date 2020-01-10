@@ -53,8 +53,11 @@ sassOptions distPath = defaultSassOptions
 postsGlob = "posts/**.md"
 jpgs = "**.jpg" .||. "**.jpeg"
 
+domain :: String
+domain = "blog.ysndr.de"
+
 root :: String
-root = "https://blog.ysndr.de"
+root = "https://" ++ domain
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -179,7 +182,7 @@ main = do
 
         create ["CNAME"] $ do
             route idRoute
-            compile $ makeItem root
+            compile $ makeItem domain
 --------------------------------------------------------------------------------
 
 customBaseContext :: Context String
