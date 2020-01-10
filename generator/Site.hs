@@ -54,7 +54,7 @@ postsGlob = "posts/**.md"
 jpgs = "**.jpg" .||. "**.jpeg"
 
 root :: String
-root = "https://ysndr.github.io/blog"
+root = "https://blog.ysndr.de"
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -176,6 +176,10 @@ main = do
                 -- make the item and apply our sitemap template
                 makeItem ""
                     >>= loadAndApplyTemplate "templates/sitemap.xml" sitemapCtx
+
+        create "CNAME" $ do
+            route idRoute
+            compile $ makeItem root
 --------------------------------------------------------------------------------
 
 customBaseContext :: Context String
