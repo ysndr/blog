@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
-module Site () where
+module Main (main) where
 import           Fields
 import           System.Environment             ( lookupEnv )
 import           System.FilePath.Posix          ( takeFileName )
