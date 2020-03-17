@@ -20,7 +20,7 @@ As Hakyll is written in Haskell combining it with the great text conversion tool
 *I won't go into all the things used in this article, instead there will be individual posts going into more detail about different elements*
 :::
 
-- Part 01: Hakyll basics and context *(this article)* 
+- Part 01: Hakyll basics and context *(this article)*
 - Part 02: *(WIP)*
 
 ## Part 01
@@ -41,13 +41,13 @@ At it's bare minimum a basic Hakyll generator looks like this:
 config :: Configuration
 config = defaultConfiguration {
     -- config overrides such as the path to the page content source
-    -- and compiled item's destination  
+    -- and compiled item's destination
 }
 
 -- A context extending the default context by a date field
 postCtx :: Tags -> Tags -> Context String
 postCtx tags category = dateField "date" "%B %e, %Y"
-                     <> defaultContext 
+                     <> defaultContext
 
 main :: IO ()
 main = hakyllWith config $ do
@@ -57,10 +57,10 @@ main = hakyllWith config $ do
             $   pandocCompiler
             -- applies the post template
             >>= loadAndApplyTemplate "templates/post.html" postCtx
-            -- embeds the rendered post into the page template 
+            -- embeds the rendered post into the page template
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
-    
+
     create ["archive.html"] $ do
             route idRoute
             compile $ do
@@ -96,7 +96,7 @@ config = defaultConfiguration { }
 
 This sets up the runtime configuration of hakyll itself. With it we can override among others the folder in which Hakyll searches for its content and where the result should be stored. All available options can be found inside the [documentation](https://jaspervdj.be/hakyll/reference/Hakyll-Core-Configuration.html)
 
-#### Matching routes
+#### matching routes
 ``` haskell
 match "posts/**.md" $ do
     route $ setExtension "html"
@@ -104,7 +104,7 @@ match "posts/**.md" $ do
         $   pandocCompiler
         -- applies the post template
         >>= loadAndApplyTemplate "templates/post.html" postCtx
-        -- embeds the rendered post into the page template 
+        -- embeds the rendered post into the page template
         >>= loadAndApplyTemplate "templates/default.html" postCtx
         >>= relativizeUrls
 ```
@@ -118,7 +118,7 @@ But what does this function actually do in particular?
 5. Embedds raw posts into the default page template
 6. And finally relativizes urls, which is a fancy function that keeps track of the resources referenced locally and keeps their links up to date.
 
-##### Compiling with Pandoc
+#### Compiling with Pandoc
 
 In the snippet above the default `pandocCompiler` function is used to read the content of the file and transform it into HTML using Hakyll's default options for pandoc. Aside `pandocCompiler` there are a few more low level functions available that allow deeperr customization in the regards of which pandoc templates are used, which extensions activated and so forth. There are also `pandocCompilerWithTransform` and `pandocCompilerWithTransformM` that allow editing the intermediate parsed content pandoc uses internally. At this point rich postprocessing can be applied, just alike the usuall pandoc filters. The only grain is that existing pandoc filters (i.e. [pandocfilters](https://github.com/jgm/pandocfilters) or [panflute](https://github.com/sergiocorreia/panflute)) cannot be easily applied with Hakyll.
 
@@ -144,9 +144,9 @@ create ["archive.html"] $ do
 
 This creates a files `archive.html` which is b uild using the compile function that basically wraps an `Item a` in the `Compiler` monad. The corresponding item is created using `makeItem` that itroduces an empty String Item that is enriched first using the archive template and subsequently the default page template.
 
-Notice the use of `loadAll` that makes the set of all posts availlable inside he compile scope. Most importantly though are the both contexts, especially the `archiveCtx` that makes the posts available to the template engine as a list of `postCtx`s. 
+Notice the use of `loadAll` that makes the set of all posts availlable inside he compile scope. Most importantly though are the both contexts, especially the `archiveCtx` that makes the posts available to the template engine as a list of `postCtx`s.
 
-### Contexts
+#### Contexts
 
 Contexts contain the meta information that is available to the templating engine when building an `Item`. Thus allowing the usage of the computed value in the template files.
 A context holds a number of fields which are contexts as well.
@@ -163,7 +163,7 @@ peekField
 peekField key length snapshot = field key $ \item -> do
     body <- itemBody <$> loadSnapshot (itemIdentifier item) snapshot
     return (peak body)
-    
+
     where peak = T.unpack . T.unwords . take length . T.words . T.pack
 ```
 
@@ -171,12 +171,12 @@ This is a very simple field once created to serve as my own version of a teaser 
 
 Yet what this example demonstate is the integral importance of `Item`s in Hakyll.
 
-#### Items
+##### Items
 
-`Item`s are a simple datatypes that wrap a `body` of some type `a` (usually `String`) and an identifier. 
+`Item`s are a simple datatypes that wrap a `body` of some type `a` (usually `String`) and an identifier.
 
 Most of Hakyll's functions that deal with content are working with `Item`s. As seen above `Item`s can also be stored in snapshots and retrieved later on.
-Especially in `field`s `Item`s contain the content from which the desired `field` can be derived from. 
+Especially in `field`s `Item`s contain the content from which the desired `field` can be derived from.
 
 
 ------
