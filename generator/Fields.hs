@@ -1,3 +1,6 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE StandaloneDeriving #-}
+
 module Fields (
   peekField
 , GitVersionContent(..)
@@ -12,11 +15,14 @@ module Fields (
 
 import           Control.Applicative            ( empty )
 import qualified Data.Text                      as T
+import qualified Data.Text.Lazy                 as TL
 import           Data.Char                      (isSpace)
 import           Data.List                      ( dropWhileEnd
                                                 , groupBy
                                                 , isPrefixOf )
 import           Data.Maybe                     ( fromJust )
+import           Data.String                    ( IsString )
+
 
 import           Data.Time.Calendar
 import           Data.Time.Clock                (UTCTime (..))
@@ -25,11 +31,18 @@ import           Data.Time.Locale.Compat        (defaultTimeLocale)
 import           Hakyll
 import           System.Exit                    ( ExitCode(..) )
 import           System.Process
-import           Text.Pandoc                    ( runPure )
+import           Text.Blaze.Internal            ( MarkupM( .. ), attribute, (!), getText, StaticString (..) )
+import           Text.Blaze.Html                ( Html, Attribute )
+import           Text.Blaze.XHtml5              ( ul, li, toHtml )
+import           Text.Blaze.XHtml5.Attributes   ( class_ , alt)
+import           Text.Blaze.Html.Renderer.Text  ( renderHtml )
+
+import           Text.Pandoc                    hiding (trace)
 import           Text.Pandoc.Options            ( WriterOptions (..) )
 import           Text.Pandoc.Readers            ( readHtml )
-import           Text.Pandoc.Writers            ( writeHtml5String )
-
+import           Text.Pandoc.Writers            ( writeHtml5 )
+import           Text.Pandoc.Writers.Shared     ( toTableOfContents )
+import Data.Either (fromRight)
 
 -- Peek Field
 --------------------------------------------------------------------------------
@@ -125,22 +138,44 @@ publishedGroupField name posts postContext = listField name groupCtx $ do
 concatField :: String -> Context String
 concatField name = functionField name (\args item -> return $ concat args)
 
-tocField :: String -> String -> Context String
-tocField name snapshot = field name $ \item -> do
+tocField :: String -> Int -> String -> Context String
+tocField name depth snapshot = field name $ \item -> do
     body <- loadSnapshot (itemIdentifier item) snapshot
 
-    let writerOptions = defaultHakyllWriterOptions
-            {
-              writerTableOfContents = True
-            , writerTemplate = Just "$table-of-contents$"
-            }
-        toc = case (runPure $ readHtml defaultHakyllReaderOptions (T.pack $ itemBody body))
-               >>= \pandoc -> runPure ( writeHtml5String writerOptions pandoc) of
-                        Left err    -> fail $ ""
-                        Right item' -> T.unpack item'
+    let writerOptions = def {
+        writerTOCDepth = depth
+    }
 
-    return $ toc
+        pandoc@(Pandoc _ blocks) = case (runPure $ readHtml defaultHakyllReaderOptions (T.pack $ itemBody body))
+                 of
+                    Left err    -> error $ "Could not parse"
+                    Right pandoc -> pandoc
 
+        toc = toTableOfContents writerOptions blocks
+
+        ulAttributes ul' = ul'
+            ! class_ "uk-nav-default uk-list uk-nav-sub"
+
+    return . TL.unpack . renderHtml . modList writerOptions ulAttributes $ [toc]
+
+
+modList :: WriterOptions -> ((Html -> Html)->(Html->Html))  -> [Block] -> Html
+modList opts ulMod blocks = makeBulletItem blocks
+  where
+      -- This decomposes one item of a bullet list
+      -- BulletList takes a  list of items each of which is a list of blocks
+      -- respectively :: [[Block]]
+      makeBulletItem :: [Block] -> Html
+      makeBulletItem [] = Empty ()
+      makeBulletItem ((BulletList elems):extra) = toHtml [makeList $ filter (not . null) elems, makeBulletItem extra]
+      makeBulletItem (block:extra) = toHtml [makeItem block, makeBulletItem extra]
+
+      makeItem :: Block -> Html
+      makeItem block = fromRight (Empty ()) (runPure $ writeHtml5 opts (Pandoc nullMeta [block]))
+
+      makeList:: [[Block]] -> Html
+      makeList [] = Empty ()
+      makeList listItems = (ulMod ul) $ (toHtml . map (li . makeBulletItem) $ listItems)
 
 allTagsField :: String -> Tags -> Context String
 allTagsField name tags = listFieldWith name (tagCtx tags) mkPostTags
