@@ -163,4 +163,19 @@ header,
 footer {
   font-family: $base-heading-font-family;
 }
+
+.y-toc {
+  max-height: 80vh;
+  overflow: scroll;
+  li {
+    &:nth-child(n + 2) {
+      margin-top: 4px;
+    }
+    a::before {
+      content: ">";
+      margin-right: 10px;
+      //   border-left: 1px solid $nav-primary-item-color;
+      //   padding-left: 5px;
+    }
+  }
 }
