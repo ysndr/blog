@@ -72,7 +72,7 @@ postCtx tags category =  dateField "date" "%B %e, %Y"
         <> teaserField "teaser" "posts-content"
         <> peekField 50 "peek" "posts-content"
         <> readTimeField "read-time" "posts-content"
-        <> tocField "toc" "posts-content"
+        <> tocField "toc" 5 "posts-content"
         <> pathField "sourcefile"
         <> versionField "git-commit" Commit
         <> versionField "git-commit-hash" Hash
