@@ -9,6 +9,7 @@ module Fields (
 , readTimeField
 , publishedGroupField
 , concatField
+, ToCExtra(..)
 , tocField
 , allTagsField
 ) where
@@ -16,12 +17,13 @@ module Fields (
 import           Control.Applicative            ( empty )
 import qualified Data.Text                      as T
 import qualified Data.Text.Lazy                 as TL
-import           Data.Char                      (isSpace)
+import           Data.Char                      ( isSpace )
+import           Data.Default                   ( Default )
 import           Data.List                      ( dropWhileEnd
                                                 , groupBy
                                                 , isPrefixOf )
 import           Data.Maybe                     ( fromJust )
-import           Data.String                    ( IsString )
+import           Data.String                    ( IsString, fromString )
 
 
 import           Data.Time.Calendar
@@ -32,7 +34,7 @@ import           Hakyll
 import           System.Exit                    ( ExitCode(..) )
 import           System.Process
 import           Text.Blaze.Internal            ( MarkupM( .. ), attribute, (!), getText, StaticString (..) )
-import           Text.Blaze.Html                ( Html, Attribute )
+import           Text.Blaze.Html                ( Html, Attribute,  )
 import           Text.Blaze.XHtml5              ( ul, li, toHtml )
 import           Text.Blaze.XHtml5.Attributes   ( class_ , alt)
 import           Text.Blaze.Html.Renderer.Text  ( renderHtml )
@@ -44,6 +46,8 @@ import           Text.Pandoc.Writers            ( writeHtml5 )
 import           Text.Pandoc.Writers.Shared     ( toTableOfContents )
 import Data.Either (fromRight)
 
+import Debug.Trace
+import Data.Typeable
 -- Peek Field
 --------------------------------------------------------------------------------
 
@@ -138,8 +142,14 @@ publishedGroupField name posts postContext = listField name groupCtx $ do
 concatField :: String -> Context String
 concatField name = functionField name (\args item -> return $ concat args)
 
-tocField :: String -> Int -> String -> Context String
-tocField name depth snapshot = field name $ \item -> do
+data ToCExtra =  ToCExtra { extraUlClasses :: String }
+     deriving (Show)
+instance Default ToCExtra where
+    def = ToCExtra { extraUlClasses = "" }
+
+
+tocField :: String -> Int -> ToCExtra -> String -> Context String
+tocField name depth tocExtra snapshot = field name $ \item -> do
     body <- loadSnapshot (itemIdentifier item) snapshot
 
     let writerOptions = def {
@@ -154,7 +164,7 @@ tocField name depth snapshot = field name $ \item -> do
         toc = toTableOfContents writerOptions blocks
 
         ulAttributes ul' = ul'
-            ! class_ "uk-nav-default uk-list uk-nav-sub"
+            ! class_ (fromString $ extraUlClasses tocExtra)
 
     return . TL.unpack . renderHtml . modList writerOptions ulAttributes $ [toc]
 

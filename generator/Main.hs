@@ -9,6 +9,7 @@ import           Hakyll.Images                  ( loadImage
                                                 , compressJpgCompiler
                                                 )
 import qualified Data.Text                      as T
+import Data.Default
 import Data.Char                                (isSpace)
 import Data.List                                (dropWhileEnd,groupBy, isPrefixOf)
 import           Hakyll.Web.Sass                ( sassCompilerWith )
@@ -72,7 +73,7 @@ postCtx tags category =  dateField "date" "%B %e, %Y"
         <> teaserField "teaser" "posts-content"
         <> peekField 50 "peek" "posts-content"
         <> readTimeField "read-time" "posts-content"
-        <> tocField "toc" 5 "posts-content"
+        <> tocField "toc" 5 (def {extraUlClasses = "uk-nav-default uk-list uk-nav-sub"}) "posts-content"
         <> pathField "sourcefile"
         <> versionField "git-commit" Commit
         <> versionField "git-commit-hash" Hash
