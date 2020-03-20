@@ -12,7 +12,7 @@ name:                Site
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.1.0.0
+version:             0.1.1.0
 
 -- A short (one-line) description of the package.
 -- synopsis:
@@ -48,7 +48,7 @@ extra-source-files:  CHANGELOG.md
 
 executable generator
   -- .hs or .lhs file containing the Main module.
-  main-is:             Site.hs
+  main-is:             Main.hs
   other-modules:       Fields
 
   -- Modules included in this executable, other than Main.
@@ -68,7 +68,9 @@ executable generator
                         text ^>=1.2.3.1,
                         hakyll-sass ^>=0.2.4,
                         hsass ^>=0.8.0,
-                        pandoc ^>=2.7.3
+                        pandoc ^>=2.7.3,
+                        blaze-html ^>=0.9.1.1,
+                        blaze-markup ^>=0.8.2.2,
 
   -- Directories containing source files.
   -- hs-source-dirs:
