@@ -1,7 +1,7 @@
 @charset "utf-8";
 
 // 1. Your custom variables and variable overwrites.
-$global-link-color: #DA7D02;
+$global-link-color: #da7d02;
 
 $global-font-family: "Merriweather Sans", "Noto Sans", sans-serif;
 $base-heading-font-family: "Fira Code", monospace, monospace;
@@ -20,114 +20,134 @@ $container-max-width: 1100px;
 // @mixin hook-card() { color: #000; }
 
 @mixin hook-text-lead() {
-    font-size: $global-font-size;
+  font-size: $global-font-size;
 
-    @media (min-width: $breakpoint-medium) {
-        font-size: $global-medium-font-size;
-    }
-    @media (min-width: $breakpoint-large) {
-        font-size: $global-large-font-size;
-    }
+  @media (min-width: $breakpoint-medium) {
+    font-size: $global-medium-font-size;
+  }
+  @media (min-width: $breakpoint-large) {
+    font-size: $global-large-font-size;
+  }
 }
 
 @mixin hook-height-misc() {
+  // .uk-height-small\@s,
+  // .uk-height-small\@m,
+  // .uk-height-small\@l,
+  // .uk-height-small\@xl,
+  // .uk-height-medium\@s,
+  // .uk-height-medium\@m,
+  // .uk-height-medium\@l,
+  // .uk-height-medium\@xl,
+  // .uk-height-large\@s,
+  // .uk-height-large\@m,
+  // .uk-height-large\@l,
+  // .uk-height-large\@xl {
+  //     height:auto;
+  // }
 
-    // .uk-height-small\@s,
-    // .uk-height-small\@m,
-    // .uk-height-small\@l,
-    // .uk-height-small\@xl,
-    // .uk-height-medium\@s,
-    // .uk-height-medium\@m,
-    // .uk-height-medium\@l,
-    // .uk-height-medium\@xl,
-    // .uk-height-large\@s,
-    // .uk-height-large\@m,
-    // .uk-height-large\@l,
-    // .uk-height-large\@xl {
-    //     height:auto;
-    // }
-    
-    @media (min-width: $breakpoint-small) {
-        .uk-height-small\@s { height: $height-small-height; }
-        .uk-height-medium\@s { height: $height-medium-height; }
-        .uk-height-large\@s { height: $height-large-height; }
+  @media (min-width: $breakpoint-small) {
+    .uk-height-small\@s {
+      height: $height-small-height;
     }
-    
-    @media (min-width: $breakpoint-medium) {
-        .uk-height-small\@m { height: $height-small-height; }
-        .uk-height-medium\@m { height: $height-medium-height; }
-        .uk-height-large\@m { height: $height-large-height; }
+    .uk-height-medium\@s {
+      height: $height-medium-height;
     }
-    
-    @media (min-width: $breakpoint-large) {
-        .uk-height-small\@l { height: $height-small-height; }
-        .uk-height-medium\@l { height: $height-medium-height; }
-        .uk-height-large\@l { height: $height-large-height; }
+    .uk-height-large\@s {
+      height: $height-large-height;
     }
-    
-    @media (min-width: $breakpoint-xlarge) {
-        .uk-height-small\@xl { height: $height-small-height; }
-        .uk-height-medium\@xl { height: $height-medium-height; }
-        .uk-height-large\@xl { height: $height-large-height; }
+  }
+
+  @media (min-width: $breakpoint-medium) {
+    .uk-height-small\@m {
+      height: $height-small-height;
     }
-} 
+    .uk-height-medium\@m {
+      height: $height-medium-height;
+    }
+    .uk-height-large\@m {
+      height: $height-large-height;
+    }
+  }
+
+  @media (min-width: $breakpoint-large) {
+    .uk-height-small\@l {
+      height: $height-small-height;
+    }
+    .uk-height-medium\@l {
+      height: $height-medium-height;
+    }
+    .uk-height-large\@l {
+      height: $height-large-height;
+    }
+  }
+
+  @media (min-width: $breakpoint-xlarge) {
+    .uk-height-small\@xl {
+      height: $height-small-height;
+    }
+    .uk-height-medium\@xl {
+      height: $height-medium-height;
+    }
+    .uk-height-large\@xl {
+      height: $height-large-height;
+    }
+  }
+}
 
 @mixin hook-base-blockquote() {
-    padding-left: $padding-padding;
-    border-left: 2px solid $global-muted-color;
+  padding-left: $padding-padding;
+  border-left: 2px solid $global-muted-color;
 }
 
 @mixin hook-base-code {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    background-color: $global-muted-background;
-    border: 2px solid $global-muted-background;
-    border-radius: 4px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  background-color: $global-muted-background;
+  border: 2px solid $global-muted-background;
+  border-radius: 4px;
 }
 
-
 @mixin hook-base-pre {
-    width: fit-content;
-    padding: 10px;
-
+  width: fit-content;
+  padding: 10px;
 }
 
 // 4. Import UIkit.
 @import "uikit/scss/uikit-theme.scss";
 
-@import './_code.scss';
+@import "./_code.scss";
 
-@import url('https://fonts.googleapis.com/css?family=Merriweather+Sans:400,400i,700,700i|Fira+Code:400,500,700&display=swap');
-
+@import url("https://fonts.googleapis.com/css?family=Merriweather+Sans:400,400i,700,700i|Fira+Code:400,500,700&display=swap");
 
 div.sourceCode {
-    overflow: scroll;
-    background-color: $global-muted-background;
-    border: none;
-    border-left: 4px solid $global-primary-background;
+  overflow: scroll;
+  background-color: $global-muted-background;
+  border: none;
+  border-left: 4px solid $global-primary-background;
 }
 
 body {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    
-    >main {
-        flex-grow: 1;
-    }
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  > main {
+    flex-grow: 1;
+  }
 }
 
 body {
-    overflow-x: hidden;
+  overflow-x: hidden;
 }
 
 .mjx-chtml.MJXc-display {
-    overflow: scroll;
+  overflow: scroll;
 }
 
 .y-leader {
-    font-family: $logo-font-family;
+  font-family: $logo-font-family;
 }
 
 .y-width-screen {
@@ -139,6 +159,8 @@ body {
   margin-right: -50vw;
 }
 
-header, footer {
-    font-family: $base-heading-font-family;
+header,
+footer {
+  font-family: $base-heading-font-family;
+}
 }
