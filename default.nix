@@ -37,7 +37,7 @@ let
 
   # ------------- generator -----------
   generator = haskell.lib.justStaticExecutables (haskellPackages'.callPackage ./generator {});
-  
+
   generator-with-thirdparty = generator.overrideAttrs(old: {
     nativeBuildInputs = old.nativeBuildInputs or [] ++ [makeWrapper];
     installPhase = old.installPhase + "\n" + ''
@@ -48,7 +48,7 @@ let
   # --------------- Commands ----------------
 
   generate-website = script {
-    name = "generate-website"; 
+    name = "generate-website";
     paths = [generator-with-thirdparty git];
 
     script = ''
@@ -58,14 +58,14 @@ let
 
   # ---------------- Shell ------------------
   haskell-env = haskellPackages'.ghcWithHoogle (
-    hp: with hp; [ cabal-install ] 
+    hp: with hp; [ cabal-install ]
     ++ generator.buildInputs );
-  
+
   shell = { enable-hie ? false }: mkShell {
     name = "blog-env";
     buildInputs = [
       # put packages here.
-      generator
+      # generator
       haskell-env
       (lib.optional (enable-hie) hie)
     ];
@@ -85,4 +85,4 @@ in {
   ci = {
     compile = generate-website;
   };
-} 
+}
