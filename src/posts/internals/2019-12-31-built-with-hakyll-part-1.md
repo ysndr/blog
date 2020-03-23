@@ -21,19 +21,19 @@ As Hakyll is written in Haskell combining it with the great text conversion tool
 :::
 
 - Part 01: Hakyll basics and context *(this article)*
-- Part 02: *(WIP)*
+- Part 02: [Custom Fields](./2020-03-22-built-with-hakyll-part-2.html)
 
-## Part 01
 
-### Setup
+
+## Setup
 
 Setting up Hakyll in general using stack or cabal is already documented extensively. My take on this project involves using [nix](https://nixos.org/nix/) as dependency/package manager. How I set up this blog using nix will also be discussed another time.
 
-### Basics
+## Basics
 
 In this article I would like to introduce the basic concepts of Hakyll in an applied way.
 
-The heart of this page is [`generator/Site.hs`](https://github.com/ysndr/blog/blob/release/generator/Site.hs).
+The heart of this page is [`generator/Main.hs`](https://github.com/ysndr/blog/blob/release/generator/Main.hs).
 
 At it's bare minimum a basic Hakyll generator looks like this:
 
@@ -87,7 +87,7 @@ In this snipped we see several things lets go through them individually:
 4. templates
 5. contexts
 
-#### config
+### config
 
 ``` haskell
 config :: Configuration
@@ -96,7 +96,7 @@ config = defaultConfiguration { }
 
 This sets up the runtime configuration of hakyll itself. With it we can override among others the folder in which Hakyll searches for its content and where the result should be stored. All available options can be found inside the [documentation](https://jaspervdj.be/hakyll/reference/Hakyll-Core-Configuration.html)
 
-#### matching routes
+### matching routes
 ``` haskell
 match "posts/**.md" $ do
     route $ setExtension "html"
@@ -118,11 +118,11 @@ But what does this function actually do in particular?
 5. Embedds raw posts into the default page template
 6. And finally relativizes urls, which is a fancy function that keeps track of the resources referenced locally and keeps their links up to date.
 
-#### Compiling with Pandoc
+### Compiling with Pandoc
 
 In the snippet above the default `pandocCompiler` function is used to read the content of the file and transform it into HTML using Hakyll's default options for pandoc. Aside `pandocCompiler` there are a few more low level functions available that allow deeperr customization in the regards of which pandoc templates are used, which extensions activated and so forth. There are also `pandocCompilerWithTransform` and `pandocCompilerWithTransformM` that allow editing the intermediate parsed content pandoc uses internally. At this point rich postprocessing can be applied, just alike the usuall pandoc filters. The only grain is that existing pandoc filters (i.e. [pandocfilters](https://github.com/jgm/pandocfilters) or [panflute](https://github.com/sergiocorreia/panflute)) cannot be easily applied with Hakyll.
 
-#### Creating Routes
+### Creating Routes
 
 Additionally to matching exitsing files and compiling them, one can also generate fully independent files using the `create` function.
 
@@ -146,7 +146,7 @@ This creates a files `archive.html` which is b uild using the compile function t
 
 Notice the use of `loadAll` that makes the set of all posts availlable inside he compile scope. Most importantly though are the both contexts, especially the `archiveCtx` that makes the posts available to the template engine as a list of `postCtx`s.
 
-#### Contexts
+### Contexts
 
 Contexts contain the meta information that is available to the templating engine when building an `Item`. Thus allowing the usage of the computed value in the template files.
 A context holds a number of fields which are contexts as well.
@@ -171,7 +171,7 @@ This is a very simple field once created to serve as my own version of a teaser 
 
 Yet what this example demonstate is the integral importance of `Item`s in Hakyll.
 
-##### Items
+#### Items
 
 `Item`s are a simple datatypes that wrap a `body` of some type `a` (usually `String`) and an identifier.
 
