@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE StandaloneDeriving #-}
 
 module Fields (
   peekField
@@ -122,7 +121,6 @@ publishedGroupField name posts postContext = listField name groupCtx $ do
 
     sequence itemized
 
-
     where groupCtx = field "year" (return . show . fst . itemBody)
                   <> listFieldWith "posts" postContext (return . snd . itemBody)
 
@@ -147,14 +145,11 @@ data ToCExtra =  ToCExtra { extraUlClasses :: String }
 instance Default ToCExtra where
     def = ToCExtra { extraUlClasses = "" }
 
-
 tocField :: String -> Int -> ToCExtra -> String -> Context String
 tocField name depth tocExtra snapshot = field name $ \item -> do
     body <- loadSnapshot (itemIdentifier item) snapshot
 
-    let writerOptions = def {
-        writerTOCDepth = depth
-    }
+    let writerOptions = def { writerTOCDepth = depth }
 
         pandoc@(Pandoc _ blocks) = case (runPure $ readHtml defaultHakyllReaderOptions (T.pack $ itemBody body))
                  of
@@ -168,16 +163,16 @@ tocField name depth tocExtra snapshot = field name $ \item -> do
 
     return . TL.unpack . renderHtml . modList writerOptions ulAttributes $ [toc]
 
-
 modList :: WriterOptions -> ((Html -> Html)->(Html->Html))  -> [Block] -> Html
-modList opts ulMod blocks = makeBulletItem blocks
+modList opts ulMod = makeBulletItem
   where
       -- This decomposes one item of a bullet list
       -- BulletList takes a  list of items each of which is a list of blocks
       -- respectively :: [[Block]]
       makeBulletItem :: [Block] -> Html
       makeBulletItem [] = Empty ()
-      makeBulletItem ((BulletList elems):extra) = toHtml [makeList $ filter (not . null) elems, makeBulletItem extra]
+      makeBulletItem ((BulletList elems):extra)
+        = toHtml [makeList $ filter (not . null) elems, makeBulletItem extra]
       makeBulletItem (block:extra) = toHtml [makeItem block, makeBulletItem extra]
 
       makeItem :: Block -> Html
