@@ -10,6 +10,7 @@ module Fields (
 , concatField
 , ToCExtra(..)
 , tocField
+, plainTocField
 , allTagsField
 ) where
 

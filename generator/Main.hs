@@ -73,7 +73,8 @@ postCtx tags category =  dateField "date" "%B %e, %Y"
         <> teaserField "teaser" "posts-content"
         <> peekField 50 "peek" "posts-content"
         <> readTimeField "read-time" "posts-content"
-        <> tocField "toc" 5 (def {extraUlClasses = "uk-nav-default uk-list uk-nav-sub"}) "posts-content"
+        <> tocField "toc" 4 (def {extraUlClasses = "uk-nav-default uk-list uk-nav-sub"}) "posts-content"
+        <> plainTocField "toc-plain" 4 "posts-content"
         <> pathField "sourcefile"
         <> versionField "git-commit" Commit
         <> versionField "git-commit-hash" Hash
