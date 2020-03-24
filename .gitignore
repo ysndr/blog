@@ -1,4 +1,5 @@
 .direnv/
 build/
 generator/dist/
+generator/dist-newstyle/
 result/

@@ -17,11 +17,7 @@ let
 
   # ------------- Haskell ------------
   hie = all-hies.selection { selector = p: { inherit (p) ghc865; }; };
-  haskellPackages' = haskell.packages.ghc865.extend( self: super: {
-      hakyll-sass-new = self.callCabal2nix "hakyll-sass" (builtins.fetchTarball {
-        url = "http://hackage.haskell.org/package/hakyll-sass-0.2.4/hakyll-sass-0.2.4.tar.gz";
-      }) {};
-  });
+  haskellPackages' = haskell.packages.ghc865.extend( self: super: { });
 
   # ------------ dist ---------------
   thirdparty = linkFarm "thirdparty" [
@@ -36,7 +32,7 @@ let
   ];
 
   # ------------- generator -----------
-  generator = haskell.lib.justStaticExecutables (haskellPackages'.callPackage ./generator {});
+  generator = haskellPackages'.callCabal2nix "Site" ./generator {};
 
   generator-with-thirdparty = generator.overrideAttrs(old: {
     nativeBuildInputs = old.nativeBuildInputs or [] ++ [makeWrapper];
