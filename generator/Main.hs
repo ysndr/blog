@@ -11,7 +11,7 @@ import           Hakyll.Images                  ( loadImage
 import qualified Data.Text                      as T
 import Data.Default
 import Data.Char                                (isSpace)
-import Data.List                                (dropWhileEnd,groupBy, isPrefixOf)
+import Data.List                                (dropWhileEnd, lookup, groupBy, isPrefixOf)
 import           Hakyll.Web.Sass                ( sassCompilerWith )
 import           Text.Sass.Options              ( SassOptions(..)
                                                 , defaultSassOptions
@@ -220,8 +220,15 @@ main = do
 
 htmlFilter :: Pandoc -> Pandoc
 htmlFilter = walk replaceElements where
-    replaceElements (Div (id, classes, kv) blocks)
-        | any (== "info") classes = Div (id, "uk-info" : classes, kv) blocks
-        | any (== "note") classes = Div (id, "uk-alert-primary uk-alert" : classes, kv) ((Header 1 ("",[],[]) [Str "Note"]) : blocks)
-        | any (== "warning") classes = Div (id, "uk-alert-warning uk-alert" : classes, kv) blocks
+    replaceElements (Div (id, classes, kv) blocks) =
+        Div (id, classes', kv) (prepend ++ blocks)
+        where
+            classes'
+                | any (== "info") classes = "uk-alert" : classes
+                | any (== "note") classes = ["uk-alert-primary" , "uk-alert"] ++ classes
+                | any (== "warning") classes = ["uk-alert-warning", "uk-alert"] ++ classes
+                | otherwise = classes
+            prepend = case lookup "message" kv of
+                Just message -> [(Header 1 ("",[],[]) [Str message])]
+                Nothing -> []
     replaceElements block = block

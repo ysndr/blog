@@ -106,4 +106,7 @@
 
 @mixin hook-alert {
     border-radius: 4px;
+    em {
+        color: inherit;
+    }
 }
