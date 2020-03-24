@@ -123,9 +123,11 @@ main = do
             compile $ copyFileCompiler
 
         -- compile SASS/CSS
-        match (fromRegex "^assets/css/[^_].*\\.scss") $ do
-            route $ setExtension "css"
-            compile sassCompiler
+        depends <- makePatternDependency "assets/css/**.scss"
+        rulesExtraDependencies [depends] $ do
+            match (fromRegex "^assets/css/[^_].*.scss") $ do
+                route $ setExtension "css"
+                compile sassCompiler
 
         -- assemble static pages
         match (fromList ["about.md", "contact.md"]) $ do

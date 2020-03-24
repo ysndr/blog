@@ -22,10 +22,6 @@ let
   # ------------ dist ---------------
   thirdparty = linkFarm "thirdparty" [
     {
-      name = "bulma";
-      path = (fetchTarball "https://github.com/jgthms/bulma/archive/0.7.4.tar.gz") + "/sass";
-    }
-    {
       name = "uikit";
       path = (fetchTarball "https://github.com/uikit/uikit/archive/v3.2.4.tar.gz") + "/src";
     }
