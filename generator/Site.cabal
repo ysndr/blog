@@ -70,6 +70,7 @@ executable generator
                         hakyll-sass ^>=0.2.4,
                         hsass ^>=0.8.0,
                         pandoc ^>=2.7.3,
+                        pandoc-types ^>=1.17.5.4,
                         blaze-html ^>=0.9.1.1,
                         blaze-markup ^>=0.8.2.2,
 

@@ -18,6 +18,8 @@ import           Text.Sass.Options              ( SassOptions(..)
                                                 , SassOutputStyle(..)
                                                 )
 import           Text.Pandoc.Options            ( WriterOptions (..) )
+import           Text.Pandoc.Definition         ( Pandoc(..), Block(..), Inline(..) )
+import           Text.Pandoc.Walk
 
 
 -- Configuration
@@ -176,7 +178,7 @@ main = do
             let postCtx' = postCtx tags categories
             route $ setExtension "html"
             compile
-                $   pandocCompiler
+                $   pandocCompilerWithTransform defaultHakyllReaderOptions  defaultHakyllWriterOptions htmlFilter
                 >>= saveSnapshot "posts-content"
                 >>= loadAndApplyTemplate "templates/post.html" postCtx'
                 >>= saveSnapshot "posts-rendered"
@@ -215,3 +217,11 @@ main = do
         create ["CNAME"] $ do
             route idRoute
             compile $ makeItem domain
+
+htmlFilter :: Pandoc -> Pandoc
+htmlFilter = walk replaceElements where
+    replaceElements (Div (id, classes, kv) blocks)
+        | any (== "info") classes = Div (id, "uk-info" : classes, kv) blocks
+        | any (== "note") classes = Div (id, "uk-alert-primary uk-alert" : classes, kv) ((Header 1 ("",[],[]) [Str "Note"]) : blocks)
+        | any (== "warning") classes = Div (id, "uk-alert-warning uk-alert" : classes, kv) blocks
+    replaceElements block = block
