@@ -1,0 +1,32 @@
+
+// $global-color: #283B3F;
+// $global-emphasis-color: #192A2E;
+// $global-link-color: #4C7A7C;
+// $global-link-hover-color: #466F71;
+// $base-em-color: #26493d;
+// $base-code-color: #3D545B;
+
+$global-highlight-color: #5D8C91; // custom
+
+$global-color: #252525;
+$global-emphasis-color: #444;
+$global-link-color: $global-color;
+$global-link-hover-color: $global-highlight-color;
+$base-em-color: $global-highlight-color;
+$base-code-color: #3D545B;
+
+
+$global-primary-background: #5D8C91;
+
+$global-font-family: "Merriweather Sans", "Noto Sans", sans-serif;
+$base-heading-font-family: "Fira Code", monospace, monospace;
+$base-code-font-family: "Fira Code", Consolas, monaco, monospace, monospace;
+$logo-font-family: $base-heading-font-family;
+
+$global-font-size: 16px;
+// $global-xxlarge-font-size: 2rem;
+// $global-xlarge-font-size: 1.75rem;
+// $global-large-font-size: 1.25rem;
+// $global-medium-font-size: 1.125rem;
+$container-max-width: 1100px;
+$article-max-width: 900px;

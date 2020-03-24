@@ -1,0 +1,109 @@
+@mixin hook-text-lead() {
+  font-size: $global-font-size;
+
+  @media (min-width: $breakpoint-medium) {
+    font-size: $global-medium-font-size;
+  }
+}
+
+@mixin hook-height-misc() {
+  // .uk-height-small\@s,
+  // .uk-height-small\@m,
+  // .uk-height-small\@l,
+  // .uk-height-small\@xl,
+  // .uk-height-medium\@s,
+  // .uk-height-medium\@m,
+  // .uk-height-medium\@l,
+  // .uk-height-medium\@xl,
+  // .uk-height-large\@s,
+  // .uk-height-large\@m,
+  // .uk-height-large\@l,
+  // .uk-height-large\@xl {
+  //     height:auto;
+  // }
+
+  @media (min-width: $breakpoint-small) {
+    .uk-height-small\@s {
+      height: $height-small-height;
+    }
+    .uk-height-medium\@s {
+      height: $height-medium-height;
+    }
+    .uk-height-large\@s {
+      height: $height-large-height;
+    }
+  }
+
+  @media (min-width: $breakpoint-medium) {
+    .uk-height-small\@m {
+      height: $height-small-height;
+    }
+    .uk-height-medium\@m {
+      height: $height-medium-height;
+    }
+    .uk-height-large\@m {
+      height: $height-large-height;
+    }
+  }
+
+  @media (min-width: $breakpoint-large) {
+    .uk-height-small\@l {
+      height: $height-small-height;
+    }
+    .uk-height-medium\@l {
+      height: $height-medium-height;
+    }
+    .uk-height-large\@l {
+      height: $height-large-height;
+    }
+  }
+
+  @media (min-width: $breakpoint-xlarge) {
+    .uk-height-small\@xl {
+      height: $height-small-height;
+    }
+    .uk-height-medium\@xl {
+      height: $height-medium-height;
+    }
+    .uk-height-large\@xl {
+      height: $height-large-height;
+    }
+  }
+}
+
+@mixin hook-base-blockquote() {
+  padding-left: $padding-padding;
+  border-left: 2px solid $global-muted-color;
+}
+
+@mixin hook-base-code {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  background-color: $global-muted-background;
+  border: 2px solid $global-muted-background;
+  border-radius: 4px;
+}
+
+@mixin hook-base-pre {
+  width: fit-content;
+  padding: 10px;
+}
+
+
+@mixin hook-article {
+    max-width: $article-max-width;
+    margin: auto;
+    &~:not(.uk-alert) a {
+        border-bottom: 1px solid $global-muted-color;
+        &:hover {
+          text-decoration: none;
+          border-bottom-color: $global-link-hover-color;
+        }
+    }
+}
+
+
+@mixin hook-alert {
+    border-radius: 4px;
+}
