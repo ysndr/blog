@@ -66,7 +66,7 @@ field :: String -> (Item a -> Compiler String) -> Context a
 ```
 
 :::{.note}
-I am by no means an expert in Haskell at this point. I have learned alot writing the engine behind all this (Which in the end is also my main  motivator). But I am certain some implementations could be done more idiomatically and/or efficiently. Thus, take the ideas that I had critically.
+I am by no means an expert in Haskell at this point. I have learned alot writing the engine behind all this (Which in the end is actually my main  motivator). But I am certain some implementations could be done more idiomatically and/or efficiently. Thus, take the ideas that I had critically.
 
 I do welcome any coments in form of issues on [Github](https://github.com/ysndr/blog). :)
 :::
