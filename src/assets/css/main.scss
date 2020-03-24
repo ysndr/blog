@@ -33,14 +33,17 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-
+  overflow-x: hidden;
   > main {
     flex-grow: 1;
   }
 }
 
-body {
-  overflow-x: hidden;
+header {
+  .logo {
+    width: auto;
+    height:  2rem;
+  }
 }
 
 .mjx-chtml.MJXc-display {

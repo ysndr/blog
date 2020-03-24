@@ -49,6 +49,7 @@ sassOptions distPath = defaultSassOptions
 --------------------------------------------------------------------------------
 postsGlob = "posts/**.md"
 jpgs = "**.jpg" .||. "**.jpeg"
+svg = "**.svg"
 
 domain :: String
 domain = "blog.ysndr.de"
@@ -121,6 +122,10 @@ main = do
 
         -- copy assets (non images and non post files)
         match ("posts/**" .&&. complement postsGlob .&&. complement jpgs) $ do
+            route idRoute
+            compile $ copyFileCompiler
+
+        match ("assets/images/**" .&&. complement jpgs) $ do
             route idRoute
             compile $ copyFileCompiler
 
