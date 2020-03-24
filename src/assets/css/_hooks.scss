@@ -94,12 +94,8 @@
 @mixin hook-article {
     max-width: $article-max-width;
     margin: auto;
-    &~:not(.uk-alert) a {
-        border-bottom: 1px solid $global-muted-color;
-        &:hover {
-          text-decoration: none;
-          border-bottom-color: $global-link-hover-color;
-        }
+    a {
+       text-decoration: underline;
     }
 }
 
