@@ -139,6 +139,7 @@ headVersionField name content  = field name $ \_ -> unsafeCompiler $ getGitVersi
 With the current implementation of `getGitVersion` I am able to get the latest commit that changed any given document. It spawns a `git` process and reads its output afterwards.
 
 I can even choose from predefined formats:
+
 - `Hash` gives the Commit's hash,
 - `Commit` the Hash+Message
 - `Full` Hash+Message+Time
