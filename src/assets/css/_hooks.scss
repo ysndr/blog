@@ -90,11 +90,10 @@
   padding: 10px;
 }
 
-
 @mixin hook-article {
     max-width: $article-max-width;
     margin: auto;
-    a {
+    &:not(.uk-card-body) a {
        text-decoration: underline;
     }
 }
