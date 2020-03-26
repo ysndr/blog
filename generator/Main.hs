@@ -45,6 +45,15 @@ sassOptions distPath = defaultSassOptions
     , sassIncludePaths   = fmap (: []) distPath
     }
 
+feedConfiguration :: FeedConfiguration
+feedConfiguration = FeedConfiguration
+    { feedTitle       = "y|sndr blog - Alot of stuff about alot of stuff"
+    , feedDescription = "Caution this feed might contain oxidized iron and functional ideas."
+    , feedAuthorName  = "Yannik Sander"
+    , feedAuthorEmail = "contact@ysndr.de"
+    , feedRoot        = "https://blog.ysndr.de"
+    }
+
 -- Global Consts
 --------------------------------------------------------------------------------
 postsGlob = "posts/**.md"
@@ -81,6 +90,11 @@ postCtx tags category =  dateField "date" "%B %e, %Y"
         <> pathField "sourcefile"
         <> versionField "git-commit" Commit
         <> versionField "git-commit-hash" Hash
+        <> customBaseContext
+
+feedCtx :: Context String
+feedCtx = bodyField "description"
+        <> dateField "date" "%Y-%m-%d"
         <> customBaseContext
 
 -- Main
@@ -198,6 +212,15 @@ main = do
             route idRoute
             compile copyFileCompiler
 
+        create ["rss.xml"] $ do
+            route idRoute
+            compile (feedCompiler renderRss)
+
+        create ["atom.xml"] $ do
+            route idRoute
+            compile (feedCompiler renderAtom)
+
+
         create ["sitemap.xml"] $ do
             route idRoute
             compile $ do
@@ -237,3 +260,16 @@ htmlFilter = walk replaceElements where
                 Just message -> [(Header 1 ("",[],[]) [Str message])]
                 Nothing -> []
     replaceElements block = block
+
+
+type FeedRenderer =
+    FeedConfiguration
+    -> Context String
+    -> [Item String]
+    -> Compiler (Item String)
+
+feedCompiler :: FeedRenderer -> Compiler (Item String)
+feedCompiler renderer =
+    renderer feedConfiguration feedCtx
+        =<< fmap (take 10 ) . recentFirst
+        =<< loadAllSnapshots postsGlob "posts-content"
