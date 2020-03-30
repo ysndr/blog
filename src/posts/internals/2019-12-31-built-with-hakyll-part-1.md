@@ -11,7 +11,7 @@ image-credits: |
 
 # Hakyll: The Basics
 
-Hakyll is tool to build static webpages and written in Haskell borrowing part of its name from it and the other from the renown static site engine [Jekyll](https://jekyllrb.com/). The fundamental difference is that instead of beeing a standalone program, Hakyll is implementented as a library offering a rich DSL to define the contents of a website. The DSL can be used to include static assets, compile pages using templates and even generate whole pages by itself i.e. RSS and ATOM feeds.
+Hakyll is tool to build static webpages and written in Haskell borrowing part of its name from it and the other from the renown static site engine [Jekyll](https://jekyllrb.com/). The fundamental difference is that instead of being a standalone program, Hakyll is implemented as a library offering a rich DSL to define the contents of a website. The DSL can be used to include static assets, compile pages using templates and even generate whole pages by itself i.e. RSS and ATOM feeds.
 As Hakyll is written in Haskell combining it with the great text conversion tool [pandoc](https://pandoc.org/) is a low hanging fruit. The combination of both allows compiling from several different file formats including (an extended version of) Markdown, [RST](http://docutils.sourceforge.net/docs/ref/rst/introduction.html) and Emacs [Org-Mode](http://orgmode.org/).
 
 :::{.warning}
@@ -118,11 +118,11 @@ But what does this function actually do in particular?
 
 ### Compiling with Pandoc
 
-In the snippet above the default `pandocCompiler` function is used to read the content of the file and transform it into HTML using Hakyll's default options for pandoc. Aside `pandocCompiler` there are a few more low level functions available that allow deeperr customization in the regards of which pandoc templates are used, which extensions activated and so forth. There are also `pandocCompilerWithTransform` and `pandocCompilerWithTransformM` that allow editing the intermediate parsed content pandoc uses internally. At this point rich postprocessing can be applied, just alike the usuall pandoc filters. The only grain is that existing pandoc filters (i.e. [pandocfilters](https://github.com/jgm/pandocfilters) or [panflute](https://github.com/sergiocorreia/panflute)) cannot be easily applied with Hakyll.
+In the snippet above the default `pandocCompiler` function is used to read the content of the file and transform it into HTML using Hakyll's default options for pandoc. Aside `pandocCompiler` there are a few more low level functions available that allow deeper customization in the regards of which pandoc templates are used, which extensions activated and so forth. There are also `pandocCompilerWithTransform` and `pandocCompilerWithTransformM` that allow editing the intermediate parsed content pandoc uses internally. At this point rich postprocessing can be applied, just alike the usual pandoc filters. The only grain is that existing pandoc filters (i.e. [pandocfilters](https://github.com/jgm/pandocfilters) or [panflute](https://github.com/sergiocorreia/panflute)) cannot be easily applied with Hakyll.
 
 ### Creating Routes
 
-Additionally to matching exitsing files and compiling them, one can also generate fully independent files using the `create` function.
+Additionally to matching existing files and compiling them, one can also generate fully independent files using the `create` function.
 
 ``` haskell
 create ["archive.html"] $ do
@@ -140,7 +140,7 @@ create ["archive.html"] $ do
             >>= relativizeUrls
 ```
 
-This creates a files `archive.html` which is b uild using the compile function that basically wraps an `Item a` in the `Compiler` monad. The corresponding item is created using `makeItem` that itroduces an empty String Item that is enriched first using the archive template and subsequently the default page template.
+This creates a files `archive.html` which is built using the compile function that basically wraps an `Item a` in the `Compiler` monad. The corresponding item is created using `makeItem` that itroduces an empty String Item that is enriched first using the archive template and subsequently the default page template.
 
 Notice the use of `loadAll` that makes the set of all posts availlable inside he compile scope. Most importantly though are the both contexts, especially the `archiveCtx` that makes the posts available to the template engine as a list of `postCtx`s.
 
@@ -148,7 +148,7 @@ Notice the use of `loadAll` that makes the set of all posts availlable inside he
 
 Contexts contain the meta information that is available to the templating engine when building an `Item`. Thus allowing the usage of the computed value in the template files.
 A context holds a number of fields which are contexts as well.
-Each fields value is created for ever compilation item (this is every item the context will be applied on, usually individual posts).
+Each field's value is created for every compilation item (this is every item the context will be applied on, usually individual posts).
 
 Take for example the following field definition:
 
@@ -165,7 +165,7 @@ peekField key length snapshot = field key $ \item -> do
     where peak = T.unpack . T.unwords . take length . T.words . T.pack
 ```
 
-This is a very simple field once created to serve as my own version of a teaser field. As you can see a `field` is crated from a key and a function mapping an item to a string. In this case the item's body is extracted from a [snapshot](https://jaspervdj.be/hakyll/tutorials/05-snapshots-feeds.html#snapshots) of the item's content. Then `length` words are taken and returned. (If you are in the actual need of a teaser field I would advice you though to use the [`teaserField`](https://jaspervdj.be/hakyll/reference/Hakyll-Web-Template-Context.html#v:teaserField)).
+This is a very simple field once created to serve as my own version of a teaser field. As you can see a `field` is created from a key and a function mapping an item to a string. In this case the item's body is extracted from a [snapshot](https://jaspervdj.be/hakyll/tutorials/05-snapshots-feeds.html#snapshots) of the item's content. Then `length` words are taken and returned. (If you are in the actual need of a teaser field I would advice you though to use the [`teaserField`](https://jaspervdj.be/hakyll/reference/Hakyll-Web-Template-Context.html#v:teaserField)).
 
 Yet what this example demonstate is the integral importance of `Item`s in Hakyll.
 
@@ -178,7 +178,7 @@ Especially in `field`s `Item`s contain the content from which the desired `field
 
 
 ------
-I dont mean to write an extensive documentation of all the concepts in Hakyll, an complete introductory tutorial as well as links to  other peoples takes can be found at Jasper's (the founder of Hakyll) [website](https://jaspervdj.be/hakyll/tutorials.html).
+I don't mean to write an extensive documentation of all the concepts in Hakyll, an complete introductory tutorial as well as links to  other peoples takes can be found at Jasper's (the founder of Hakyll) [website](https://jaspervdj.be/hakyll/tutorials.html).
 
 
 In a follow up article I would like to share a compilation of custom fields that I created or adapted from other blogs.
