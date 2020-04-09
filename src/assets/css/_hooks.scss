@@ -22,6 +22,10 @@
   //     height:auto;
   // }
 
+  .uk-height-xlarge {
+    height: $height-xlarge-height;
+  }
+
   @media (min-width: $breakpoint-small) {
     .uk-height-small\@s {
       height: $height-small-height;
@@ -31,6 +35,9 @@
     }
     .uk-height-large\@s {
       height: $height-large-height;
+    }
+    .uk-height-xlarge\@s {
+      height: $height-xlarge-height;
     }
   }
 
@@ -43,6 +50,9 @@
     }
     .uk-height-large\@m {
       height: $height-large-height;
+    }
+    .uk-height-xlarge\@m {
+      height: $height-xlarge-height;
     }
   }
 
@@ -67,6 +77,9 @@
     }
     .uk-height-large\@xl {
       height: $height-large-height;
+    }
+    .uk-height-xlarge\@xl {
+      height: $height-xlarge-height;
     }
   }
 }
