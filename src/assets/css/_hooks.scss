@@ -86,8 +86,11 @@
 }
 
 @mixin hook-base-pre {
-  width: fit-content;
-  padding: 10px;
+  overflow-x: auto;
+    &.sourceCode {
+    width: fit-content;
+    padding: 10px;
+  }
 }
 
 @mixin hook-article {
