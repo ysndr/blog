@@ -73,7 +73,7 @@ let
     '';
   };
 in {
-  inherit shell website generator generate-website ;
+  inherit shell generator generate-website ;
   ci = {
     compile = generate-website;
   };
