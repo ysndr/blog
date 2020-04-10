@@ -112,6 +112,10 @@
     &:not(.uk-card-body) a {
        text-decoration: underline;
     }
+    & .footnotes a {
+      text-decoration: none;
+    }
+
 }
 
 
