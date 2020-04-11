@@ -3,7 +3,11 @@
 module Main (main) where
 import           Fields
 import           System.Environment             ( lookupEnv )
-import           System.FilePath.Posix          ( takeFileName )
+import           System.FilePath.Posix          ( takeFileName
+                                                , takeDirectory
+                                                , takeBaseName
+                                                , (</>)
+                                                )
 import           Hakyll
 import           Hakyll.Images                  ( loadImage
                                                 , compressJpgCompiler
@@ -11,7 +15,12 @@ import           Hakyll.Images                  ( loadImage
 import qualified Data.Text                      as T
 import Data.Default
 import Data.Char                                (isSpace)
-import Data.List                                (dropWhileEnd, lookup, groupBy, isPrefixOf)
+import           Data.List                      ( dropWhileEnd
+                                                , lookup
+                                                , groupBy
+                                                , isPrefixOf
+                                                , isSuffixOf
+                                                )
 import           Data.Maybe                     ( fromMaybe )
 import           Hakyll.Web.Sass                ( sassCompilerWith )
 import           Text.Sass.Options              ( SassOptions(..)
@@ -128,6 +137,7 @@ main = do
                     >>= loadAndApplyTemplate "templates/tag.html"     tagsCtx
                     >>= loadAndApplyTemplate "templates/default.html" tagsCtx
                     >>= relativizeUrls
+                    >>= cleanIndexUrls
 
         -- compress images
         match jpgs $ do
@@ -159,6 +169,7 @@ main = do
                 >>= loadAndApplyTemplate "templates/page.html" customBaseContext
                 >>= loadAndApplyTemplate "templates/default.html" customBaseContext
                 >>= relativizeUrls
+                >>= cleanIndexUrls
 
         -- assemble archive
         create ["archive.html"] $ do
@@ -175,6 +186,7 @@ main = do
                     >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
                     >>= loadAndApplyTemplate "templates/default.html" archiveCtx
                     >>= relativizeUrls
+                    >>= cleanIndexUrls
 
         -- assemble index page
         match "index.html" $ do
@@ -191,6 +203,7 @@ main = do
                     >>= applyAsTemplate indexCtx
                     >>= loadAndApplyTemplate "templates/default.html" indexCtx
                     >>= relativizeUrls
+                    >>= cleanIndexUrls
 
 
          -- assemble posts
@@ -204,6 +217,7 @@ main = do
                 >>= saveSnapshot "posts-rendered"
                 >>= loadAndApplyTemplate "templates/default.html" postCtx'
                 >>= relativizeUrls
+                >>= cleanIndexUrls
 
         -- compile templates
         match "templates/**" $ compile templateBodyCompiler
@@ -285,3 +299,24 @@ feedCompiler renderer =
     renderer feedConfiguration feedCtx
         =<< fmap (take 10 ) . recentFirst
         =<< loadAllSnapshots postsGlob "posts-content"
+
+-- adapted from https://www.rohanjain.in/hakyll-clean-urls/
+cleanRoute :: Routes
+cleanRoute = customRoute createIndexRoute
+  where
+    createIndexRoute ident = parentDir </> index  where
+        p = toFilePath ident
+        parentDir = takeDirectory p
+        baseName = takeBaseName p
+        index = if baseName == "index"
+                then "index.html"
+                else baseName </> "index.html" -- do not create `index/index.html`
+
+cleanIndexUrls :: Item String -> Compiler (Item String)
+cleanIndexUrls = let
+    cleanIndex :: String -> String
+    cleanIndex url
+        | isSuffixOf idx url = take (length url - length idx) url
+        | otherwise            = url
+        where idx = "index.html"
+    in return . fmap (withUrls cleanIndex)
