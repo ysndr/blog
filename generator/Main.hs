@@ -12,6 +12,7 @@ import qualified Data.Text                      as T
 import Data.Default
 import Data.Char                                (isSpace)
 import Data.List                                (dropWhileEnd, lookup, groupBy, isPrefixOf)
+import           Data.Maybe                     ( fromMaybe )
 import           Hakyll.Web.Sass                ( sassCompilerWith )
 import           Text.Sass.Options              ( SassOptions(..)
                                                 , defaultSassOptions
@@ -249,16 +250,27 @@ main = do
 htmlFilter :: Pandoc -> Pandoc
 htmlFilter = walk replaceElements where
     replaceElements (Div (id, classes, kv) blocks) =
-        Div (id, classes', kv) (prepend ++ blocks)
+        Div (id, classes', kv) (prependMessage ++ blocks)
         where
             classes'
-                | any (== "info") classes = "uk-alert" : classes
-                | any (== "note") classes = ["uk-alert-primary" , "uk-alert"] ++ classes
-                | any (== "warning") classes = ["uk-alert-warning", "uk-alert"] ++ classes
+                | any (== "info") classes       = "uk-alert" : classes
+                | any (== "note") classes       = ["uk-alert-primary" , "uk-alert"] ++ classes
+                | any (== "warning") classes    = ["uk-alert-warning", "uk-alert"] ++ classes
                 | otherwise = classes
-            prepend = case lookup "message" kv of
+            prependMessage = case lookup "message" kv of
                 Just message -> [(Header 1 ("",[],[]) [Str message])]
                 Nothing -> []
+    replaceElements (Para inlines) = Para (map addClasses inlines) where
+        addClasses (Image (id, classes, kv) label target) = Image (
+            id,
+            classes ++ [
+                "uk-border-rounded",
+                "uk-box-shadow-large",
+                "uk-align-" ++ (fromMaybe "center" $ lookup "align" kv)
+            ],
+            kv) label target
+        addClasses inline = inline
+
     replaceElements block = block
 
 

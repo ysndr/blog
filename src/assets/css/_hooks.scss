@@ -112,8 +112,29 @@
     &:not(.uk-card-body) a {
        text-decoration: underline;
     }
-    & .footnotes a {
+    .footnotes a {
       text-decoration: none;
+    }
+
+    figure {
+      display: flex;
+      width:100%;
+      flex-direction: column;
+      align-items: center;
+      img {
+        width: 85%;
+        height:auto;
+      }
+    }
+    img {
+      margin-top: $align-margin-vertical;
+      width: 66%;
+      height: auto;
+    }
+    @media (max-width: $breakpoint-small) {
+      img {
+        width: 100%;
+      }
     }
 
 }
