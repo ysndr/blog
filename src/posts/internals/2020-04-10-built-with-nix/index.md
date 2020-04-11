@@ -120,41 +120,28 @@ This blog uses a shell environment in which I have all the tools I need at hand.
 
 ### `default.nix`
 
-[`default.nix`](https://github.com/ysndr/blog/default.nix) files are read by nix if no other file is given to the command it contains most of what I could want.
+Nix command such as `nix-build` by default read the [`default.nix`](https://github.com/ysndr/blog/default.nix) file in the directory they are executed from. In my projects I use them to define and export everything that might be useful. This might include build tools, language environments, scripts or shells.
 
 Generally my `default.nix` look like this:
 
 ```nix
 {pkgs ? import (if pin == false then <nixpkgs> else pin) {},
-
  pin ? ./nixpkgs.nix, ... }:
-
 with pkgs;
-
 let
 
 <some packages and configuration>
 
 shell = mkShell {
-
 ​    name = "<name>";
-
 ​    buildInputs = [ <packages I want in my shell> ];
-
 ​    shellHook = '' # shell command to be executed  when I enter the shell
-
 ​    '';
-
 }
-
 in
-
 {
-
 ​    inherit shell;
-
 ​    inherit packageA, packageB, ...;
-
 }
 ```
 
@@ -164,15 +151,10 @@ so what about this blog `default.nix`?
 
 ```nix
 let
-
   all-hies = import (builtins.fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
-
 in
-
 {pkgs ? import (if pin == false then <nixpkgs> else pin) {},
-
  pin ? ./nixpkgs.nix, ... }:
-
 with pkgs;
 
 let
@@ -180,21 +162,15 @@ let
 
 Aside from the default I only priorly import what is `all-hies` which is a  project that maintains the [Haskell Ide Engine](https://github.com/infinisil/all-hies) on Nix.
 
-
-
 ```nix
 # -------------- Utils -------------
 
 nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-
 ​    pkgs=pkgs;
-
 };
 
 script = {...} @ args: nur.repos.ysndr.lib.wrap ({
-
   shell = true;
-
 } // args);
 ```
 
@@ -204,7 +180,6 @@ This are utilities I might use. [NUR](https://github.com/nix-community/NUR) is t
 # ------------- Haskell ------------
 
 hie = all-hies.selection { selector = p: { inherit (p) ghc865; }; };
-
 myHaskellPackages = haskell.packages.ghc865.extend( self: super: { });
 ```
 
@@ -214,15 +189,10 @@ These lines prepare the Haskell environment I use here. I do not override anythi
 # ------------ dist ---------------
 
 thirdparty = linkFarm "thirdparty" [
-
   {
-
 ​    name = "uikit";
-
 ​    path = (fetchTarball "https://github.com/uikit/uikit/archive/v3.2.4.tar.gz") + "/src";
-
   }
-
 ];
 ```
 
@@ -234,15 +204,10 @@ I import all third party tools (only uikit currently) into the nix store.
 generator = myHaskellPackages.callCabal2nix "Site" ./generator {};
 
 generator-with-thirdparty = generator.overrideAttrs(old: {
-
   nativeBuildInputs = old.nativeBuildInputs or [] ++ [makeWrapper];
-
   installPhase = old.installPhase + "\n" + ''
-
 ​    wrapProgram $out/bin/generator --set THIRDPARTY ${thirdparty}
-
   '';
-
 });
 ```
 
@@ -264,13 +229,9 @@ Similar helpers also exist for Stack.
 generate-website = script {
 
   name = "generate-website";
-
   paths = [generator-with-thirdparty git];
-
   script = ''
-
 ​    generator rebuild
-
   '';
 
 };
@@ -282,43 +243,29 @@ generate-website = script {
 # ---------------- Shell ------------------
 
 haskell-env = myHaskellPackages.ghcWithHoogle (
-
-  hp: with hp; [ cabal-install ]
-
-  ++ generator.buildInputs );
+  hp: with hp; [ cabal-install ] ++ generator.buildInputs );
 
 shell = { enable-hie ? false }: mkShell {
-
   name = "blog-env";
-
   buildInputs = [
-
 ​    # put packages here.
 
 ​    # generator
-
 ​    haskell-env
 
-​    (lib.optional (enable-hie) hie)
-
+​    (lib.optional (enable-hie) hie) # optionally setup hie
   ];
-
   shellHook = ''
 
 ​    export THIRDPARTY="${thirdparty}"
 
 ​    export HIE_HOOGLE_DATABASE="${haskell-env}/share/doc/hoogle/default.hoo"
-
 ​    export NIX_GHC="${haskell-env}/bin/ghc"
-
 ​    export NIX_GHCPKG="${haskell-env}/bin/ghc-pkg"
-
 ​    export NIX_GHC_DOCDIR="${haskell-env}/share/doc/ghc/html"
-
 ​    export NIX_GHC_LIBDIR=$( $NIX_GHC --print-libdir )
 
   '';
-
 };
 ```
 
@@ -330,11 +277,8 @@ The shell has this haskell environment and optionally the `hie` executable expos
 in {
 
   inherit shell generator generate-website ;
-
   ci = {
-
 ​    compile = generate-website;
-
   };
 
 }
@@ -355,11 +299,8 @@ The `nixpkgs.nix` file defines a common snapshot of the nixpkgs repo, and is the
 
 ```nix
 {}: import (builtins.fetchTarball {
-
   url = "https://github.com/NixOS/nixpkgs/archive/88d9f776091.tar.gz";
-
   sha256 = "sha256:0z8a0g69fmbbzi77jhvhwafv73dn5fg3gsr0q828lss6j5qpx995";
-
 }) {}
 ```
 
