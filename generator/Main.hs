@@ -207,7 +207,7 @@ main = do
 
 
          -- assemble posts
-        match postsGlob $ do
+        matchMetadata postsGlob (\m -> lookupString "status" m == Just "published") $ do
             let postCtx' = postCtx tags categories
             route $ setExtension "html"
             compile
