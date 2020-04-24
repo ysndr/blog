@@ -64,6 +64,7 @@ let
 
     shellHook = ''
       export THIRDPARTY="${thirdparty}"
+      export HAKYLL_ENV="development"
 
       export HIE_HOOGLE_DATABASE="${haskell-env}/share/doc/hoogle/default.hoo"
       export NIX_GHC="${haskell-env}/bin/ghc"

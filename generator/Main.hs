@@ -114,6 +114,9 @@ main :: IO ()
 main = do
     sassCompiler <- fmap (sassCompilerWith . sassOptions)
                          (lookupEnv "THIRDPARTY")
+    compilerEnv <- lookupEnv "HAKYLL_ENV"
+    let isDevelopment = compilerEnv == Just "development"
+
     hakyllWith config $ do
 
         tags <- buildTags postsGlob (fromCapture "tags/*.html")
@@ -207,7 +210,7 @@ main = do
 
 
          -- assemble posts
-        matchMetadata postsGlob (\m -> lookupString "status" m == Just "published") $ do
+        matchMetadata postsGlob (\m -> isDevelopment || lookupString "status" m == Just "published") $ do
             let postCtx' = postCtx tags categories
             route $ setExtension "html"
             compile
