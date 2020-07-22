@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main (main) where
 import           Fields
+import           Utils
 import           System.Environment             ( lookupEnv )
 import           System.FilePath.Posix          ( takeFileName
                                                 , takeDirectory
@@ -214,7 +215,9 @@ main = do
             let postCtx' = postCtx tags categories
             route $ setExtension "html"
             compile
-                $   pandocCompilerWithTransform defaultHakyllReaderOptions  defaultHakyllWriterOptions htmlFilter
+                $   pandocCompilerWithTransform defaultHakyllReaderOptions
+                                                defaultHakyllWriterOptions
+                                                htmlFilter
                 >>= saveSnapshot "posts-content"
                 >>= loadAndApplyTemplate "templates/post.html" postCtx'
                 >>= saveSnapshot "posts-rendered"
