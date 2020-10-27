@@ -10,7 +10,7 @@ module Fields (
 , concatField
 , ToCExtra(..)
 , tocField
-, plainTocField
+-- , plainTocField
 , allTagsField
 ) where
 
@@ -183,24 +183,24 @@ modList opts ulMod = makeBulletItem
       makeList [] = Empty ()
       makeList listItems = (ulMod ul) $ (toHtml . map (li . makeBulletItem) $ listItems)
 
-plainTocField :: String -> Int -> String -> Context String
-plainTocField name depth snapshot = field name $ \item -> do
+-- plainTocField :: String -> Int -> String -> Context String
+-- plainTocField name depth snapshot = field name $ \item -> do
 
-    body <- loadSnapshot (itemIdentifier item) snapshot
+--     body <- loadSnapshot (itemIdentifier item) snapshot
+--     template <- read "$toc$"
+--     let writerOptions = def
+--             {
+--               writerTableOfContents = True
+--             , writerTOCDepth = depth
+--             , writerTemplate = Just template
+--             }
+--         toc = case runPure (readHtml defaultHakyllReaderOptions
+--                                      (T.pack $ itemBody body))
+--                >>= \pandoc -> runPure ( writeHtml5String writerOptions pandoc) of
+--                    Left err    -> fail $ ""
+--                    Right item' -> T.unpack item'
 
-    let writerOptions = def
-            {
-              writerTableOfContents = True
-            , writerTOCDepth = depth
-            , writerTemplate = Just "$table-of-contents$"
-            }
-        toc = case runPure (readHtml defaultHakyllReaderOptions
-                                     (T.pack $ itemBody body))
-               >>= \pandoc -> runPure ( writeHtml5String writerOptions pandoc) of
-                   Left err    -> fail $ ""
-                   Right item' -> T.unpack item'
-
-    return toc
+--     return toc
 
 allTagsField :: String -> Tags -> Context String
 allTagsField name tags = listFieldWith name (tagCtx tags) mkPostTags
