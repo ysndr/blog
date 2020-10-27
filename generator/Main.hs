@@ -15,11 +15,7 @@ import           Hakyll.Images                  ( loadImage
                                                 )
 import qualified Data.Text                      as T
 import Data.Default
-import Data.Char                                (isSpace)
-import           Data.List                      ( dropWhileEnd
-                                                , lookup
-                                                , groupBy
-                                                , isPrefixOf
+import           Data.List                      ( isPrefixOf
                                                 , isSuffixOf
                                                 )
 import           Data.Maybe                     ( fromMaybe )
