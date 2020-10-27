@@ -2,23 +2,23 @@ name: "Build Site and Deploy"
 
 on:
   push:
-    branches:	
+    branches:
       - release
 
 jobs:
-  buid-and-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - name: Install Nix
-      uses: cachix/install-nix-action@v6
+      uses: cachix/install-nix-action@v11
     - name: Compile Document
-      run: $(nix-build -A ci.compile --no-out-link)
+      run: $(nix-build -A packages.x86_64-linux.ci.compile --no-out-link)
     - name: Disable Jekyll rendering
       run: touch build/site/.nojekyll
     - name: Deploy
       if: success()
-      uses: crazy-max/ghaction-github-pages@v1
+      uses: crazy-max/ghaction-github-pages@v2
       with:
         target_branch: gh-pages
         build_dir: build/site
