@@ -18,9 +18,10 @@
       flake-utils.lib.eachDefaultSystem (
         system:
           let
-            pkgs' = import nixpkgs { inherit system; };
+            pkgs' = import nixpkgs { inherit system; overlays = [ nur.overlay ]; };
             blog = pkgs'.callPackage ./blog.nix {
-              pkgs = pkgs'; inherit nur;
+              pkgs = pkgs';
+              nur = pkgs'.nur;
               thirdparty = [
                 {
                   name = "uikit";
