@@ -1,0 +1,71 @@
+{
+  "nodes": {
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1601282935,
+        "narHash": "sha256-WQAFV6sGGQxrRs3a+/Yj9xUYvhTpukQJIcMbIi7LCJ4=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "588973065fce51f4763287f0fda87a174d78bf48",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1603664546,
+        "narHash": "sha256-YTsFGnmyY2yQHL5ZMQGmkQt5VuFSb/dfXsRkI4j0ngw=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "280cd6b75126ac074904d35b55c3353ddd12e5a8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nur": {
+      "locked": {
+        "lastModified": 1603662597,
+        "narHash": "sha256-9V96YNdEf9XVvcg2QLtqhUdZx/rMq1qYwR983dfdSL8=",
+        "owner": "nix-community",
+        "repo": "NUR",
+        "rev": "2c7ca9ac16f505d802099c4dfb1c2f02191ca349",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "NUR",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixpkgs": "nixpkgs",
+        "nur": "nur",
+        "uikit-src": "uikit-src"
+      }
+    },
+    "uikit-src": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-u9pBwhA2Smw7DgrEMe6UltYzNjC2A8aUyUqOwlqC/m0=",
+        "type": "tarball",
+        "url": "https://github.com/uikit/uikit/archive/v3.5.8.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://github.com/uikit/uikit/archive/v3.5.8.tar.gz"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
