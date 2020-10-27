@@ -97,7 +97,7 @@ postCtx tags category =  dateField "date" "%B %e, %Y"
         <> peekField 50 "peek" "posts-content"
         <> readTimeField "read-time" "posts-content"
         <> tocField "toc" 4 (def {extraUlClasses = "uk-nav-default uk-list uk-nav-sub"}) "posts-content"
-        <> plainTocField "toc-plain" 4 "posts-content"
+        -- <> plainTocField "toc-plain" 4 "posts-content"
         <> pathField "sourcefile"
         <> versionField "git-commit" Commit
         <> versionField "git-commit-hash" Hash
@@ -286,9 +286,9 @@ htmlFilter = walk replaceElements where
             classes ++ [
                 "uk-border-rounded",
                 "uk-box-shadow-large",
-                "uk-align-" ++ (fromMaybe "center" $ lookup "align" kv)
+                T.append "uk-align-" align
             ],
-            kv) label target
+            kv) label target where align = fromMaybe  "center" $ lookup "align" kv
         addClasses inline = inline
 
     replaceElements block = block
