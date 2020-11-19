@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install Nix
-      uses: cachix/install-nix-action@v11
+      uses: cachix/install-nix-action@v12
     - name: Compile Document
       run: $(nix-build -A packages.x86_64-linux.ci.compile --no-out-link)
     - name: Disable Jekyll rendering
