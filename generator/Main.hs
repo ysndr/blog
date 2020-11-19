@@ -6,11 +6,13 @@ import           System.Environment             ( lookupEnv )
 import           System.FilePath.Posix          ( takeFileName
                                                 , takeDirectory
                                                 , takeBaseName
+                                                , takeExtension
                                                 , (</>)
                                                 )
 import           Hakyll
 import           Hakyll.Images                  ( loadImage
                                                 , compressJpgCompiler
+                                                , ensureFitCompiler
                                                 )
 import qualified Data.Text                      as T
 import Data.Default
@@ -139,10 +141,15 @@ main = do
                     >>= cleanIndexUrls
 
         -- compress images
-        match jpgs $ do
+        match jpgs $ version "large" $ do
             route idRoute
             compile $ loadImage
                 >>= compressJpgCompiler 50
+
+        match jpgs $ version "small" $ do
+            route $ fileSuffixRoute "small"
+            compile $ loadImage
+                >>= ensureFitCompiler 1200 600 >>= compressJpgCompiler 50
 
         -- copy assets (non images and non post files)
         match ("posts/**" .&&. complement postsGlob .&&. complement jpgs) $ do
@@ -298,6 +305,17 @@ feedCompiler renderer =
     renderer feedConfiguration feedCtx
         =<< fmap (take 10 ) . recentFirst
         =<< loadAllSnapshots postsGlob "posts-content"
+
+fileSuffixRoute :: String -> Routes
+fileSuffixRoute suffix = customRoute makeSuffixRoute
+  where
+    makeSuffixRoute ident = parentDir </> suffixed  where
+        p = toFilePath ident
+        parentDir = takeDirectory p
+        baseName = takeBaseName p
+        ext = takeExtension p
+        suffixed = baseName ++ "-" ++ suffix ++ ext
+
 
 -- adapted from https://www.rohanjain.in/hakyll-clean-urls/
 cleanRoute :: Routes
