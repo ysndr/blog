@@ -149,7 +149,8 @@ main = do
         match jpgs $ version "small" $ do
             route $ fileSuffixRoute "small"
             compile $ loadImage
-                >>= ensureFitCompiler 1200 600 >>= compressJpgCompiler 50
+                >>= ensureFitCompiler 1200 600
+                >>= compressJpgCompiler 90
 
         -- copy assets (non images and non post files)
         match ("posts/**" .&&. complement postsGlob .&&. complement jpgs) $ do
