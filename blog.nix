@@ -63,7 +63,7 @@ in
     shell = mkShell {
       name = "blog-env";
       buildInputs = [
-        haskell-env generator
+        haskell-env
       ];
 
       shellHook = ''
