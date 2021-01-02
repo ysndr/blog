@@ -4,12 +4,12 @@ subtitle: Migrating to Nix Flakes, why, how and what are Flakes in the first pla
 tags: internal, technical, nix, haskell
 description: Nix Flakes are the long awaited addition coming with the next major release of Nix. What are Flakes, what do they offer, how can you use them now and should you consider migrating?
 image: https://unsplash.com/photos/R1OSU00xo78/download?force=true&w=1920
-status: unpublished
+status: published
 image-credits: |
     <span>Photo by <a href="https://unsplash.com/@joshstyle">JOSHUA COLEMAN</a> on <a href="https://unsplash.com/">Unsplash</a></span>
 ...
 
-# Crunching on Corn, eh Nix Flakes for OSS
+# Walking through Snow, eh Nix Flakes for OSS
 
 :::{.note}
 This article is an update to my series on how this blog is built using [Haskell](/tags/haskell.html) and [Nix](/tags/nix.html).
@@ -367,7 +367,7 @@ In the last two sections I presented solutions for six of the seven problems tha
 Actually we're almost there.. Remember how I mentioned the possibility to inject overlays when importing `nixpkgs`? Composing multiple sources of packages is easy if one can just drop them in there.\
 Moreover, there are conventional output arguments `overlay` and `overlays` that make discovering the fakes; overlay(s) a bit easier.
 
-```
+```{.nix}
 {
   description = "Flake utils demo";
 
