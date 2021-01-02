@@ -30,12 +30,15 @@
               ];
             };
           in
-            {
+            rec {
               packages = { inherit (blog) generator generator-with-thirdparty ci shell; };
               defaultPackage = blog.generator-with-thirdparty;
-              apps.generate-website =
-                flake-utils.lib.mkApp { drv = blog.ci.generate-website; };
-              defaultApp = blog.generate-website;
+              apps.compile =
+                flake-utils.lib.mkApp { drv = blog.ci.compile; exePath = ""; };
+              apps.generator =
+                flake-utils.lib.mkApp { drv = blog.generator-with-thirdparty; exePath = "/bin/generator"; };
+
+              defaultApp = apps.compile;
               devShell = blog.shell;
             }
       );
