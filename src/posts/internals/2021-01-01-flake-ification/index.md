@@ -495,14 +495,14 @@ Following is a quick reference over all flake output attributes.
     # overlay to easily override/packages in the package set of the importer
     overlay = final: prev: { };
 
-    # Same idea as overlay but a list of them.
-    overlays = [];
+    # TODO: Same idea as overlay but several.
+    overlays."<attr>" = final: prev: { };
 
     # Additionally to packages also modules for Nixos can be provided (Flakes can be used with `nixos-rebuild`)
     nixosModule = Module definition;
 
-    # Same idea as nixosModule but a list of them.
-    nixosModules = [];
+    # TODO: Same idea as nixosModule but several
+    nixosModules."<attr>" = Module definition;
 
     # Attrset of nixos configurations by hostname.
     nixosConfigurations."<hostname>" = {};
