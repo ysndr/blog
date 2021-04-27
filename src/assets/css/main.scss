@@ -3,6 +3,7 @@
 // 1. Your custom variables and variable overwrites.
 
 @import "./variables";
+@import "./_colors";
 
 // 2. Import default variables and available mixins.
 @import "uikit/scss/variables-theme.scss";
