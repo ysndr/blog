@@ -104,6 +104,39 @@ footer {
   }
 }
 
+.y-box-header {
+  color: $global-color;
+  font-size: $global-medium-font-size;
+  display: flex;
+
+  & > * {
+    margin: 0;
+    display: flex;
+    & > *{
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+  }
+  .y-badge {
+    border: 1px solid;
+    border-radius: 4px;
+    display: inline-flex;
+    justify-items: center;
+    font-size: 45%;
+    font-weight: bold;
+    display: inline-flex;
+    margin-right: 10px ;
+    margin-left: 5px;
+    padding: 1px 3px;
+  }
+}
+
+.y-box-caption {
+  color: inherit;
+  font-size: $global-small-font-size;
+  padding-top: $container-padding-horizontal;
+}
+
 dl {
   display: flex;
   flex-wrap: wrap;
