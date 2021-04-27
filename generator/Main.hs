@@ -292,6 +292,8 @@ htmlFilter = walk replaceElements where
             kv) label target where align = fromMaybe  "center" $ lookup "align" kv
         addClasses inline = inline
 
+    replaceElements code @ (CodeBlock (_, [_], _) _) = Div ("", ["y-fill-horizontal"], []) [code]
+
     replaceElements block = block
 
 

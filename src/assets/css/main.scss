@@ -26,8 +26,26 @@ div.sourceCode {
   overflow: auto;
   background-color: $global-muted-background;
   border: none;
-  border-left: 4px solid $global-primary-background;
-  margin-left: -4px;
+}
+
+.y-fill-horizontal {
+  margin-left: -$container-padding-horizontal;
+  margin-right: -$container-padding-horizontal;
+  border-radius: 0px;
+
+  @media (min-width: $breakpoint-small) {
+    margin-left: -$container-padding-horizontal-s;
+    margin-right: -$container-padding-horizontal-s;
+    border: none;
+    border-radius: 4px;
+  }
+
+  @media (min-width: $breakpoint-medium) {
+    margin-left: inherit;
+    margin-right:inherit;
+    border: none;
+    border-radius: 4px;
+  }
 }
 
 body {
