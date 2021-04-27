@@ -219,8 +219,7 @@ If using a `<known-flake>` nix will not use your respective channel even if one 
 
 See also the [reference below](#reference) for more information and examples.
 
-:::{.note}
-**Issues solved here:**
+:::{.note header="Issues solved here:"}
 
 1. impure imports
 2. no ultimate way to pin `nixpkgs`
