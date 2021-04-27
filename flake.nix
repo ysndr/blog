@@ -7,7 +7,7 @@
 
 
   inputs.uikit-src = {
-    url = "https://github.com/uikit/uikit/archive/v3.5.8.tar.gz";
+    url = "https://github.com/uikit/uikit/archive/v3.6.20.tar.gz";
     flake = false;
   };
 

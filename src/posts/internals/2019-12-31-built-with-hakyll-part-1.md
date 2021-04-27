@@ -15,9 +15,7 @@ image-credits: |
 Hakyll is tool to build static webpages and written in Haskell borrowing part of its name from it and the other from the renown static site engine [Jekyll](https://jekyllrb.com/). The fundamental difference is that instead of being a standalone program, Hakyll is implemented as a library offering a rich DSL to define the contents of a website. The DSL can be used to include static assets, compile pages using templates and even generate whole pages by itself i.e. RSS and ATOM feeds.
 As Hakyll is written in Haskell combining it with the great text conversion tool [pandoc](https://pandoc.org/) is a low hanging fruit. The combination of both allows compiling from several different file formats including (an extended version of) Markdown, [RST](http://docutils.sourceforge.net/docs/ref/rst/introduction.html) and Emacs [Org-Mode](http://orgmode.org/).
 
-:::{.warning}
-**Attention**
-
+:::{.warning header="Attention"}
 *I won't go into all the things used in this article, instead there will be individual posts going into more detail about different elements*
 :::
 

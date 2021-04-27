@@ -28,6 +28,8 @@ import           Text.Sass.Options              ( SassOptions(..)
 import           Text.Pandoc.Options            ( WriterOptions (..) )
 import           Text.Pandoc.Definition         ( Pandoc(..), Block(..), Inline(..) )
 import           Text.Pandoc.Walk
+import Text.Pandoc (runPure)
+import Text.Pandoc.Readers (readMarkdown)
 
 
 -- Configuration
@@ -268,19 +270,37 @@ main = do
             route idRoute
             compile $ makeItem domain
 
+parse body = case (runPure $ readMarkdown defaultHakyllReaderOptions body)
+                 of
+                    Left err    -> error $ "Could not parse"
+                    Right (Pandoc meta blocks) -> blocks
+
 htmlFilter :: Pandoc -> Pandoc
 htmlFilter = walk replaceElements where
     replaceElements (Div (id, classes, kv) blocks) =
-        Div (id, classes', kv) (prependMessage ++ blocks)
+        Div (id, classes' ++ ["uk-alert y-fill-horizontal"], kv) (prependHeader ++ content ++ appendCaption)
         where
-            classes'
-                | any (== "info") classes       = "uk-alert" : classes
-                | any (== "note") classes       = ["uk-alert-primary" , "uk-alert"] ++ classes
-                | any (== "warning") classes    = ["uk-alert-warning", "uk-alert"] ++ classes
-                | otherwise = classes
-            prependMessage = case lookup "message" kv of
-                Just message -> [(Header 1 ("",[],[]) [Str message])]
-                Nothing -> []
+            (classes', icon, badge)
+                | any (== "info") classes       = (classes, "info", "INFO")
+                | any (== "note") classes       = (["uk-alert-primary"] ++ classes, "pencil", "NOTE")
+                | any (== "warning") classes    = (["uk-alert-warning"] ++ classes, "warning", "WARN")
+                | any (== "help")    classes    = (["uk-alert-success"] ++ classes, "lifesaver", "HELP")
+                | any (== "danger")  classes    = (["uk-alert-danger"] ++ classes, "bolt", "MISTAKE")
+                | otherwise = (classes, "", "")
+            content = blocks
+
+            iconElement = Div ("", [], []) [Div ("", [], [("uk-icon", icon)]) [], Div ("", ["y-badge"], []) [Plain [Str badge]]]
+            prependHeader =
+                case lookup "header" kv of
+                    Just header -> [(Div ("", ["y-box-header"], []) (iconElement : parse header) )]
+                    Nothing -> []
+
+            appendCaption =
+                case  lookup "caption" kv of
+                    Just caption -> [(Div ("", ["y-box-caption"], []) (parse caption))]
+                    Nothing -> []
+
+
     replaceElements (Para inlines) = Para (map addClasses inlines) where
         addClasses (Image (id, classes, kv) label target) = Image (
             id,
@@ -291,6 +311,8 @@ htmlFilter = walk replaceElements where
             ],
             kv) label target where align = fromMaybe  "center" $ lookup "align" kv
         addClasses inline = inline
+
+    replaceElements code @ (CodeBlock (_, [_], _) _) = Div ("", ["y-fill-horizontal"], []) [code]
 
     replaceElements block = block
 

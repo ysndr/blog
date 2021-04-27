@@ -101,8 +101,16 @@
 @mixin hook-base-pre {
   overflow-x: auto;
     &.sourceCode {
-    width: fit-content;
-    padding: 10px;
+      width: fit-content;
+      padding-left: $container-padding-horizontal;
+      padding-right: $container-padding-horizontal;
+      padding-top: $container-padding-horizontal;
+      padding-bottom: $container-padding-horizontal;
+
+      @media (min-width: $breakpoint-small) {
+        padding-left: $container-padding-horizontal-s;
+        padding-right: $container-padding-horizontal-s;
+      }
   }
 }
 

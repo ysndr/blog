@@ -1,0 +1,27 @@
+// $global-color: #283B3F;
+// $global-emphasis-color: #192A2E;
+// $global-link-color: #4C7A7C;
+// $global-link-hover-color: #466F71;
+// $base-em-color: #26493d;
+// $base-code-color: #3D545B;
+
+$global-highlight-color: #5d8c91; // custom
+
+$global-color: #252525;
+$global-emphasis-color: #444;
+$global-link-color: $global-color;
+$global-link-hover-color: $global-highlight-color;
+$base-em-color: $global-highlight-color;
+$base-code-color: #3d545b;
+
+// backgrounds
+$global-background: #fcfcfc;
+$global-muted-background: #f5f5f5;
+$global-code-background: hsl(185, 5%, 95%);
+$global-primary-background: #5d8c91;
+$global-success-background: rgb(85, 173, 2);
+
+
+// text colors
+$global-code-color:                                $global-highlight-color;
+$global-em-color:                                  $global-highlight-color;
