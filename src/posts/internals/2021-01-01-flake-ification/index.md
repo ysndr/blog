@@ -75,8 +75,7 @@ How do you know what to import, what does it do? There are simply no inherent se
 
 Additionally to this Eelco also [lists](https://www.tweag.io/blog/2020-05-25-flakes/) some more issues with this. Firstly, due to missing strong conventions and semantics composing packages is difficult, or not nice of an experience for the user. It also means that discovering packages can not be automated easily.
 
-:::{.note}
-**Summary of problems**
+:::{.note header="Summary of problems"}
 
 Lets summarize the shortcomings we just discussed:
 
@@ -347,8 +346,7 @@ Of course, project shells using for example `mkShell` do also still work (and ar
 Using flakes, one alternative is to use a `buildEnv` derivation which is loaded using `nix `**`shell`**.
 :::
 
-:::{.note}
-**Issues solved here:**
+:::{.note header="Issues solved here"}
 
 1. impure arguments
 2. no common (output) interface
@@ -520,8 +518,7 @@ Following is a quick reference over all flake output attributes.
 ```
 
 
-:::{.note}
-**Further Reading/Resources**
+:::{.note header="Further Reading/Resources"}
 
 - [wiki page on flakes](https://nixos.wiki/wiki/Flakes)
 - [zimbatm's blog article](https://zimbatm.com/NixFlakes/)
