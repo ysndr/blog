@@ -140,7 +140,7 @@ footer {
 .y-header {
   display: flex;
 
-  @media (min-width: $breakpoint-small) {
+  @media (min-width: $breakpoint-medium) {
     flex-direction: row-reverse;
     margin-left: - $icon-image-size;
 
