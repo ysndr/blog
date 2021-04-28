@@ -314,6 +314,10 @@ htmlFilter = walk replaceElements where
 
     replaceElements code @ (CodeBlock (_, [_], _) _) = Div ("", ["y-fill-horizontal"], []) [code]
 
+    replaceElements (Header level (id, classes, kv) content ) = Header level (id, classes', kv) content' where
+        classes' = classes ++ ["y-header"]
+        content' = [(Span ("", [], []) content), Link ("", ["y-anchor"], [("uk-icon", "link")]) [] (T.pack $ "#"++ (T.unpack id), id) ] -- how else to do that?
+
     replaceElements block = block
 
 

@@ -137,6 +137,34 @@ footer {
   padding-top: $container-padding-horizontal;
 }
 
+.y-header {
+  display: flex;
+
+  @media (min-width: $breakpoint-small) {
+    flex-direction: row-reverse;
+    margin-left: - $icon-image-size;
+
+    >:first-child {
+      margin-right: auto
+    };
+
+    .y-anchor {
+      margin-left: -5px !important;
+      margin-right: 5px;
+    }
+  }
+
+  .y-anchor {
+    margin-left: auto;
+    min-width: $icon-image-size;
+    display: inherit;
+    &:not(:hover) {
+      color: $global-muted-color;
+    }
+  }
+
+}
+
 dl {
   display: flex;
   flex-wrap: wrap;
