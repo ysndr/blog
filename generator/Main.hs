@@ -218,7 +218,7 @@ main = do
          -- assemble posts
         matchMetadata postsGlob (\m -> isDevelopment || lookupString "status" m == Just "published") $ do
             let postCtx' = postCtx tags categories
-            route $ composeRoutes ensureDateRoute $ composeRoutes cleanRoute postRoute
+            route $ composeRoutes ensureDateRoute $ composeRoutes cleanRoute idRoute
             compile
                 $   pandocCompilerWithTransform defaultHakyllReaderOptions  defaultHakyllWriterOptions htmlFilter
                 >>= saveSnapshot "posts-content"
