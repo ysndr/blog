@@ -172,7 +172,7 @@ main = do
 
         -- assemble static pages
         match (fromList ["about.md", "contact.md"]) $ do
-            route $ setExtension "html"
+            route $ cleanRoute
             compile
                 $   pandocCompiler
                 >>= loadAndApplyTemplate "templates/page.html" customBaseContext
@@ -182,7 +182,7 @@ main = do
 
         -- assemble archive
         create ["archive.html"] $ do
-            route idRoute
+            route cleanRoute
             compile $ do
                 posts <- recentFirst =<< loadAll postsGlob
                 let ctx = postCtx tags categories
@@ -199,7 +199,7 @@ main = do
 
         -- assemble index page
         match "index.html" $ do
-            route idRoute
+            route cleanRoute
             compile $ do
                 posts <- recentFirst =<< loadAll postsGlob
                 let ctx = postCtx tags categories
@@ -218,7 +218,7 @@ main = do
          -- assemble posts
         matchMetadata postsGlob (\m -> isDevelopment || lookupString "status" m == Just "published") $ do
             let postCtx' = postCtx tags categories
-            route $ setExtension "html"
+            route $ composeRoutes ensureDateRoute $ composeRoutes cleanRoute postRoute
             compile
                 $   pandocCompilerWithTransform defaultHakyllReaderOptions  defaultHakyllWriterOptions htmlFilter
                 >>= saveSnapshot "posts-content"
@@ -227,6 +227,8 @@ main = do
                 >>= loadAndApplyTemplate "templates/default.html" postCtx'
                 >>= relativizeUrls
                 >>= cleanIndexUrls
+                >>= localAssetsUrls
+
 
         -- compile templates
         match "templates/**" $ compile templateBodyCompiler
@@ -346,6 +348,19 @@ fileSuffixRoute suffix = customRoute makeSuffixRoute
         suffixed = baseName ++ "-" ++ suffix ++ ext
 
 
+ensureDateRoute :: Routes
+ensureDateRoute = metadataRoute $ \m -> do
+    case lookupString "date" m of
+        Just date -> customRoute $ prefixDate date
+        _ -> idRoute
+    where
+        prefixDate date ident = path where
+            file = toFilePath ident
+            dir = takeDirectory file
+            name = takeFileName file
+            path = if isPrefixOf date name then file
+                   else dir </> (date ++ "-" ++ name)
+
 -- adapted from https://www.rohanjain.in/hakyll-clean-urls/
 cleanRoute :: Routes
 cleanRoute = customRoute createIndexRoute
@@ -366,3 +381,16 @@ cleanIndexUrls = let
         | otherwise            = url
         where idx = "index.html"
     in return . fmap (withUrls cleanIndex)
+
+
+localAssetsUrls :: Item String -> Compiler (Item String)
+localAssetsUrls item = let
+    localAssets :: FilePath -> FilePath
+    localAssets url
+        | isPrefixOf "./"  url && local /= "index" = "../" </> local </> drop 2 url -- drop ./
+        | otherwise            = url
+    ident = itemIdentifier item
+    file = toFilePath ident
+    local = takeBaseName file
+    in
+        return $ fmap (withUrls $ localAssets ) item
