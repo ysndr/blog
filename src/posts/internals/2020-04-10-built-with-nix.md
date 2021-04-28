@@ -66,8 +66,7 @@ Yet, while that package might exists in the store, this does not mean it is *ins
 
 You see, the hash we have seen right now is there for a reason. It allows to have multiple versions of one and the same program at the same time, even with the same version. Normally all packages are built according to one specific state of the `nixpkgs` repo. `.nix` files get evaluated by writing a build instruction file (`.drv`). This resolves all dependencies (building them if they do not exist yet), prepares the package's source and combines those into a hash. If one instead builds it with a newer version where some dependency was updated or changed, not only this derivation hash changes, but it also happens to change the target derivation's hash, forcing it to be rebuilt using the new dependency. The same happens if sources change. As a result, many different versions of a package can coexist in the store.
 
-:::{.note}
-### Notice
+:::{.note header=""}
 
 As nix functions are pure, **wherever** one uses the same `nixpkgs` instance, the exact same inputs are used to create the exact same output. Also, it makes little to no difference on which machine the package is built. The binary will be the same(ish).
 
@@ -214,9 +213,9 @@ generator-with-thirdparty = generator.overrideAttrs(old: {
 
 Then, I define the `generator` as a derivation from its Cabal file and the corresponding "Site" executable key defined in `./generator/`. `generator-with-thirdparty` makes what I imported as thirdparty content available under the `$THIRDPARTY` environment variable.
 
-:::{.note}
+:::{.note header=""}
 
-**Notice:** `myHaskellPackages.callCabal2nix "Site" ./generator {};` is a great tool to quickly make haskell programms available through Nix.
+`myHaskellPackages.callCabal2nix "Site" ./generator {};` is a great tool to quickly make haskell programms available through Nix.
 
 Similar helpers also exist for Stack.
 
@@ -306,9 +305,9 @@ The `nixpkgs.nix` file defines a common snapshot of the nixpkgs repo, and is the
 }) {}
 ```
 
-:::{.note}
+:::{.note header=""}
 
-**Notice:** snapshots like these also allow rollbacks as they define which versions of dependencies get passed on.
+Snapshots like these also allow rollbacks as they define which versions of dependencies get passed on.
 
 :::
 
@@ -320,7 +319,7 @@ With nix installed, I run `$(nix-build -A ci.compile --no-out-link)` to make Nix
 
 [See more...](https://github.com/ysndr/blog/blob/release/.github/workflows/main.yml)
 
-:::{.note}
+:::{.note header=""}
 
 I previously did even more with nix but specific GitHub Actions tend to do the job well enough.
 
@@ -330,7 +329,7 @@ I previously did even more with nix but specific GitHub Actions tend to do the j
 
 I see this has become more of a roundup about Nix. Nix is **huge** though.. and this article does not try to capture everything (obviously). From reading this, I hope you have a rough idea of what nix does and how it was applied here. If you knew Nix already, maybe you found something new or interesting among this pile of words and snippets. If you did not know Nix before, I hope this article was still of interest to you.
 
-:::{.info}
+:::{.info header=""}
 
 If you are hooked on the idea now, further fine grained introduction and resources are:
 
