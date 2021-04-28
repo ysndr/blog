@@ -249,18 +249,20 @@ main = do
             route idRoute
             compile $ do
                 -- load and sort the posts
-                posts <- recentFirst =<< loadAll "posts/*"
+                posts <- recentFirst =<< loadAll postsGlob
 
                 -- load individual pages from a list (globs DO NOT work here)
                 singlePages <- loadAll (fromList ["about.rst", "contact.markdown"])
 
                 -- mappend the posts and singlePages together
                 let pages = posts <> singlePages
-                    -- create the `pages` field with the postCtx
+
+                    postCtx' t c = dateField "date" "%Y-%m-%d" <> postCtx t c
+                    -- create the `pages` field with the postCtx containing standard date
                     -- and return the `pages` value for it
                     sitemapCtx =
                         constField "root" root <>
-                        listField "pages" (postCtx tags categories) (return pages)
+                        listField "pages" (postCtx' tags categories) (return pages)
 
                 -- make the item and apply our sitemap template
                 makeItem ""
