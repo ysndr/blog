@@ -39,12 +39,19 @@ div.sourceCode {
     margin-right: -$container-padding-horizontal-s;
     padding-left: $container-padding-horizontal-s;
     padding-right: $container-padding-horizontal-s;
+    & > .sourceCode {
+    margin-left: -$container-padding-horizontal-s;
+    margin-right: -$container-padding-horizontal-s;
+    }
   }
 
   @media (min-width: $breakpoint-medium) {
     margin-left: inherit;
     margin-right:inherit;
     border-radius: 4px;
+    & > .sourceCode {
+      border-radius: 4px;
+    }
   }
 }
 
