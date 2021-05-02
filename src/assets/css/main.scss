@@ -37,14 +37,13 @@ div.sourceCode {
   @media (min-width: $breakpoint-small) {
     margin-left: -$container-padding-horizontal-s;
     margin-right: -$container-padding-horizontal-s;
-    border: none;
-    border-radius: 4px;
+    padding-left: $container-padding-horizontal-s;
+    padding-right: $container-padding-horizontal-s;
   }
 
   @media (min-width: $breakpoint-medium) {
     margin-left: inherit;
     margin-right:inherit;
-    border: none;
     border-radius: 4px;
   }
 }
