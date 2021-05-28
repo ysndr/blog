@@ -1,0 +1,19 @@
+{
+    "name": "ysndr-css-tools",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "dependencies": {
+      "postcss": "^8.3.0",
+      "postcss-cli": "^8.3.0",
+      "tailwindcss": "^2.1.2",
+      "autoprefixer": "^10.2.0",
+      "postcss-nesting":"^8.0.0",
+      "postcss-import": "^14.0.2"
+    },
+    "devDependencies": {},
+    "scripts": {},
+    "keywords": [],
+    "author": "Yannik Sander",
+    "license": "ISC"
+  }

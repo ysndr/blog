@@ -30,6 +30,8 @@ import           Text.Pandoc.Definition         ( Pandoc(..), Block(..), Inline(
 import           Text.Pandoc.Walk
 import Text.Pandoc (runPure)
 import Text.Pandoc.Readers (readMarkdown)
+import System.Exit (ExitCode(ExitSuccess))
+import System.Process (readProcessWithExitCode)
 
 
 -- Configuration
@@ -107,6 +109,21 @@ feedCtx = bodyField "description"
         <> dateField "date" "%Y-%m-%d"
         <> customBaseContext
 
+postCssCompiler:: Compiler (Item String)
+postCssCompiler = do
+    file <- getResourceFilePath
+    compiled <-  unsafeCompiler $ runPostCss file
+    makeItem compiled
+
+runPostCss :: FilePath -> IO (String)
+runPostCss file = do
+    (status, stdout, _) <- readProcessWithExitCode "postcss" [ file ] ""
+
+    return $ case status  of
+        ExitSuccess -> stdout
+        _           -> error "could not compile css"
+
+
 -- Main
 -------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -164,11 +181,11 @@ main = do
             compile $ copyFileCompiler
 
         -- compile SASS/CSS
-        depends <- makePatternDependency "assets/css/**.scss"
+        depends <- makePatternDependency "assets/css/**.css"
         rulesExtraDependencies [depends] $ do
-            match (fromRegex "^assets/css/[^_].*.scss") $ do
+            match (fromRegex "^assets/css/[^_].*\\.css") $ do
                 route $ setExtension "css"
-                compile sassCompiler
+                compile postCssCompiler
 
         -- assemble static pages
         match (fromList ["about.md", "contact.md"]) $ do
