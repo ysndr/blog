@@ -22,14 +22,24 @@ module.exports = {
             'Fira Code', 'monospace'
         ]
       },
+      fontSize: {
+        body: ["15px", "22.5px"]
+      },
       colors: {
           muted: "#f5f5f5",
           emphasis: "#444",
+          dark: "#222",
+
         // primary: 'var(--color-primary)',
         // secondary: 'var(--color-secondary)',
         // heading: 'var(--color-heading)',
         // body: 'var(--color-body)'
       },
+      textColor: {
+        muted: "#999",
+        mutedDark: "#b5b5b5",
+        emphasizedDark: "#fff",
+      }
     },
   },
   variants: {},

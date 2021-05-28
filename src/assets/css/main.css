@@ -1,8 +1,13 @@
 @import "tailwindcss/base";
+
+@import "./_base.css";
+
+
 @import "tailwindcss/components";
-
-.uk-open {
-    display: block !important;
-}
-
 @import "tailwindcss/utilities";
+
+@layer components {
+    .uk-open {
+        display: block !important;
+    }
+}

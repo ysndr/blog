@@ -1,0 +1,111 @@
+@layer base {
+  :not(main) {
+    & ul {
+      @apply list-none mx-0;
+    }
+    & a {
+      text-decoration: none;
+    }
+  }
+
+  .dark {
+    @apply bg-dark;
+
+    & a, emph, .text-emphasis {
+      @apply text-emphasizedDark;
+    }
+
+    + .text-muted, .text-muted {
+      @apply text-mutedDark;
+    }
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-body font-standout my-4 !important;
+  }
+
+  h1 {
+    @apply text-4xl;
+  }
+
+  h2 {
+    @apply text-3xl;
+  }
+
+  h3 {
+    @apply text-2xl;
+  }
+
+  h4 {
+    @apply text-xl;
+  }
+
+  pre {
+    @apply my-6;
+  }
+
+  p {
+    @apply my-6;
+  }
+
+  a {
+    @apply underline;
+    color: inherit;
+  }
+
+  blockquote {
+    @apply font-serif text-lg bg-gray-100 text-gray-700 italic border-l-4 border-gray-600 p-1 mx-6 my-2;
+  }
+
+  figure {
+    @apply flex flex-col items-center my-4;
+  }
+
+  figcaption {
+    @apply italic my-2 text-sm;
+  }
+
+  ul, ol {
+    @apply ml-10 my-6;
+  }
+
+  ul {
+    @apply list-disc;
+  }
+
+  ol {
+    @apply list-decimal;
+  }
+
+  li > ul, li > ol {
+    margin: inherit;
+  }
+
+  li {
+    display: flex;
+  }
+
+  table {
+    @apply table-auto;
+  }
+
+  td {
+    @apply border px-4 py-2;
+  }
+
+  tr.even {
+    @apply bg-gray-100;
+  }
+
+  a, span, li {
+    & svg {
+      display: inline;
+    }
+  }
+
+  svg {
+    stroke: currentColor;
+    fill: currentColor;
+  }
+
+}
