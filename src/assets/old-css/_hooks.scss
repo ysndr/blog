@@ -148,12 +148,24 @@
 }
 
 
+// @mixin hook-section {
+//   padding-top: 0;
+//   @media (min-width: $breakpoint-medium) {
+//     padding-top: $section-small-padding-vertical;
+//   }
+// }
+
+
 @mixin hook-alert {
+
+
     border-radius: 4px;
     em {
         color: inherit;
     }
 }
+
+
 
 h1 > *,h2 > *,h3 > *,h4 > *,h5 > *,h6 > * {
   font-size: inherit !important;
