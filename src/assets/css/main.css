@@ -4,6 +4,7 @@
 
 @import "tailwindcss/base";
 
+@import "./_code.css";
 @import "./_base.css";
 
 
