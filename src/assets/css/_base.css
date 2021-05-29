@@ -67,22 +67,29 @@
 
   ul, ol {
     @apply ml-10 my-6;
+    &:not([horizontal]) > :nth-child(n+2) {
+      @apply mt-1;
+    }
   }
 
   ul {
     @apply list-disc;
   }
 
+  ul[horizontal] {
+    @apply list-none flex;
+  }
+
   ol {
     @apply list-decimal;
   }
 
-  li > ul, li > ol {
+  li > * > ul, li > * > ol {
     margin: inherit;
   }
 
   li {
-    display: flex;
+    @apply items-center;
   }
 
   table {
