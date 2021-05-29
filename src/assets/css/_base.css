@@ -3,6 +3,13 @@
   html {
     @apply text-body;
   }
+
+  section {
+    display: flow-root;
+    @apply py-12;
+  }
+
+
   :not(main) {
     & ul {
       @apply list-none mx-0;
