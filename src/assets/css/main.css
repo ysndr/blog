@@ -15,4 +15,29 @@
     .uk-open {
         display: block !important;
     }
+  .y-fill-horizontal {
+      @apply -mx-4;
+
+      border-radius: 0px;
+
+    @media (--media-sm) {
+        @apply -mx-4;
+        @apply px-4;
+        & > .sourceCode {
+        margin-left: -$container-padding-horizontal-s;
+        margin-right: -$container-padding-horizontal-s;
+        }
+      }
+
+      @media (--media-md) {
+        margin-left: inherit;
+        margin-right:inherit;
+        border-radius: 4px;
+
+
+        /*& > .sourceCode {
+          border-radius: 4px;
+        }*/
+      }
+  }
 }
