@@ -39,6 +39,7 @@ module.exports = {
         muted: "#999",
         mutedDark: "#b5b5b5",
         emphasizedDark: "#fff",
+        black: "#444"
       }
     },
   },
