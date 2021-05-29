@@ -10,10 +10,10 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        // sans: [
-        //   'Inter',
-        //   defaultTheme.fontFamily.sans,
-        // ],
+        sans: [
+          'Fira Sans',
+          defaultTheme.fontFamily.sans,
+        ],
         // serif: [
         //   'Roboto Slab',
         //   defaultTheme.fontFamily.serif
