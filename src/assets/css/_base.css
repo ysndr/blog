@@ -56,8 +56,17 @@
     @apply my-6;
   }
 
-  p {
-    @apply my-6;
+
+  p, ul, ol, dl, pre, address, fieldset, figure {
+    @apply mb-4;
+  }
+  *+p, *+ul, *+ol, *+dl, *+pre, *+address, *+fieldset, *+figure  {
+    @apply mt-4;
+  }
+
+  *:last-child {
+    margin-bottom: 0;
+  }
   }
 
   a {
