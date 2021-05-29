@@ -1,39 +1,34 @@
-<header id="header" class="uk-navbar-container">
-  <div class="uk-container uk-flex uk-flex-column uk-flex-middle">
+<header class="px-4 bg-muted container  font-standout leading-snug">
 
-    <div class="uk-flex uk-flex-middle uk-width-1-1 uk-flex-wrap uk-margin-large-top uk-margin-medium-bottom">
-      <div class="uk-container uk-flex uk-flex-right uk-flex-middle uk-width-expand@s uk-width-1-1">
-        <span class="uk-text-right">
-          <h1 class="uk-article-title">$title$</h1>
+    <div class="grid-cols-1 my-8">
+      <div class="flex flex-col text-right text-emphasis ">
+          <h1>$title$</h1>
           <p>$if(subtitle)$$subtitle$$endif$</p>
-        </span>
       </div>
       <div class="uk-visible@s uk-width-auto">
         <hr class="uk-divider-vertical uk-margin-left uk-margin-right">
       </div>
       <div
-        class="uk-container uk-flex uk-flex-column uk-flex-center uk-width-2-5@s uk-width-1-1 uk-text-muted uk-text-small">
-        <ul class="uk-list">
-          <li class="uk-flex">
-            <span class="uk-margin-small-right uk-flex-none" uk-icon="calendar"></span>
-            $date$
+        class="text-sm text-muted">
+        <ul>
+          <li class="flex">
+            <i class="las la-calendar-day mr-4"></i> $date$
           </li>
-          <li class="uk-flex">
-            <span class="uk-margin-small-right uk-flex-none" uk-icon="clock"></span>
-            $read-time$ Minutes
+          <li class="flex">
+            <i class="las la-stopwatch mr-4"></i> $read-time$ Minutes
           </li>
           $if(tags)$
-          <li class="uk-flex-inline" style="overflow-wrap: break-word;">
-            <span class="uk-margin-small-right uk-flex-none " uk-icon="bookmark"></span>
+          <li class="flex break-words">
+            <i class="las la-tags mr-4"></i>
             $for(tags)$
             <span>
-              <a class="uk-text-emphasis uk-link-text" href="$url$">$name$</a>$sep$,
+              <a class="text-emphasis" href="$url$">$name$</a>$sep$,
               $endfor$
               </span>
           </li>
           $endif$
-          <li class="uk-flex">
-            <span class="uk-margin-small-right uk-flex-none" uk-icon="git-branch"></span>
+          <li class="flex">
+            <i class="las la-code-branch mr-4"></i>
             <a
               class="uk-link-muted"
               href="https://github.com/ysndr/blog/commit/$git-commit-hash$">$git-commit$</a>
@@ -42,7 +37,6 @@
         </ul>
       </div>
     </div>
-    <hr class="uk-width-1-1" />
-  </div>
+  <hr class="uk-width-1-1" />
 
 </header>

@@ -1,4 +1,8 @@
 @layer base {
+
+  html {
+    @apply text-body;
+  }
   :not(main) {
     & ul {
       @apply list-none mx-0;
@@ -21,23 +25,31 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply text-body font-standout my-4 !important;
+    @apply font-standout mb-4 !important;
   }
 
   h1 {
-    @apply text-4xl;
-  }
-
-  h2 {
     @apply text-3xl;
   }
 
-  h3 {
+  h2 {
     @apply text-2xl;
   }
 
-  h4 {
+  h3 {
     @apply text-xl;
+  }
+
+  h4 {
+    @apply text-lg;
+  }
+
+  h5 {
+    @apply font-semibold;
+  }
+
+  h6 {
+    @apply italic;
   }
 
   pre {
@@ -68,7 +80,7 @@
   ul, ol {
     @apply ml-10 my-6;
     &:not([horizontal]) > :nth-child(n+2) {
-      @apply mt-1;
+      @apply mt-2;
     }
   }
 
