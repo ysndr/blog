@@ -445,13 +445,13 @@ let
         sha512 = "+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==";
       };
     };
-    "electron-to-chromium-1.3.741" = {
+    "electron-to-chromium-1.3.742" = {
       name = "electron-to-chromium";
       packageName = "electron-to-chromium";
-      version = "1.3.741";
+      version = "1.3.742";
       src = fetchurl {
-        url = "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.741.tgz";
-        sha512 = "4i3T0cwnHo1O4Mnp9JniEco8bZiXoqbm3PhW5hv7uu8YLg35iajYrRnNyKFaN8/8SSTskU2hYqVTeYVPceSpUA==";
+        url = "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.742.tgz";
+        sha512 = "ihL14knI9FikJmH2XUIDdZFWJxvr14rPSdOhJ7PpS27xbz8qmaRwCwyg/bmFwjWKmWK9QyamiCZVCvXm5CH//Q==";
       };
     };
     "emoji-regex-8.0.0" = {
@@ -1147,6 +1147,15 @@ let
         sha512 = "leHXsQRq89S3JC9zw/tKyiVV2jAhnfQe0J8VI4eQQbUjwIe0XxVqLrR+7UsahF1s9wi4GlqP6SJ8ydf44cgF2Q==";
       };
     };
+    "postcss-custom-media-8.0.0" = {
+      name = "postcss-custom-media";
+      packageName = "postcss-custom-media";
+      version = "8.0.0";
+      src = fetchurl {
+        url = "https://registry.npmjs.org/postcss-custom-media/-/postcss-custom-media-8.0.0.tgz";
+        sha512 = "FvO2GzMUaTN0t1fBULDeIvxr5IvbDXcIatt6pnJghc736nqNgsGao5NT+5+WVLAQiTt6Cb3YUms0jiPaXhL//g==";
+      };
+    };
     "postcss-functions-3.0.0" = {
       name = "postcss-functions";
       packageName = "postcss-functions";
@@ -1190,15 +1199,6 @@ let
       src = fetchurl {
         url = "https://registry.npmjs.org/postcss-nested/-/postcss-nested-5.0.5.tgz";
         sha512 = "GSRXYz5bccobpTzLQZXOnSOfKl6TwVr5CyAQJUPub4nuRJSOECK5AqurxVgmtxP48p0Kc/ndY/YyS1yqldX0Ew==";
-      };
-    };
-    "postcss-nesting-8.0.1" = {
-      name = "postcss-nesting";
-      packageName = "postcss-nesting";
-      version = "8.0.1";
-      src = fetchurl {
-        url = "https://registry.npmjs.org/postcss-nesting/-/postcss-nesting-8.0.1.tgz";
-        sha512 = "cHPNhW5VvRQjszFDxmy16mis9qFQqQLBNw6KVmueLqqE3M182ZAk9+QoxGqbGVryzLVhannw2B5Yhosqq522fA==";
       };
     };
     "postcss-reporter-7.0.2" = {
@@ -1591,7 +1591,7 @@ let
       sources."didyoumean-1.2.1"
       sources."dir-glob-3.0.1"
       sources."dlv-1.1.3"
-      sources."electron-to-chromium-1.3.741"
+      sources."electron-to-chromium-1.3.742"
       sources."emoji-regex-8.0.0"
       sources."error-ex-1.3.2"
       sources."escalade-3.1.1"
@@ -1678,6 +1678,7 @@ let
       sources."pify-2.3.0"
       sources."postcss-8.3.0"
       sources."postcss-cli-8.3.1"
+      sources."postcss-custom-media-8.0.0"
       (sources."postcss-functions-3.0.0" // {
         dependencies = [
           sources."ansi-styles-3.2.1"
@@ -1694,7 +1695,6 @@ let
       sources."postcss-js-3.0.3"
       sources."postcss-load-config-3.0.1"
       sources."postcss-nested-5.0.5"
-      sources."postcss-nesting-8.0.1"
       sources."postcss-reporter-7.0.2"
       sources."postcss-selector-parser-6.0.6"
       sources."postcss-value-parser-4.1.0"
