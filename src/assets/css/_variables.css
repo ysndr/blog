@@ -1,13 +1,19 @@
 :root {
-    --breakpoint-sm: 640px;
-    --breakpoint-md: 768px;
-    --breakpoint-lg: 1024px;
-    --breakpoint-xl: 1280px;
-    --breakpoint-2xl: 1536px;
-}
 
-@custom-media --media-sm (min-width: 640px);
-@custom-media --media-md (min-width: 768px);
-@custom-media --media-lg (min-width: 1024px);
-@custom-media --media-xl (min-width: 1280px);
-@custom-media --media-2xl (min-width: 1536px);
+
+
+    --bg-muted: #f5f5f5;
+    --bg-body: #fcfcfc;
+
+    --bg-code: #f2f3f3;
+
+    --bg-info: var(--bg-muted);
+    --bg-warning: #fef5ee;
+    --bg-note: #dbe5e6;
+    --bg-help: #daedc7;
+    --bg-danger: #fef4f6;
+
+
+
+
+}

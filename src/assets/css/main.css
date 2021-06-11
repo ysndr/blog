@@ -1,39 +1,38 @@
-@import url("https://fonts.googleapis.com/css?family=Fira+Sans:400,400i,700,700i|Fira+Code:400,500,700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Fira+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 @import "./_variables.css";
 
 @import "tailwindcss/base";
-
-@import "./_code.css";
 @import "./_base.css";
 
-
 @import "tailwindcss/components";
+@import "./_components.css";
+
+
 @import "tailwindcss/utilities";
 
+@import "./_code.css";
+
+
+
 @layer components {
-    .uk-open {
-        display: block !important;
-    }
-  .y-fill-horizontal {
-      @apply -mx-4;
-
-      border-radius: 0px;
-
-    @media (--media-sm) {
-        @apply -mx-4;
-        @apply px-4;
-        & > .sourceCode {
-        margin-left: -$container-padding-horizontal-s;
-        margin-right: -$container-padding-horizontal-s;
-        }
-      }
-
-      @media (--media-md) {
-        margin-left: inherit;
-        margin-right: inherit;
-      }
+  .uk-open {
+      display: block !important;
   }
+
+  .y-fill-horizontal {
+      @apply -mx-4 sm:-mx-8 lg:mx-auto ;
+      @apply overflow-hidden;
+      @apply rounded-none lg:rounded px-8 !important;
+
+        & > .sourceCode {
+            @apply -mx-8 sm:-mx-8 lg:-mx-8;
+            @apply rounded-none lg:rounded overflow-hidden;
+        }
+
+
+
+      }
 
   .box {
     @apply my-4 py-6 px-4 rounded text-emphasis;
@@ -69,5 +68,73 @@
 
         }
       }
+
+    }
+
+    & .caption {
+      color: inherit;
+      font-size: $global-small-font-size;
+      padding-top: $container-padding-horizontal;
+    }
+  }
+
+  .container {
+    max-width: 1100px;
+  }
+
+  .y-header {
+    @apply flex lg:flex-row-reverse;
+
+    >:first-child {
+      @apply mr-auto;
+    }
+
+    & .anchor {
+      @apply ml-auto lg:-ml-12 lg:mr-4 w-8;
+    }
+  }
+
+  .y-toc {
+    & ul {
+      @apply m-0;
+      & ul {
+        @apply pt-1 pl-4;
+      }
+    }
+    & li a::before {
+
+        content: ">";
+        @apply mr-2;
+
+    }
+  }
+
+  .align-center {
+    @apply float-none mx-auto;
+  }
+
+  .align-left {
+    @apply float-left mr-4;
+  }
+
+  .align-right {
+    @apply float-right ml-4;
+  }
+
+}
+
+@layer utilities {
+  @variants responsive {
+    column-fill: auto;
+    .masonry * {
+      break-inside: avoid-column;
+    }
+    .masonry-2 {
+      column-count: 2;
+    }
+    .masonry-3 {
+      column-count: 3;
+    }
+
   }
 }
