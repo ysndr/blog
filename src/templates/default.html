@@ -19,49 +19,59 @@
   <link rel="manifest" href="/assets/images/favicon/site.webmanifest">
 </head>
 
-<body class="flex flex-col overflow-x-hidden text-body text-black">
+<body class="flex flex-col overflow-x-hidden text-body text-black leading-normal">
   $partial(concat("templates/includes/",item-type, "-header.html"))$
 
   $partial("templates/includes/nav.html")$
 
-  <main>
-    <div class="uk-container px-4">
+  <main class="my-8">
+    <div class="container">
       $body$
     </div>
   </main>
 
 
-  <footer class="font-standout text-sm container py-8 px-4 text-mutedDark bg-footer dark">
-      <div class="uk-grid-medium uk-child-width-1-3@m uk-child-width-1-1" uk-grid>
+  <footer class="font-standout text-sm py-8 px-4 text-mutedDark bg-footer dark">
+      <div class="container grid sm:grid-cols-3 gap-8">
         <div>
-          <div class="">
+
             <h3 class="text-emphasizedDark">Contact</h3>
-            <p><a href="mailto:contact@ysndr.de" class="text-emphasizedDark"><i class="las la-envelope-open-text"></i> contact@ysndr.de</a></p>
-            <p><a href="https://linkedin.com/in/yannik-sander" class="text-emphasizedDark"><i class="lab la-linkedin"></i></svg> yannik-sander</a></p>
-            <p><a href="https://github.com/ysndr" class="text-emphasizedDark"><i class="las la-code-branch"></i> ysndr</a></p>
+            <ul class="ml-1 list-none">
+            <li><a href="mailto:contact@ysndr.de" class="text-emphasizedDark no-underline"><i class="las la-envelope-open-text"></i> contact@ysndr.de</a></li>
+            <li><a href="https://linkedin.com/in/yannik-sander" class="text-emphasizedDark no-underline"><i class="lab la-linkedin"></i></svg> yannik-sander</a></li>
+            <li>
+            <a href="https://github.com/ysndr" class="text-emphasizedDark no-underline"><i class="las la-code-branch"></i> ysndr</a></li>
+          </ul>
 
 
-          </div>
         </div>
-        <div>
-          <div class="">
-            <h3 class="text-emphasizedDark">Legal</h3>
-            <p>
-              <span class="las la-check-circle block"></span> No analytics are used here your data is safe :)
-            </p>
-            <p><span class="las la-check-circle block"></span> The content of this blog is licensed under CC0 terms if not otherwise noted</span></p>
-          </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">Legal</h3>
+          <ul class="ml-1 list-none">
+            <li class="inline-flex justify-items-start items-baseline mb-0">
+              <span class="las la-check-circle block mr-2"></span> No analytics are used here your data is safe :)
+            </li>
+            <li class="inline-flex items-baseline">
+              <span class="las la-check-circle block mr-2"></span> The content of this blog is licensed under CC0 terms if not otherwise noted</span>
+            </li>
+          </ul>
         </div>
-        <div>
-          <div class="">
-            <h3 class="text-emphasizedDark">About this blog</h3>
-            <p>Built with <i class="las la-code"></i> and <i class="lar la-heart"></i> using <a
-                href="https://jaspervdj.be/hakyll/">Hakyll</a></p>
-            <p><a href="https://builtwithnix.org" rel="nofollow"><img src=https://builtwithnix.org/badge.svg"
-                  style="max-width:100%;"></a></p>
-            <p class="uk-text-muted"><i class="las la-code-branch"></i> last updated: <a class="text-emphasizedDark" href="https://github.com/ysndr/blog">$git-head-commit-full$</a>
-            </p>
-          </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">About this blog</h3>
+          <ul class="ml-1 list-none">
+            <li>
+              Built with <i class="las la-code"></i> and <i class="lar la-heart"></i> using <a class="text-emphasizedDark no-underline" href="https://jaspervdj.be/hakyll/">Hakyll</a>
+            </li>
+            <li class="text-muted"><i class="las la-code-branch"></i> last updated: <a class="text-emphasizedDark no-underline" href="https://github.com/ysndr/blog">$git-head-commit-full$</a>
+            </li>
+            <li>
+              <a class="no-underline" href="https://builtwithnix.org" rel="nofollow">
+                <img src="https://builtwithnix.org/badge.svg" style="max-width:100%;">
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

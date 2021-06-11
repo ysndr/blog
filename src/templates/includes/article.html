@@ -1,16 +1,14 @@
 
-    $if(image)$
-    <div class="uk-background-center-center uk-background-cover uk-height-medium uk-height-large@s uk-height-xlarge@m uk-flex uk-box-shadow-xlarge uk-margin-bottom"
-    style="background-image: url($image$); border-radius: 4px; ">
-    <!-- <div class="uk-overlay uk-overlay-default uk-position-bottom">
-        <p class="uk-text-lead uk-container"><i>$description$</i></p>
-    </div> -->
-    <div class="uk-container uk-flex uk-width-1-1 uk-flex-right uk-flex-bottom">
-        <div class="uk-inline uk-padding-small">
-            <div class="uk-button uk-background-muted uk-border-circle uk-drop-shadow-xlarge" style="line-height: 0; padding:4px;"
-            type="button"><span uk-icon="info"></span></div>
-            <div uk-drop="pos: top-right">
-                <div class="uk-card uk-card-default uk-card-body uk-card-hover">
+$if(image)$
+<div class="h-56 sm:h-xl xl:h-2xl bg-cover w-5/6 mx-auto xl:min-w-full xl:w-auto mb-8 xl:-mx-24 rounded-lg relative shadow-2xl overflow-hidden">
+    <img src="$image$" alt="Article image" class="relative w-full h-full object-cover">
+
+    <div class="w-full absolute bottom-0">
+        <div class="relative">
+            <div class="bg-white rounded-full m-4 w-max float-right p-1" style="line-height: 0;"
+            type="button"><i class="las la-copyright"></i></div>
+            <div uk-drop="pos: top-right" class="w-max hidden absolute pb-4">
+                <div class="bg-white p-6 rounded">
                     <h4 class="uk-card-title">Credits</h4>
                     $if(image-credits)$
                     $image-credits$
@@ -21,15 +19,15 @@
             </div>
         </div>
     </div>
-
 </div>
+
 $else$
 $endif$
 
 
-    <article class="uk-article">
+<article>
 
-    <p class="uk-text-lead"><i>$description$</i></p>
+    <p class="text-lead text-emphasis italic sm:w-5/6 mx-auto"><i>$description$</i></p>
     <p>$body$</p>
 
 </article>

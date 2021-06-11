@@ -1,60 +1,60 @@
-<div class="container">
-    <div class="grid grid-cols-1 gap-8 items-center">
+<div class="mx-auto">
+    <div class="flex flex-wrap items-start content-start -ml-8" uk-grid="masonry: true;">
 
         $for(posts)$
+        <div class="pl-8 pb-8 w-full sm:w-1/2 lg:w-1/3">
 
-            <div class="container flex flex-col shadow-lg">
+            <div class="flex flex-col rounded overflow-hidden  shadow-xl hover:shadow-2xl">
                 $if(image)$
                 <!-- <div class="w-full h-48 overflow-hidden justify-center flex"> -->
                     <img src="$image$" alt="" class="object-cover w-fill h-48">
-                <!-- </div> -->
+                    <!-- </div> -->
                 $endif$
 
-                    <article class="container p-8">
-                        <div>
-                            <div>
-                                <h1 class="text-xl">
-                                    <a class="uk-link-heading" href="$url$">
-                                        $title$
-                                    </a>
-                                </h1>
-                                <h2 class="text-sm text-muted">
-                                    <ul class="items-center">
-                                        <li class>
-                                            <i class="las la-calendar-day"></i> $date$
-                                        </li>
-                                        <li>
-                                            <i class="las la-stopwatch"></i> $read-time$ Minutes
-                                        </li>
-                                        $if(tags)$
-                                        <li class="break-words">
-                                            <i class="las la-tags"></i>
-                                            $for(tags)$
-                                            <span>
-                                                <a class="text-emphasis" href="$url$">$name$</a>$sep$,
-                                            </span>
-                                            $endfor$
-                                        </li>
-                                        $endif$
-                                    </ul>
-                                </h2>
-                                <p class="uk-text-lead"><i>$description$</i></p>
-                            </div>
-                            $if(teaser)$
-                            <hr>
-                            <p class="peek">$teaser$<a href="$url$"> ... read more</a></p>
-                            $endif$
-                        </div>
-                        <div class="uk-grid-small uk-child-width-auto" uk-grid>
-                            <div>
-                                <a class="uppercase" href="$url$">Read more</a>
-                            </div>
-                        </div>
-                    </article>
+                <article class="w-full p-8">
+                    <header class="mb-4">
 
+                        <h1 class="text-xl">
+                            <a class="uk-link-heading" href="$url$">
+                                $title$
+                            </a>
+                        </h1>
+                        <h2 class="text-sm text-muted mt-0">
+                            <ul class="items-center">
+                                <li class>
+                                    <i class="las la-calendar-day"></i> $date$
+                                </li>
+                                <li>
+                                    <i class="las la-stopwatch"></i> $read-time$ Minutes
+                                </li>
+                                $if(tags)$
+                                <li class="break-words">
+                                    <i class="las la-tags"></i>
+                                    $for(tags)$
+                                    <span>
+                                        <a class="text-emphasis" href="$url$">$name$</a>$sep$,
+                                    </span>
+                                    $endfor$
+                                </li>
+                                $endif$
+                            </ul>
+                        </h2>
+                        <p class="text-emphasis"><i>$description$</i></p>
 
+                        $if(teaser)$
+                        <hr>
+                        <p class="peek">$teaser$<a href="$url$"> ... read more</a></p>
+                        $endif$
+                    </header>
+
+                    <div>
+                        <a class="uppercase text-sm no-underline" href="$url$">Read more</a>
+                    </div>
+
+                </article>
             </div>
-
+        </div>
         $endfor$
+
     </div>
 </div>

@@ -1,16 +1,16 @@
-<header class="sticky font-standout inset-0">
-  <nav class="container grid grid-cols-3 bg-muted px-4">
+<header class="sticky font-standout inset-0 z-50 min-w-full bg-muted text-base">
+  <nav class="container grid grid-cols-3">
 
 
 
     <div class="flex flex-col">
-      <a type=button class="content-center my-auto text-muted"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <a type=button class="content-center my-auto text-muted w-max"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M4 6h20 M4 12h20 M4 18h20" />
       </svg><span class="ml-2 uppercase text-xs">Menu</span></a>
 
 
       <div uk-dropdown class="container hidden">
-            <div class="inset-x-0 absolute container px-8 grid grid-flow-row  shadow-lg bg-white text-sm text-muted fill-current stroke-current">
+            <div class="inset-x-0 absolute container px-8 grid sm:grid-cols-3 gap-8 shadow-lg bg-white text-sm text-muted fill-current stroke-current pb-6">
               <div>
                 <ul class="flex flex-col gap-2" >
                   <li class="uppercase text-black">Who?</li>
@@ -27,7 +27,7 @@
                   </li>
                 </ul>
               </div>
-             <hr>
+             <hr class="sm:hidden">
               <div>
                 <ul class="flex flex-col gap-2">
                   <li class="text-black uppercase">What?</li>
@@ -37,9 +37,11 @@
                   <li><a href="https://github.com/ysndr/nixos-config">NixOS Config</a></li>
                 </ul>
               </div>
-              <hr>
+              <hr class="sm:hidden">
               <div>
                 <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Blog</li>
+                  <li><a href="/about">About Me</a></li>
                   <li class="uk-nav-header">Posts</li>
                   <li><a href="/archive">Archive</a></li>
                   <li class="flex">
@@ -56,38 +58,32 @@
                 </ul>
               </div>
             </div>
-
-
       </div>
 
     </div>
 
 
-      <div class="uk-navbar-nav uk-flex-1 py-4 align-items-center">
+    <div class="uk-navbar-nav uk-flex-1 py-4 align-items-center">
 
-        <a href="/" class="flex items-center justify-center">
-            <img src="/assets/images/logo-small.svg" alt="y|sndr" class="h-8"/>
-          </a>
+      <a href="/" class="flex items-center justify-center">
+          <img src="/assets/images/logo-small.svg" alt="y|sndr" class="h-8"/>
+        </a>
 
 
-      </div>
+    </div>
 
 
 
     $if(toc)$
-    <div class="uk-navbar-right">
-      <ul class="uk-navbar-nav">
-        <li>
-        <a><div class="uk-button uk-text-muted uk-button-default"
-          type="button"><span class="uk-hidden@m">Content</span> <span class="uk-visible@m">Table of Contents</span></div></a>
-        <div class="uk-navbar-dropdown y-toc uk-width-medium" uk-drop="pos: bottom-right; offset: 0" >
-           <div class="uk-list" uk-scrollspy-nav="closest: li; scroll: true; offset: 85">$toc$</div>
+    <div class="flex flex-col items-end md:relative">
+        <a class="content-center uppercase my-auto text-muted w-max" type="button">
+          <span class="md:hidden">Content</span> <span class="hidden md:block">Table of Contents</span>
+        </a>
+        <div class="y-toc hidden" uk-drop>
+          <div class="container max-w-full sm:max-w-sm  bg-white p-6 w-full absolute text-muted right-0 shadow-xl rounded-b" uk-scrollspy-nav="closest: li; scroll: true; offset: 85; cls: text-emphasis">
+            $toc$
+          </div>
         </div>
-
-      </li>
-
-
-      </ul>
     </div>
     $endif$
 
