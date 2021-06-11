@@ -1,0 +1,260 @@
+@layer base {
+
+  html {
+    @apply text-body text-dark;
+    background: var(--bg-body);
+  }
+
+  section.container {
+    display: flow-root;
+    @apply py-10;
+  }
+
+  article {
+    figure {
+      @apply flex flex-col items-center w-full my-4;
+      & img {
+        @apply mb-4;
+      }
+    }
+    img {
+      @apply mt-4 w-full shadow-2xl mb-8 object-cover rounded;
+      @apply md:w-2/3 md:h-auto;
+    }
+
+    figcaption {
+      @apply italic my-2 text-sm;
+    }
+
+    h1,h2,h3,h4,h5,h6 {
+      @apply flex;
+      .anchor {
+        @apply ml-auto min-w-min text-muted no-underline flex text-xl;
+        &::before {
+          @apply m-auto;
+        }
+        &:hover {
+          color: inherit;
+        }
+      }
+    }
+
+  }
+
+  header {
+    & ul {
+      @apply list-none mx-0;
+    }
+    & a {
+      text-decoration: none;
+    }
+  }
+
+  .dark {
+    @apply bg-dark;
+
+    & a, emph, .text-emphasis {
+      @apply text-emphasizedDark;
+    }
+
+    + .text-muted, .text-muted {
+      @apply text-mutedDark;
+    }
+  }
+
+  header {
+    font-size: 110%;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-standout mb-4 !important;
+  }
+  h1, h2, h3 {
+    & > small {
+      @apply mt-4;
+      font-size: 60%;
+    }
+  }
+
+  *+h1, *+h2, *+h3, *+h4, *+h5, *+h6 {
+    @apply mt-8;
+  }
+
+  h1 {
+    @apply text-3xl;
+  }
+
+  h2 {
+    @apply text-2xl;
+  }
+
+  h3 {
+    @apply text-xl;
+  }
+
+  h4 {
+    @apply text-lg;
+  }
+
+  h5 {
+    @apply font-semibold;
+  }
+
+  h6 {
+    @apply italic;
+  }
+
+  hr {
+    @apply bg-hr;
+  }
+
+  pre {
+    @apply my-6;
+    overflow-x: auto;
+
+    &.sourceCode {
+      @apply p-4 min-w-full;
+      background-color: var(--bg-code);
+      width: fit-content;
+
+      @apply sm:px-8;
+    }
+  }
+
+  code {
+    @apply text-sm rounded p-1 text-code;
+    background-color: var(--bg-code);
+  }
+
+
+  p, ul, ol, dl, pre, address, fieldset, figure {
+    @apply mb-4;
+  }
+
+  *+p, *+ul, *+ol, *+dl, *+pre, *+address, *+fieldset, *+figure  {
+    @apply mt-4;
+  }
+
+
+  :not(p)>*:last-child {
+    margin-bottom: 0;
+  }
+
+  dl {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    align-items: start;
+    dt {
+      box-sizing: border-box;
+      width: 33%;
+      text-align: right;
+      padding-right: 12px;
+    }
+
+    dd {
+      width: 66%;
+      margin: 0;
+      &+ dd {
+        margin-top:4px;
+        margin-left:33%;
+      }
+      &+ dt, & + dt + dd {
+        margin-top: 8px;
+      }
+    }
+
+  }
+
+  a {
+    @apply  underline hover:text-highlight;
+    color: inherit;
+    text-decoration-color: inherit;
+    * {
+      @apply hover:text-highlight;
+      text-decoration-color: inherit;
+    }
+  }
+
+  em a {
+    @apply hover:text-black;
+  }
+
+  blockquote {
+    @apply font-serif text-lg text-emphasis italic border-l border-gray-600 pl-8 my-2;
+  }
+
+  .footnotes .footnote-back {
+    font: caption;
+  }
+
+  em {
+    @apply text-highlight;
+  }
+
+
+  &:not(.uk-card-body) a {
+     text-decoration: underline;
+  }
+  .footnotes a {
+    text-decoration: none;
+  }
+
+  ul, ol {
+    @apply ml-10 my-6;
+    &:not([horizontal]) > :nth-child(n+2) {
+      @apply mt-2;
+    }
+  }
+
+  ul {
+    list-style-type: “U+203A”；
+  }
+
+  ul[horizontal] {
+    @apply list-none flex;
+  }
+
+  ol {
+    @apply list-decimal ml-8;
+  }
+
+  ul li ul, ol li ul, ul li ol, ol li ol {
+    @apply mt-0
+  }
+
+  li {
+    @apply items-center;
+  }
+
+  table {
+    @apply table-auto;
+  }
+
+  td {
+    @apply border px-4 py-2;
+  }
+
+  tr.even {
+    @apply bg-gray-100;
+  }
+
+  a, span, li {
+    & svg {
+      display: inline;
+    }
+  }
+
+  svg {
+    stroke: currentColor;
+    fill: currentColor;
+  }
+
+  .mjx-chtml.MJXc-display {
+    overflow: scroll;
+  }
+
+  .la, .lab, .lad, .lal, .lar, .las {
+    font-size: 125%;
+  }
+}

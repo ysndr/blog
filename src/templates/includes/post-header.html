@@ -1,39 +1,39 @@
-<header id="header" class="uk-navbar-container">
-  <div class="uk-container uk-flex uk-flex-column uk-flex-middle">
+<header class="bg-muted font-standout leading-snug">
 
-    <div class="uk-flex uk-flex-middle uk-width-1-1 uk-flex-wrap uk-margin-large-top uk-margin-medium-bottom">
-      <div class="uk-container uk-flex uk-flex-right uk-flex-middle uk-width-expand@s uk-width-1-1">
-        <span class="uk-text-right">
-          <h1 class="uk-article-title">$title$</h1>
-          <p>$if(subtitle)$$subtitle$$endif$</p>
-        </span>
+    <div class="flex flex-col sm:flex-row items-center my-8 container justify-items-center">
+      <div class="flex flex-col text-right text-emphasis">
+          <h1 class="inline-flex flex-col">$title$
+          <small>$if(subtitle)$$subtitle$$endif$</small>
+          </h1>
+          <span class="text-xs text-muted">
+          $for(authors)$
+              $author$
+              $sep$⦿
+              $endfor$
+          </span>
       </div>
-      <div class="uk-visible@s uk-width-auto">
-        <hr class="uk-divider-vertical uk-margin-left uk-margin-right">
-      </div>
+      <hr class="hidden sm:block sm:h-24 sm:w-px mx-4 my-4 sm:my-auto min-w-px">
       <div
-        class="uk-container uk-flex uk-flex-column uk-flex-center uk-width-2-5@s uk-width-1-1 uk-text-muted uk-text-small">
-        <ul class="uk-list">
-          <li class="uk-flex">
-            <span class="uk-margin-small-right uk-flex-none" uk-icon="calendar"></span>
-            $date$
+        class="text-sm text-muted sm:w-5/12 md:w-2/5">
+        <ul>
+          <li class="flex">
+            <i class="las la-calendar-day mr-4"></i> $date$
           </li>
-          <li class="uk-flex">
-            <span class="uk-margin-small-right uk-flex-none" uk-icon="clock"></span>
-            $read-time$ Minutes
+          <li class="flex">
+            <i class="las la-stopwatch mr-4"></i> $read-time$ Minutes
           </li>
           $if(tags)$
-          <li class="uk-flex-inline" style="overflow-wrap: break-word;">
-            <span class="uk-margin-small-right uk-flex-none " uk-icon="bookmark"></span>
+          <li class="flex break-words">
+            <i class="las la-tags mr-4"></i>
             $for(tags)$
             <span>
-              <a class="uk-text-emphasis uk-link-text" href="$url$">$name$</a>$sep$,
+              <a class="text-emphasis" href="$url$">$name$</a>$sep$,
               $endfor$
               </span>
           </li>
           $endif$
-          <li class="uk-flex">
-            <span class="uk-margin-small-right uk-flex-none" uk-icon="git-branch"></span>
+          <li class="flex">
+            <i class="las la-code-branch mr-4"></i>
             <a
               class="uk-link-muted"
               href="https://github.com/ysndr/blog/commit/$git-commit-hash$">$git-commit$</a>
@@ -42,7 +42,6 @@
         </ul>
       </div>
     </div>
-    <hr class="uk-width-1-1" />
-  </div>
+    <hr class="container" />
 
 </header>

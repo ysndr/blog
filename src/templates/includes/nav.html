@@ -1,88 +1,89 @@
-<header class="uk-navbar-container uk-position-z-index uk-width-1-1" style="
-    position: sticky;
-    align-self: flex-start;
-    top: 0;
-">
-  <nav class="uk-container" uk-navbar="">
+<header class="sticky font-standout inset-0 z-50 min-w-full bg-muted text-base">
+  <nav class="container grid grid-cols-3">
 
-    <div class="uk-navbar-center ">
-      <div class="uk-navbar-nav uk-flex-1">
 
-        <li class="uk-logo"><a href="/">
-            <img src="/assets/images/logo-small.svg" alt="y|sndr" class="logo"/>
-          </a>
-        </li>
 
-      </div>
-    </div>
+    <div class="flex flex-col">
+      <a type=button class="content-center my-auto text-muted w-max"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M4 6h20 M4 12h20 M4 18h20" />
+      </svg><span class="ml-2 uppercase text-xs">Menu</span></a>
 
-    <div class="uk-navbar-left">
-      <ul class="uk-navbar-nav">
-        <li>
-          <a><span uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Menu</span></a>
-          <div class="uk-navbar-dropdown" uk-drop="boundary: nav; boundary-align: true; pos: bottom-justify; offset: 0">
 
-            <div class="uk-navbar-dropdown-grid uk-child-width-1-3@s uk-child-width-1-1" uk-grid>
+      <div uk-dropdown class="container hidden">
+            <div class="inset-x-0 absolute container px-8 grid sm:grid-cols-3 gap-8 shadow-lg bg-white text-sm text-muted fill-current stroke-current pb-6">
               <div>
-                <ul class="uk-nav uk-navbar-dropdown-nav">
-                  <li class="uk-nav-header">Who?</li>
+                <ul class="flex flex-col gap-2" >
+                  <li class="uppercase text-black">Who?</li>
                   <li><a href="/about">About Me</a></li>
                   <li><a href="https://gist.github.com/ysndr/978662957bb9187fd52b2037466e1e34">CV</a></li>
-                  <li class="uk-nav-divider uk-margin-bottom"></li>
-                  <li class="">
-                    <ul class="uk-iconnav uk-iconnav-horizontal">
-                      <li><a href="mailto:contact@ysndr.de" uk-icon="mail"></a></li>
-                      <li><a href="https://linkedin.com/in/yannik-sander" uk-icon="linkedin"></a>
+                  <li><hr></li>
+                  <li>
+                    <ul class="gap-2" horizontal>
+                      <li><a href="mailto:contact@ysndr.de"><i class="las la-envelope-open-text"></i></a></li>
+                      <li><a href="https://linkedin.com/in/yannik-sander"><i class="lab la-linkedin-in"></i></a>
                       </li>
-                      <li><a href="https://github.com/ysndr" uk-icon="github"></a></li>
+                      <li><a href="https://github.com/ysndr"><i class="lab la-github"></i></a></li>
                     </ul>
                   </li>
                 </ul>
               </div>
+             <hr class="sm:hidden">
               <div>
-                <ul class="uk-nav uk-navbar-dropdown-nav">
-                  <li class="uk-nav-header">What?</li>
+                <ul class="flex flex-col gap-2">
+                  <li class="text-black uppercase">What?</li>
                   <li><a href="https://github.com/ysndr">Projects</a></li>
-                  <li class="uk-nav-divider"></li>
+                  <li><hr></li>
                   <li><a href="https://github.com/ysndr/sam-knn-regressor">sam-knn-regressor</a></li>
                   <li><a href="https://github.com/ysndr/nixos-config">NixOS Config</a></li>
                 </ul>
               </div>
+              <hr class="sm:hidden">
               <div>
-                <ul class="uk-nav uk-navbar-dropdown-nav">
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Blog</li>
+                  <li><a href="/about">About Me</a></li>
                   <li class="uk-nav-header">Posts</li>
                   <li><a href="/archive">Archive</a></li>
-                  <li class="uk-flex">
-                    <span uk-icon="rss" class="uk-text-muted"></span>
-                    <ul class="uk-iconnav uk-subnav-divider">
+                  <li class="flex">
+                    <span>
+                      <svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="rss" stroke="currentColor"><circle cx="3.12" cy="16.8" r="1.85"></circle><path fill="none" stroke-width="1.1" d="M1.5,8.2 C1.78,8.18 2.06,8.16 2.35,8.16 C7.57,8.16 11.81,12.37 11.81,17.57 C11.81,17.89 11.79,18.19 11.76,18.5"></path><path fill="none" stroke-width="1.1" d="M1.5,2.52 C1.78,2.51 2.06,2.5 2.35,2.5 C10.72,2.5 17.5,9.24 17.5,17.57 C17.5,17.89 17.49,18.19 17.47,18.5"></path></svg>
+                    </span>
+                    <ul class="gap-4 items-center ml-2" horizontal>
                       <li><a href="/rss.xml">RSS</a></li>
                       <li><a href="/atom.xml">Atom</a></li>
                     </ul>
                   </li>
-                  <li class="uk-nav-divider"></li>
-                  <li><a href="https://github.com/ysndr/blog/commit/$git-head-commit-hash$"><span uk-icon="git-branch"/>current rev.: $git-head-commit$</a></li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/blog/commit/$git-head-commit-hash$"><span><svg  class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="git-branch"><circle fill="none" stroke-width="1.2" cx="7" cy="3" r="2"></circle><circle fill="none" stroke-width="1.2" cx="14" cy="6" r="2"></circle><circle fill="none" stroke-width="1.2" cx="7" cy="17" r="2"></circle><path fill="none" stroke-width="2" d="M14,8 C14,10.41 12.43,10.87 10.56,11.25 C9.09,11.54 7,12.06 7,15 L7,5"></path></svg></span>   current rev.: $git-head-commit$</a></li>
                 </ul>
               </div>
             </div>
+      </div>
 
-
-          </div>
-      </ul>
     </div>
+
+
+    <div class="uk-navbar-nav uk-flex-1 py-4 align-items-center">
+
+      <a href="/" class="flex items-center justify-center">
+          <img src="/assets/images/logo-small.svg" alt="y|sndr" class="h-8"/>
+        </a>
+
+
+    </div>
+
+
+
     $if(toc)$
-    <div class="uk-navbar-right">
-      <ul class="uk-navbar-nav">
-        <li>
-        <a><div class="uk-button uk-text-muted uk-button-default"
-          type="button"><span class="uk-hidden@m">Content</span> <span class="uk-visible@m">Table of Contents</span></div></a>
-        <div class="uk-navbar-dropdown y-toc uk-width-medium" uk-drop="pos: bottom-right; offset: 0" >
-           <div class="uk-list" uk-scrollspy-nav="closest: li; scroll: true; offset: 85">$toc$</div>
+    <div class="flex flex-col items-end md:relative">
+        <a class="content-center uppercase my-auto text-muted w-max" type="button">
+          <span class="md:hidden">Content</span> <span class="hidden md:block">Table of Contents</span>
+        </a>
+        <div class="y-toc hidden" uk-drop>
+          <div class="container max-w-full sm:max-w-sm  bg-white p-6 w-full absolute text-muted right-0 shadow-xl rounded-b" uk-scrollspy-nav="closest: li; scroll: true; offset: 85; cls: text-emphasis">
+            $toc$
+          </div>
         </div>
-
-      </li>
-
-
-      </ul>
     </div>
     $endif$
 

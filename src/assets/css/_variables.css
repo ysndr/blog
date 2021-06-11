@@ -1,0 +1,19 @@
+:root {
+
+
+
+    --bg-muted: #f5f5f5;
+    --bg-body: #fcfcfc;
+
+    --bg-code: #f2f3f3;
+
+    --bg-info: var(--bg-muted);
+    --bg-warning: #fef5ee;
+    --bg-note: #dbe5e6;
+    --bg-help: #daedc7;
+    --bg-danger: #fef4f6;
+
+
+
+
+}

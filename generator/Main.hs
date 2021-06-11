@@ -30,6 +30,8 @@ import           Text.Pandoc.Definition         ( Pandoc(..), Block(..), Inline(
 import           Text.Pandoc.Walk
 import Text.Pandoc (runPure)
 import Text.Pandoc.Readers (readMarkdown)
+import System.Exit (ExitCode(ExitSuccess))
+import System.Process (readProcessWithExitCode)
 
 
 -- Configuration
@@ -91,11 +93,12 @@ postCtx :: Tags -> Tags -> Context String
 postCtx tags category =  dateField "date" "%B %e, %Y"
         <> allTagsField "tags" tags
         <> allTagsField "category" category
+        <> authorsField "authors"
         <> constField "item-type" "post"
         <> teaserField "teaser" "posts-content"
         <> peekField 50 "peek" "posts-content"
         <> readTimeField "read-time" "posts-content"
-        <> tocField "toc" 4 (def {extraUlClasses = "uk-nav-default uk-list uk-nav-sub"}) "posts-content"
+        <> tocField "toc" 4 def "posts-content"
         -- <> plainTocField "toc-plain" 4 "posts-content"
         <> pathField "sourcefile"
         <> versionField "git-commit" Commit
@@ -106,6 +109,21 @@ feedCtx :: Context String
 feedCtx = bodyField "description"
         <> dateField "date" "%Y-%m-%d"
         <> customBaseContext
+
+postCssCompiler:: Compiler (Item String)
+postCssCompiler = do
+    file <- getResourceFilePath
+    compiled <-  unsafeCompiler $ runPostCss file
+    makeItem compiled
+
+runPostCss :: FilePath -> IO (String)
+runPostCss file = do
+    (status, stdout, _) <- readProcessWithExitCode "postcss" [ file ] ""
+
+    return $ case status  of
+        ExitSuccess -> stdout
+        _           -> error "could not compile css"
+
 
 -- Main
 -------------------------------------------------------------------------------
@@ -164,11 +182,11 @@ main = do
             compile $ copyFileCompiler
 
         -- compile SASS/CSS
-        depends <- makePatternDependency "assets/css/**.scss"
+        depends <- makePatternDependency "assets/css/**.css"
         rulesExtraDependencies [depends] $ do
-            match (fromRegex "^assets/css/[^_].*.scss") $ do
+            match (fromRegex "^assets/css/[^_].*\\.css") $ do
                 route $ setExtension "css"
-                compile sassCompiler
+                compile postCssCompiler
 
         -- assemble static pages
         match (fromList ["about.md", "contact.md"]) $ do
@@ -282,26 +300,26 @@ parse body = case (runPure $ readMarkdown defaultHakyllReaderOptions body)
 htmlFilter :: Pandoc -> Pandoc
 htmlFilter = walk replaceElements where
     replaceElements (Div (id, classes, kv) blocks) =
-        Div (id, classes' ++ ["uk-alert y-fill-horizontal"], kv) (prependHeader ++ content ++ appendCaption)
+        Div (id, classes' ++ ["box y-fill-horizontal"], kv) (prependHeader ++ content ++ appendCaption)
         where
             (classes', icon, badge)
-                | any (== "info") classes       = (classes, "info", "INFO")
-                | any (== "note") classes       = (["uk-alert-primary"] ++ classes, "pencil", "NOTE")
-                | any (== "warning") classes    = (["uk-alert-warning"] ++ classes, "warning", "WARN")
-                | any (== "help")    classes    = (["uk-alert-success"] ++ classes, "lifesaver", "HELP")
-                | any (== "danger")  classes    = (["uk-alert-danger"] ++ classes, "bolt", "MISTAKE")
+                | any (== "info") classes       = (classes, "la-info", "INFO")
+                | any (== "note") classes       = (["uk-alert-primary"] ++ classes, "la-pencil-alt", "NOTE")
+                | any (== "warning") classes    = (["uk-alert-warning"] ++ classes, "la-exclamation-circle", "WARN")
+                | any (== "help")    classes    = (["uk-alert-success"] ++ classes, "la-life-ring", "HELP")
+                | any (== "danger")  classes    = (["uk-alert-danger"] ++ classes, "la-bolt", "MISTAKE")
                 | otherwise = (classes, "", "")
             content = blocks
 
-            iconElement = Div ("", [], []) [Div ("", [], [("uk-icon", icon)]) [], Div ("", ["y-badge"], []) [Plain [Str badge]]]
+            iconElement = Div ("", [], []) [Plain [ Span ("", ["las", icon],[]) []], Div ("", ["badge"], []) [Plain [Str badge]]]
             prependHeader =
                 case lookup "header" kv of
-                    Just header -> [(Div ("", ["y-box-header"], []) (iconElement : parse header) )]
+                    Just header -> [(Div ("", ["header"], []) [iconElement, Div ("", [], []) (parse header)] )]
                     Nothing -> []
 
             appendCaption =
                 case  lookup "caption" kv of
-                    Just caption -> [(Div ("", ["y-box-caption"], []) (parse caption))]
+                    Just caption -> [(Div ("", ["caption"], []) (parse caption))]
                     Nothing -> []
 
 
@@ -309,9 +327,7 @@ htmlFilter = walk replaceElements where
         addClasses (Image (id, classes, kv) label target) = Image (
             id,
             classes ++ [
-                "uk-border-rounded",
-                "uk-box-shadow-large",
-                T.append "uk-align-" align
+                T.append "align-" align
             ],
             kv) label target where align = fromMaybe  "center" $ lookup "align" kv
         addClasses inline = inline
@@ -320,7 +336,7 @@ htmlFilter = walk replaceElements where
 
     replaceElements (Header level (id, classes, kv) content ) = Header level (id, classes', kv) content' where
         classes' = classes ++ ["y-header"]
-        content' = [(Span ("", [], []) content), Link ("", ["y-anchor"], [("uk-icon", "link")]) [] (T.pack $ "#"++ (T.unpack id), id) ] -- how else to do that?
+        content' = [(Span ("", [], []) content), Link ("", ["anchor", "las", "la-anchor"], []) [] (T.pack $ "#"++ (T.unpack id), id) ] -- how else to do that?
 
     replaceElements block = block
 

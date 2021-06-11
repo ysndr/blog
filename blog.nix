@@ -27,18 +27,27 @@ in
       }
     );
 
+    # --------------- JS --------------
+    css-tools = (import ./css-tools { inherit pkgs; });
+
     # ------------ dist ---------------
     thirdparty' = linkFarm "thirdparty" thirdparty;
 
     # ------------- generator -----------
-    generator = haskellPackages'.callCabal2nix "Site" "${./generator}" {};
+    generator = (haskellPackages'.callCabal2nix "Site" "${./generator}" {}).overrideAttrs (
+      old: {
+        nativeBuildInputs = old.nativeBuildInputs or [] ++ [ css-tools ];
+      }
+    );
 
     generator-with-thirdparty =
       generator.overrideAttrs (
         old: {
           nativeBuildInputs = old.nativeBuildInputs or [] ++ [ makeWrapper ];
           installPhase = old.installPhase + "\n" + ''
-            wrapProgram $out/bin/generator --set  THIRDPARTY ${thirdparty'}
+            wrapProgram $out/bin/generator \
+              --set THIRDPARTY "${thirdparty'}"
+              --set NODE_PATH "$NODE_PATH:${css-tools.shell.nodeDependencies}"
           '';
         }
       );
@@ -64,11 +73,16 @@ in
       name = "blog-env";
       buildInputs = [
         haskell-env
+        css-tools.shell.nodeDependencies
       ];
 
       shellHook = ''
+
         export THIRDPARTY="${thirdparty'}"
         export HAKYLL_ENV="development"
+
+        export NODE_PATH="$NODE_PATH:${css-tools.shell.nodeDependencies}/lib/node_modules"
+        export NODE_ENV="$HAKYLL_ENV"
 
         export HIE_HOOGLE_DATABASE="${haskell-env}/share/doc/hoogle/default.hoo"
         export NIX_GHC="${haskell-env}/bin/ghc"
