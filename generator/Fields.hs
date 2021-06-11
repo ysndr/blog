@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Fields (
-  peekField
+  authorsField
+,  peekField
 , GitVersionContent(..)
 , versionField
 , headVersionField
@@ -22,7 +23,7 @@ import           Data.Default                   ( Default )
 import           Data.List                      ( dropWhileEnd
                                                 , groupBy
                                                 , isPrefixOf )
-import           Data.Maybe                     ( fromJust )
+import           Data.Maybe                     (maybeToList,  fromJust )
 import           Data.String                    ( IsString, fromString )
 
 
@@ -224,3 +225,12 @@ allTagsField name tags = listFieldWith name (tagCtx tags) mkPostTags
     mkPostTags item = (getTags . itemIdentifier $ item)
         >>= \tags' -> if null tags' then empty
                       else (return tags') >>= (mapM makeItem)
+
+
+authorsField name = listFieldWith name (field "author" (return . itemBody)) mkAuthor
+  where
+    mkAuthor:: Item String  -> Compiler [Item String]
+    mkAuthor item = do
+            metadata <- getMetadata  $ itemIdentifier item
+            let authors = concat $ maybeToList $ lookupStringList name metadata
+            (return authors) >>= mapM makeItem

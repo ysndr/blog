@@ -31,13 +31,43 @@
 
       @media (--media-md) {
         margin-left: inherit;
-        margin-right:inherit;
-        border-radius: 4px;
+        margin-right: inherit;
+      }
+  }
 
+  .box {
+    @apply my-4 py-6 px-4 rounded text-emphasis;
 
-        /*& > .sourceCode {
-          border-radius: 4px;
-        }*/
+    &.info {
+      background: var(--bg-info);
+    }
+    &.note {
+      background: var(--bg-note);
+    }
+    &.help {
+      background: var(--bg-help);
+    }
+    &.warning {
+      background: var(--bg-warning);
+    }
+    &.danger {
+      background: var(--bg-danger);
+    }
+
+    & > .header {
+      @apply text-lg flex font-medium;
+
+      & :first-child {
+        @apply flex;
+
+        &>* {
+          @apply my-auto;
+        }
+
+        .badge {
+          @apply border border-emphasis rounded inline-flex flex-grow-0 justify-items-center text-2xs font-bold ml-1 mr-2 p-1;
+
+        }
       }
   }
 }
