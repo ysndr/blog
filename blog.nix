@@ -41,7 +41,7 @@ in
     # ------------- generator -----------
     generator = (haskellPackages'.callCabal2nix "Site" "${./generator}" {}).overrideAttrs (
       old: {
-        nativeBuildInputs = old.nativeBuildInputs or [] ++ [ css-tools.package ];
+        nativeBuildInputs = old.nativeBuildInputs or [] ++ [ css-tools.shell.nodeDependencies ];
       }
     );
 
@@ -52,7 +52,7 @@ in
           installPhase = old.installPhase + "\n" + ''
             wrapProgram $out/bin/generator \
               --set THIRDPARTY "${thirdparty'}" \
-              --set NODE_PATH "$NODE_PATH:${css-tools.shell.nodeDependencies}"
+              --set NODE_PATH "$NODE_PATH:${css-tools.shell.nodeDependencies}/lib/node_modules"
           '';
         }
       );
@@ -61,7 +61,7 @@ in
 
     generate-website = script {
       name = "generate-website";
-      paths = [ generator-with-thirdparty git ];
+      paths = [ generator-with-thirdparty git css-tools.shell.nodeDependencies ];
 
       script = ''
         generator rebuild
