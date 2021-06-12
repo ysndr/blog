@@ -9,7 +9,7 @@ name:               Site
 --                   | | | +--- code changes with no API change
 -- version:          0.1.1.0
 
-version:            0.1.1.1
+version:            0.2.1.1
 license:            MIT
 license-file:       LICENSE
 maintainer:         me@ysndr.de
@@ -23,18 +23,18 @@ executable generator
     default-language: Haskell2010
     other-extensions: OverloadedStrings
     build-depends:
-        base ^>=4.13,
+        base >=4.14,
         data-default ^>=0.7,
         filepath ^>=1.4,
         process ^>=1.6,
         time ^>=1.9,
         time-locale-compat ^>=0.1,
-        hakyll ^>= 4.13.4.1 ,
-        hakyll-images ^>=0.4,
+        hakyll ^>= 4.14,
+        hakyll-images ^>=1.0,
         text ^>=1.2,
         hakyll-sass ^>=0.2,
         hsass ^>=0.8,
-        pandoc ^>=2.11,
+        pandoc ^>=2.13,
         pandoc-types ^>=1.22,
         blaze-html ^>=0.9,
         blaze-markup ^>=0.8
