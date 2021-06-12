@@ -21,9 +21,14 @@ in
     # hie = all-hies.selection { selector = p: { inherit (p) ghc865; }; };
     haskellPackages' = haskellPackages.extend (
       self: super: with pkgs.haskell.lib;  {
-        hakyll = appendPatch (dontCheck (super.callHackage "hakyll" "4.13.4.1" {})) ./hakyll.patch;
-        hakyll-images = unmarkBroken super.hakyll-images;
-        hakyll-sass = unmarkBroken super.hakyll-sass;
+        # hakyll = appendPatch (dontCheck (super.callHackage "hakyll" "4.13.4.1" {})) ./hakyll.patch;
+
+
+        # hakyll-images = unmarkBroken super.hakyll-images;
+        JuicyPixels-extra = super.callHackage "JuicyPixels-extra" "0.4.1" {};
+        # pandoc = super.callHackage "pandoc" "2.14.0.1" {};
+
+        # hakyll-sass = unmarkBroken super.hakyll-sass;
       }
     );
 
@@ -36,7 +41,7 @@ in
     # ------------- generator -----------
     generator = (haskellPackages'.callCabal2nix "Site" "${./generator}" {}).overrideAttrs (
       old: {
-        nativeBuildInputs = old.nativeBuildInputs or [] ++ [ css-tools ];
+        nativeBuildInputs = old.nativeBuildInputs or [] ++ [ css-tools.package ];
       }
     );
 
