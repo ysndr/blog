@@ -51,7 +51,7 @@ in
           nativeBuildInputs = old.nativeBuildInputs or [] ++ [ makeWrapper ];
           installPhase = old.installPhase + "\n" + ''
             wrapProgram $out/bin/generator \
-              --set THIRDPARTY "${thirdparty'}"
+              --set THIRDPARTY "${thirdparty'}" \
               --set NODE_PATH "$NODE_PATH:${css-tools.shell.nodeDependencies}"
           '';
         }
