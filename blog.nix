@@ -39,23 +39,20 @@ in
     thirdparty' = linkFarm "thirdparty" thirdparty;
 
     # ------------- generator -----------
-    generator = (haskellPackages'.callCabal2nix "Site" "${./generator}" {}).overrideAttrs (
-      old: {
-        nativeBuildInputs = old.nativeBuildInputs or [] ++ [ css-tools.shell.nodeDependencies ];
-      }
-    );
+    generator = (haskellPackages'.callCabal2nix "Site" "${./generator}" {});
 
     generator-with-thirdparty =
-      generator.overrideAttrs (
-        old: {
-          nativeBuildInputs = old.nativeBuildInputs or [] ++ [ makeWrapper ];
-          installPhase = old.installPhase + "\n" + ''
+      symlinkJoin {
+        name = "generator-with-thirdparty";
+        paths = [generator css-tools.shell.nodeDependencies css-tools.package ];
+        buildInputs = [ makeWrapper ];
+        postBuild = ''
             wrapProgram $out/bin/generator \
               --set THIRDPARTY "${thirdparty'}" \
-              --set NODE_PATH "$NODE_PATH:${css-tools.shell.nodeDependencies}/lib/node_modules"
+              --prefix NODE_PATH : ${css-tools.shell.nodeDependencies}/lib/node_modules \
+              --prefix PATH : ${css-tools.shell.nodeDependencies}/bin
           '';
-        }
-      );
+      };
 
     # --------------- Commands ----------------
 
