@@ -48,7 +48,7 @@ jobs:
         path: release
 
     - name: Setup preview (Download preview)
-      uses: actions/upload-artifact@v2
+      uses: actions/download-artifact@v2
       with:
         name: blog-build
         path: preview
