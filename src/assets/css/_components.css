@@ -1,0 +1,106 @@
+@layer components {
+    .uk-open {
+        display: block !important;
+    }
+
+    .y-fill-horizontal {
+        @apply -mx-4 sm:-mx-8 lg:mx-auto ;
+        @apply overflow-hidden;
+        @apply rounded-none lg:rounded px-8 !important;
+
+          & > .sourceCode {
+              @apply -mx-8 sm:-mx-8 lg:-mx-8;
+              @apply rounded-none lg:rounded overflow-hidden;
+          }
+
+
+
+        }
+
+    .box {
+      @apply my-4 py-6 px-4 rounded text-emphasis;
+
+      &.info {
+        background: var(--bg-info);
+      }
+      &.note {
+        background: var(--bg-note);
+      }
+      &.help {
+        background: var(--bg-help);
+      }
+      &.warning {
+        background: var(--bg-warning);
+      }
+      &.danger {
+        background: var(--bg-danger);
+      }
+
+      & > .header {
+        @apply text-lg flex font-medium;
+
+        & :first-child {
+          @apply flex;
+
+          &>* {
+            @apply my-auto;
+          }
+
+          .badge {
+            @apply border border-emphasis rounded inline-flex flex-grow-0 justify-items-center text-2xs font-bold ml-1 mr-2 p-1;
+
+          }
+        }
+
+      }
+
+      & .caption {
+        color: inherit;
+        font-size: $global-small-font-size;
+        padding-top: $container-padding-horizontal;
+      }
+    }
+
+    .container {
+      max-width: 1100px;
+    }
+
+    .y-header {
+      @apply flex lg:flex-row-reverse;
+
+      >:first-child {
+        @apply mr-auto;
+      }
+
+      & .anchor {
+        @apply ml-auto lg:-ml-12 lg:mr-4 w-8;
+      }
+    }
+
+    .y-toc {
+      & ul {
+        @apply m-0;
+        & ul {
+          @apply pt-1 pl-4;
+        }
+      }
+      & li a::before {
+
+          content: ">";
+          @apply mr-2;
+
+      }
+    }
+
+    .align-center {
+      @apply float-none mx-auto;
+    }
+
+    .align-left {
+      @apply float-left mr-4;
+    }
+
+    .align-right {
+      @apply float-right ml-4;
+    }
+}
