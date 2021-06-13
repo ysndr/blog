@@ -7,6 +7,8 @@ on:
 
 env:
   GITHUB_PR_NUMBER: "${{github.event.number}}"
+  PREVIEW_PATH: "./release/preview"
+
 
 jobs:
   build:
@@ -39,30 +41,36 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - name: Setup preview (Download release)
-      if: github.event_name == 'pull_request'
+    - name: Download Release
       uses: actions/checkout@v2
       with:
         repository: ysndr/blog
         ref: gh-pages
         path: release
 
-    - name: Setup preview (Download preview)
+    - name: Download Current Build
       uses: actions/download-artifact@v2
       with:
         name: blog-build
-        path: preview
+        path: current
 
-    - name: Setup preview (move preview)
+    - name: Apply as Preview
       if: github.event_name == 'pull_request'
       run: |
-        export PREVIEW="./release/preview"
-        export PR_PATH="./release/preview/$GITHUB_PR_NUMBER"
+        export PR_PATH="$PREVIEW_PATH/$GITHUB_PR_NUMBER"
 
-        mkdir -p $PREVIEW
+        mkdir -p $PREVIEW_PATH
         [ -d $PR_PATH ] && rm -r $PR_PATH
 
         mv ./preview $PR_PATH
+
+    - name: Apply as Release
+      if: github.event_name != 'pull_request'
+      run: |
+
+        mv $PREVIEW_PATH ./current/preview
+        rm -r ./release
+        mv ./current ./release
 
     - name: Upload (including preview)
       uses: actions/upload-artifact@v2
@@ -74,16 +82,17 @@ jobs:
 
 
 
-    - name: Deploy
-      run: ls -lar .
-      # uses: crazy-max/ghaction-github-pages@v2
-      # with:
-      #   target_branch: gh-pages2
-      #   build_dir: build/site
-      #   committer_name: github-ci
-      #   committer-email: notifications+ci-blog@ysndr.de
-      # env:
-      #   GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+    - name: Deploy to GitHub
+      uses: crazy-max/ghaction-github-pages@v2
+      with:
+        target_branch: gh-pages2
+        build_dir: ./.
+        committer_name: github-ci
+        committer-email: notifications+ci-blog@ysndr.de
+      env:
+        GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+
+
   always-run:
     runs-on: ubuntu-latest
     steps:
