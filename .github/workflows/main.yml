@@ -5,52 +5,84 @@ on:
     branches: "release"
   pull_request:
 
+env:
+  GITHUB_PR_NUMBER: "${{github.event.number}}"
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install Nix
-      uses: cachix/install-nix-action@v12
-      with:
-        install_url: https://github.com/numtide/nix-flakes-installer/releases/download/nix-2.4pre20201221_9fab14a/install
-        extra_nix_config: |
-          experimental-features = nix-command flakes
+    # - name: Install Nix
+    #   uses: cachix/install-nix-action@v12
+    #   with:
+    #     install_url: https://github.com/numtide/nix-flakes-installer/releases/download/nix-2.4pre20201221_9fab14a/install
+    #     extra_nix_config: |
+    #       experimental-features = nix-command flakes
+    # - name: Compile Document
+    #   run: nix run ./#compile
+    # - name: Disable Jekyll rendering
+    #   run: touch build/site/.nojekyll
     - name: Compile Document
-      run: nix run ./#compile
-    - name: Disable Jekyll rendering
-      run: touch build/site/.nojekyll
+      run: |
+        pwd
+        mkdir -p build/site
+        touch build/site/index.html
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: blog-build
+        path: ./build/site
+
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
     - name: Setup preview (Download release)
-      if: github.event_name == "pull_request"
+      if: github.event_name == 'pull_request'
       uses: actions/checkout@v2
       with:
+        repository: ysndr/blog
         ref: gh-pages
         path: release
+
+    - name: Setup preview (Download preview)
+      uses: actions/upload-artifact@v2
+      with:
+        name: blog-build
+        path: preview
+
     - name: Setup preview (move preview)
-      if: github.event_name == "pull_request"
+      if: github.event_name == 'pull_request'
       run: |
-        export PR_PATH="./gh-pages/preview/${{ github.event.pull_request.number }}"
+        pwd
+
+        export PR_PATH="./release/preview/$GITHUB_PR_NUMBER"
+        [ -d $PR_PATH ] && rm -r $PR_PATH
         mkdir -p $PR_PATH
-        rm -r $PR_PATH/* || true
-        cp -r build/site $PR_PATH
-        mv ./gh_pages build/site
+
+        ls -la
+
+        cp -r ./preview $PR_PATH
+
+    - name: Upload (including preview)
+      uses: actions/upload-artifact@v2
+      with:
+        name: blog-build
 
 
 
     - name: Deploy
-      uses: crazy-max/ghaction-github-pages@v2
-      with:
-        target_branch: gh-pages
-        build_dir: build/site
-        committer_name: github-ci
-        committer-email: notifications+ci-blog@ysndr.de
-      env:
-        GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+      run: ls -lar .
+      # uses: crazy-max/ghaction-github-pages@v2
+      # with:
+      #   target_branch: gh-pages2
+      #   build_dir: build/site
+      #   committer_name: github-ci
+      #   committer-email: notifications+ci-blog@ysndr.de
+      # env:
+      #   GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
   always-run:
     runs-on: ubuntu-latest
     steps:
