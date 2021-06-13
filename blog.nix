@@ -49,6 +49,7 @@ in
         postBuild = ''
             wrapProgram $out/bin/generator \
               --set THIRDPARTY "${thirdparty'}" \
+              --set POSTCSS_MODULES "${css-tools.shell.nodeDependencies}/lib/node_modules" \
               --prefix NODE_PATH : ${css-tools.shell.nodeDependencies}/lib/node_modules \
               --prefix PATH : ${css-tools.shell.nodeDependencies}/bin
           '';
