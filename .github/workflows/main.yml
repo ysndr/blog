@@ -68,7 +68,9 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: blog-build
-        path: release
+        path: |
+          release
+          !./release/.git
 
 
 
