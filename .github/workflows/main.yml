@@ -62,7 +62,7 @@ jobs:
         mkdir -p $PREVIEW_PATH
         [ -d $PR_PATH ] && rm -r $PR_PATH
 
-        mv ./preview $PR_PATH
+        mv ./current $PR_PATH
 
     - name: Apply as Release
       if: github.event_name != 'pull_request'
