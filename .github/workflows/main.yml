@@ -64,13 +64,13 @@ jobs:
 
         ls -la
 
-        cp -r ./preview $PR_PATH
+        mv ./preview $PR_PATH
 
     - name: Upload (including preview)
       uses: actions/upload-artifact@v2
       with:
         name: blog-build
-        path: .
+        path: release
 
 
 
