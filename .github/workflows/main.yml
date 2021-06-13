@@ -56,13 +56,11 @@ jobs:
     - name: Setup preview (move preview)
       if: github.event_name == 'pull_request'
       run: |
-        pwd
-
+        export PREVIEW="./release/preview"
         export PR_PATH="./release/preview/$GITHUB_PR_NUMBER"
-        [ -d $PR_PATH ] && rm -r $PR_PATH
-        mkdir -p $PR_PATH
 
-        ls -la
+        mkdir -p $PREVIEW
+        [ -d $PR_PATH ] && rm -r $PR_PATH
 
         mv ./preview $PR_PATH
 
