@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:title" content="y|sndr - Building a reproducible blog with Nix">
+  <meta property="og:description" content="A blog about nix, rust, haskell and more">
+  <meta property="og:image" content="/assets/images/feature-x-small.jpg">
+  <meta property="og:url" content="https://blog.ysndr.de/">
+  <title>y|sndr - Building a reproducible blog with Nix</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css" />
+  <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">  <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="../../../rss.xml" />
+  <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="../../../atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../../../assets/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../assets/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../../assets/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../../assets/images/favicon/site.webmanifest">
+</head>
+
+<body class="flex flex-col overflow-x-hidden text-body text-black leading-normal">
+  <header class="bg-muted font-standout leading-snug">
+
+    <div class="flex flex-col sm:flex-row items-center my-8 container justify-items-center">
+      <div class="flex flex-col text-right text-emphasis">
+          <h1 class="inline-flex flex-col">Building a reproducible blog with Nix
+          <small>How I use Nix to manage the development and CI of this blog</small>
+          </h1>
+          <span class="text-xs text-muted">
+          
+          </span>
+      </div>
+      <hr class="hidden sm:block sm:h-24 sm:w-px mx-4 my-4 sm:my-auto min-w-px">
+      <div class="text-sm text-muted sm:w-5/12 md:w-2/5">
+        <ul>
+          <li class="flex">
+            <i class="las la-calendar-day mr-4"></i> April 10, 2020
+          </li>
+          <li class="flex">
+            <i class="las la-stopwatch mr-4"></i> 15 Minutes
+          </li>
+          
+          <li class="flex break-words">
+            <i class="las la-tags mr-4"></i>
+            
+            <span>
+              <a class="text-emphasis" href="../../../tags/internal.html">internal</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/technical.html">technical</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/nix.html">nix</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/haskell.html">haskell</a>
+              </span>
+          </li>
+          
+          <li class="flex">
+            <i class="las la-code-branch mr-4"></i>
+            <a class="uk-link-muted" href="https://github.com/ysndr/blog/commit/88efb25">88efb25: Flatten directory format to make use of automatic clean copying of urls</a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+    <hr class="container" />
+
+</header>
+
+
+  <header class="sticky font-standout inset-0 z-50 min-w-full bg-muted text-base">
+  <nav class="container grid grid-cols-3">
+
+
+
+    <div class="flex flex-col">
+      <a type="button" class="content-center my-auto text-muted w-max"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M4 6h20 M4 12h20 M4 18h20"></path>
+      </svg><span class="ml-2 uppercase text-xs">Menu</span></a>
+
+
+      <div uk-dropdown class="container hidden">
+            <div class="inset-x-0 absolute container px-8 grid sm:grid-cols-3 sm:gap-8 shadow-lg bg-white text-sm text-muted fill-current stroke-current pb-6">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Who?</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="https://gist.github.com/ysndr/978662957bb9187fd52b2037466e1e34">CV</a></li>
+                  <li><hr></li>
+                  <li>
+                    <ul class="gap-2" horizontal>
+                      <li><a href="mailto:contact@ysndr.de"><i class="las la-envelope-open-text"></i></a></li>
+                      <li><a href="https://linkedin.com/in/yannik-sander"><i class="lab la-linkedin-in"></i></a>
+                      </li>
+                      <li><a href="https://github.com/ysndr"><i class="lab la-github"></i></a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+             <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="text-black uppercase">What?</li>
+                  <li><a href="https://github.com/ysndr">Projects</a></li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/sam-knn-regressor">sam-knn-regressor</a></li>
+                  <li><a href="https://github.com/ysndr/nixos-config">NixOS Config</a></li>
+                </ul>
+              </div>
+              <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Blog</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="../../../archive">Archive</a></li>
+                  <li class="flex">
+                    <span>
+                      <svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="rss" stroke="currentColor"><circle cx="3.12" cy="16.8" r="1.85"></circle><path fill="none" stroke-width="1.1" d="M1.5,8.2 C1.78,8.18 2.06,8.16 2.35,8.16 C7.57,8.16 11.81,12.37 11.81,17.57 C11.81,17.89 11.79,18.19 11.76,18.5"></path><path fill="none" stroke-width="1.1" d="M1.5,2.52 C1.78,2.51 2.06,2.5 2.35,2.5 C10.72,2.5 17.5,9.24 17.5,17.57 C17.5,17.89 17.49,18.19 17.47,18.5"></path></svg>
+                    </span>
+                    <ul class="gap-4 items-center ml-2" horizontal>
+                      <li><a href="../../../rss.xml">RSS</a></li>
+                      <li><a href="../../../atom.xml">Atom</a></li>
+                    </ul>
+                  </li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/blog/commit/6edbb66"><span><svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="git-branch"><circle fill="none" stroke-width="1.2" cx="7" cy="3" r="2"></circle><circle fill="none" stroke-width="1.2" cx="14" cy="6" r="2"></circle><circle fill="none" stroke-width="1.2" cx="7" cy="17" r="2"></circle><path fill="none" stroke-width="2" d="M14,8 C14,10.41 12.43,10.87 10.56,11.25 C9.09,11.54 7,12.06 7,15 L7,5"></path></svg></span>   current rev.: 6edbb66: Move components css into their own file</a></li>
+                </ul>
+              </div>
+            </div>
+      </div>
+
+    </div>
+
+
+    <div class="uk-navbar-nav uk-flex-1 py-4 align-items-center">
+
+      <a href="../../../" class="flex items-center justify-center">
+          <img src="../../../assets/images/logo-small.svg" alt="y|sndr" class="h-8" />
+        </a>
+
+
+    </div>
+
+
+
+    
+    <div class="flex flex-col items-end md:relative">
+        <a class="content-center uppercase my-auto text-muted w-max" type="button">
+          <span class="md:hidden">Content</span> <span class="hidden md:block">Table of Contents</span>
+        </a>
+        <div class="y-toc hidden" uk-drop>
+          <div class="container max-w-full sm:max-w-sm  bg-white p-6 w-full absolute text-muted right-0 shadow-xl rounded-b" uk-scrollspy-nav="closest: li; scroll: true; offset: 85; cls: text-emphasis">
+            <ul class><li><a href="#building-a-reproducible-blog-with-nix"><span>Building a reproducible blog with Nix</span><span></span></a><ul class><li><a href="#what-is-nix"><span>What is Nix?</span><span></span></a><ul class><li><a href="#how-to-installuse-packages"><span>How to install/use packages?</span><span></span></a><ul class><li><a href="#global-installation"><span>Global installation</span><span></span></a></li><li><a href="#local-usage"><span>Local usage</span><span></span></a></li></ul></li></ul></li><li><a href="#nix-on-this-blog"><span>Nix on this blog</span><span></span></a><ul class><li><a href="#default.nix"><span><code>default.nix</code></span><span></span></a></li><li><a href="#shell.nix-and-nixpkgs.nix"><span><code>shell.nix</code> and <code>nixpkgs.nix</code></span><span></span></a></li></ul></li><li><a href="#nix-and-github-actions"><span>Nix and GitHub Actions</span><span></span></a></li><li><a href="#epilog"><span>Epilog</span><span></span></a></li></ul></li></ul>
+          </div>
+        </div>
+    </div>
+    
+
+  </nav>
+
+</header>
+
+
+  <main class="my-8">
+    <div class="container">
+      <section class="relative">
+    
+
+<div class="h-56 sm:h-xl xl:h-2xl bg-cover w-5/6 mx-auto xl:min-w-full xl:w-auto mb-8 xl:-mx-24 rounded-lg relative shadow-2xl overflow-hidden">
+    <img src="https://images.unsplash.com/photo-1565058290014-df9bd491a29c" alt="Article image" class="relative w-full h-full object-cover">
+
+    <div class="w-full absolute bottom-0">
+        <div class="relative">
+            <div class="bg-white rounded-full m-4 w-max float-right p-1" style="line-height: 0;" type="button"><i class="las la-copyright"></i></div>
+            <div uk-drop="pos: top-right" class="w-max hidden absolute pb-4">
+                <div class="bg-white p-6 rounded">
+                    <h4 class="uk-card-title">Credits</h4>
+                    
+                    Photo by <a style="background-color:black;color:white;text-decoration:none;padding:4px 6px;font-family:-apple-system, BlinkMacSystemFont, &quot;San Francisco&quot;, &quot;Helvetica Neue&quot;, Helvetica, Ubuntu, Roboto, Noto, &quot;Segoe UI&quot;, Arial, sans-serif;font-size:12px;font-weight:bold;line-height:1.2;display:inline-block;border-radius:3px" href="https://unsplash.com/@the_roaming_platypus?utm_medium=referral&amp;utm_campaign=photographer-credit&amp;utm_content=creditBadge" target="_blank" rel="noopener noreferrer" title="Download free do whatever you want high-resolution photos from timJ"><span style="display:inline-block;padding:2px 3px"><svg xmlns="http://www.w3.org/2000/svg" style="height:12px;width:auto;position:relative;vertical-align:middle;top:-2px;fill:white" viewBox="0 0 32 32"><title>unsplash-logo</title><path d="M10 9V0h12v9H10zm12 5h10v18H0V14h10v9h12v-9z"></path></svg></span><span style="display:inline-block;padding:2px 3px">timJ</span></a> on Unsplash
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<article>
+
+    <p class="text-lead text-emphasis italic sm:w-5/6 mx-auto"><i>Nix is a purely functional package manger that allows isolated development environments and builds. This blog uses it to provide a development environment and to build the blog in a GitHub Action</i></p>
+    <p><h1 class="y-header" id="building-a-reproducible-blog-with-nix"><span>Building a reproducible blog with Nix</span><a href="#building-a-reproducible-blog-with-nix" class="anchor las la-anchor" title="building-a-reproducible-blog-with-nix"></a></h1>
+<p>This blog is hosted by <a href="https://pages.github.com/">GitHub Pages</a>. GitHub Pages, aside static HTML content, only supports building Jekyll pages natively. At some point a website like this one has to be <strong>generated</strong>, i.e. turned into static HTML content. This means Markdown has to be converted to HTML static pages (like the <a href="../../../">homepage</a>), an <a href="../../../archive.html">archive</a> has to be created, and <a href="../../../rss.xml">RSS</a> and <a href="../../../atom.xml">ATOM</a> feeds have to be produced. In this blog’s case, this is done by a Haskell DSL called <a href="https://jaspervdj.be/hakyll/">Hakyll</a>. More details about that can be found in <a href="2019-12-31-built-with-hakyll-part-1.html">prior articles</a>.</p>
+<p>In order to keep everything in the same place, I use <a href="https://github.com/features/actions">GitHub Actions</a> as a mean to automatically build and publish this blog whenever I push updates or merge pull requests.</p>
+<p><strong>Was this not an article about Nix?</strong></p>
+<p>Yes indeed it is. In order to create reproducible builds of this blog I employ the <a href="https://nixos.org/nix">Nix</a> package manager. But in order…</p>
+<div class="info box y-fill-horizontal">
+<p>Jump to <a href="#nix-on-this-blog">Nix on this blog</a> if you know nix already.</p>
+</div>
+<h2 class="y-header" id="what-is-nix"><span>What is Nix?</span><a href="#what-is-nix" class="anchor las la-anchor" title="what-is-nix"></a></h2>
+<p>Nix is sort of a hybrid tool between a package manager and a build system. The Nix homepage states:</p>
+<blockquote>
+<p>Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible. It provides atomic upgrades and rollbacks, side-by-side installation of multiple versions of a package, multi-user package management and easy setup of build environments.</p>
+</blockquote>
+<p>Sounds… good? What does all of that mean though?</p>
+<p>Nix (the package manager) is built around the functional programming language <code>nix</code> (what a coincidence, ha?). A program, library, etc. is built by Nix as the output of a pure function. Runtime/buildtime dependencies go in mix with the sources of the package, are built in an isolated space, and output an executable or whatever you want to build. Such a function is called a <strong>Derivation</strong>.</p>
+<p>Everything that should be built with Nix has to be described as such a function. In fact, the whole set of packages that is there is just <a href="https://github.com/nixos/nixpkgs">a giant collection</a> of functions, each defined in their own files.</p>
+<p>The isolated manner in which the packages are built also shows in the way they are managed. All packages are installed as such:</p>
+<pre><code>/nix/store/6fgjp1wsv1w44f890f6kvwywjnc32svr-zoxide-0.2.1/bin/zoxide</code></pre>
+<p>Lets take this apart:</p>
+<dl>
+<dt><code>/nix/store/</code></dt>
+<dd>This is the nix store all packages are contained in this folder
+</dd>
+<dt><code>6fgjp1wsv1w44f890f6kvwywjnc32svr</code></dt>
+<dd>This is a hash of the producing function, it takes into account the function itself, and its inputs
+</dd>
+<dd>It also easens binary caching.
+</dd>
+<dt><code>zoxide</code></dt>
+<dd>the package’s name
+</dd>
+<dt><code>0.2.1</code></dt>
+<dd>the packaged version
+</dd>
+<dt><code>/bin/zoxide</code></dt>
+<dd>the actual executable
+</dd>
+<dd>actually the file structure of packages is similar to what you would normally find in places like <code>/usr</code> or <code>~/.local/</code>
+</dd>
+</dl>
+<p>Yet, while that package might exists in the store, this does not mean it is <em>installed</em> or usable. — Huh?</p>
+<p>You see, the hash we have seen right now is there for a reason. It allows to have multiple versions of one and the same program at the same time, even with the same version. Normally all packages are built according to one specific state of the <code>nixpkgs</code> repo. <code>.nix</code> files get evaluated by writing a build instruction file (<code>.drv</code>). This resolves all dependencies (building them if they do not exist yet), prepares the package’s source and combines those into a hash. If one instead builds it with a newer version where some dependency was updated or changed, not only this derivation hash changes, but it also happens to change the target derivation’s hash, forcing it to be rebuilt using the new dependency. The same happens if sources change. As a result, many different versions of a package can coexist in the store.</p>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header>
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+NOTE
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p>As nix functions are pure, <strong>wherever</strong> one uses the same <code>nixpkgs</code> instance, the exact same inputs are used to create the exact same output. Also, it makes little to no difference on which machine the package is built. The binary will be the same(ish).</p>
+<p>Actually, there is a <a href="https://r13y.com/">project</a> tracking how many builds (of a vital subset of nix) are reproducible on two different machines.</p>
+</div>
+<h3 class="y-header" id="how-to-installuse-packages"><span>How to install/use packages?</span><a href="#how-to-installuse-packages" class="anchor las la-anchor" title="how-to-installuse-packages"></a></h3>
+<h4 class="y-header" id="global-installation"><span>Global installation</span><a href="#global-installation" class="anchor las la-anchor" title="global-installation"></a></h4>
+<p>There are different ways to achive this. Using nix locally, the easiest but least idiomatic would be:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> nix-env <span class="at">-iA</span> zoxide</span></code></pre></div>
+</div>
+<p>This installs <code>zoxide</code><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>) globally for the current user, by linking all of zoxides contents to a special directory (<code>~/.nix-profile/</code>). The <code>bin</code> contents of this directory are on the <code>$PATH</code> making the package’s binary available to the user.</p>
+<p>As mentioned this is not idiomatic Nix, which focuses on declerativity. If you want something installed, consider using <a href="https://github.com/rycee/home-manager"><code>home-manager</code></a> or add packages to your <code>configuration.nix</code> if you are on <a href="https://nixos.org/nixos">NixOS</a>.</p>
+<h4 class="y-header" id="local-usage"><span>Local usage</span><a href="#local-usage" class="anchor las la-anchor" title="local-usage"></a></h4>
+<p>If you need a program but do not want to install it because you don’t need it often and you don’t want to clutter your <code>$PATH</code>, or it’s a project specific tool you can make use of either <code>nix run</code> or <code>nix-shell</code>.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> nix run nixpkgs.git</span></code></pre></div>
+</div>
+<p>This will drop you into a Bash shell with git available.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> nix-shell <span class="at">-p</span> git</span></code></pre></div>
+</div>
+<p>This will essentially do the same but can do much more.</p>
+<ul>
+<li><p><code>nix-shell</code> accepts multiple packages</p></li>
+<li><p>can be used as a shebang (<a href="https://gist.github.com/travisbhartwell/f972aab227306edfcfea">see</a>)</p></li>
+<li><p>can drop you into development environments of a specific derivation (<a href="https://nixos.org/nixos/nix-pills/developing-with-nix-shell.html">see</a>)</p></li>
+<li><p>can be used to make development environments for a project.</p></li>
+</ul>
+<p>Let’s focus on the last point for this article.</p>
+<h2 class="y-header" id="nix-on-this-blog"><span>Nix on this blog</span><a href="#nix-on-this-blog" class="anchor las la-anchor" title="nix-on-this-blog"></a></h2>
+<p>This blog uses a shell environment in which I have all the tools I need at hand. Let’s look at the structure file by file.</p>
+<h3 class="y-header" id="default.nix"><span><code>default.nix</code></span><a href="#default.nix" class="anchor las la-anchor" title="default.nix"></a></h3>
+<p>By default, Nix commands such as <code>nix-build</code> read the <a href="https://github.com/ysndr/blog/default.nix"><code>default.nix</code></a> file in the directory they are executed from. In my projects, I use them to define and export everything that might be useful. This might include build tools, language environments, scripts or shells.</p>
+<p>Generally my <code>default.nix</code> file looks like this:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb5"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">{pkgs</span> <span class="pp">?</span> import <span class="er">(</span><span class="cf">if</span> <span class="ex">pin</span> == false then <span class="op">&lt;</span>nixpkgs<span class="op">&gt;</span> else pin<span class="kw">)</span> <span class="ex">{},</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a> <span class="ex">pin</span> <span class="pp">?</span> ./nixpkgs.nix, ... }:</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">with</span> pkgs<span class="kw">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">let</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span>some <span class="ex">packages</span> and configuration<span class="op">&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">shell</span> = mkShell {</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    name = <span class="st">&quot;&lt;name&gt;&quot;</span><span class="kw">;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    buildInputs = [ <span class="op">&lt;</span>packages I want in my shell<span class="op">&gt;</span> ]<span class="kw">;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    shellHook = <span class="st">''</span> <span class="co"># shell command to be executed when I enter the shell</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    <span class="st">''</span><span class="kw">;</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="er">in</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    inherit shell<span class="kw">;</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    inherit packageA, packageB, ...<span class="kw">;</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div>
+</div>
+<p>This exposes a shell environment for <code>nix-shell</code> and programs to be executed directy using <code>nix-build</code>.</p>
+<p>So what about this blog’s <code>default.nix</code>?</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb6"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">let</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">all-hies</span> = import <span class="er">(</span><span class="ex">builtins.fetchTarball</span> <span class="st">&quot;https://github.com/infinisil/all-hies/tarball/master&quot;</span><span class="kw">)</span> <span class="ex">{}</span><span class="kw">;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="er">in</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">{pkgs</span> <span class="pp">?</span> import <span class="er">(</span><span class="cf">if</span> <span class="ex">pin</span> == false then <span class="op">&lt;</span>nixpkgs<span class="op">&gt;</span> else pin<span class="kw">)</span> <span class="ex">{},</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a> <span class="ex">pin</span> <span class="pp">?</span> ./nixpkgs.nix, ... }:</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">with</span> pkgs<span class="kw">;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="bu">let</span></span></code></pre></div>
+</div>
+<p>Aside from the default, I only priorly import <code>all-hies</code>, which is a project that maintains the <a href="https://github.com/infinisil/all-hies">Haskell Ide Engine</a> on Nix.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb7"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------- Utils -------------</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">nur</span> = import <span class="er">(</span><span class="ex">builtins.fetchTarball</span> <span class="st">&quot;https://github.com/nix-community/NUR/archive/master.tar.gz&quot;</span><span class="kw">)</span> <span class="kw">{</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    pkgs=pkgs<span class="kw">;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">};</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">script</span> = {...} @ args: nur.repos.ysndr.lib.wrap <span class="er">(</span><span class="kw">{</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">shell</span> = true<span class="kw">;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span> <span class="ex">//</span> args<span class="kw">);</span></span></code></pre></div>
+</div>
+<p>This are utilities I might use. <a href="https://github.com/nix-community/NUR">NUR</a> is the nix version of arch’s AUR, albeit not nearly as active sadly. From my own collection, I use the <code>shell</code> script which helps me putting together runnable scripts.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb8"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------- Haskell ------------</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">hie</span> = all-hies.selection { selector = p: { inherit <span class="er">(</span><span class="ex">p</span><span class="kw">)</span> <span class="ex">ghc865</span><span class="kw">;</span> <span class="er">}</span><span class="kw">;</span> <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">myHaskellPackages</span> = haskell.packages.ghc865.extend<span class="er">(</span> <span class="ex">self:</span> super: { }<span class="kw">);</span></span></code></pre></div>
+</div>
+<p>These lines prepare the Haskell environment I use here. I do not override anything from GHC so this is a bit superflous.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb9"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------ dist ---------------</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">thirdparty</span> = linkFarm <span class="st">&quot;thirdparty&quot;</span> [</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">{</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    name = <span class="st">&quot;uikit&quot;</span><span class="kw">;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    path = <span class="er">(</span><span class="ex">fetchTarball</span> <span class="st">&quot;https://github.com/uikit/uikit/archive/v3.2.4.tar.gz&quot;</span><span class="kw">)</span> <span class="ex">+</span> <span class="st">&quot;/src&quot;</span><span class="kw">;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">}</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="ex">]</span><span class="kw">;</span></span></code></pre></div>
+</div>
+<p>I import all third party tools (only uikit currently) into the nix store.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb10"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------- generator -----------</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">generator</span> = myHaskellPackages.callCabal2nix <span class="st">&quot;Site&quot;</span> ./generator {}<span class="kw">;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="ex">generator-with-thirdparty</span> = generator.overrideAttrs<span class="er">(</span><span class="ex">old:</span> {</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">nativeBuildInputs</span> = old.nativeBuildInputs or [] ++ [makeWrapper]<span class="kw">;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">installPhase</span> = old.installPhase + <span class="st">&quot;\n&quot;</span> + <span class="st">''</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    wrapProgram <span class="va">$out</span>/bin/generator <span class="at">--set</span> THIRDPARTY <span class="va">${thirdparty}</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">''</span><span class="kw">;</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="er">}</span><span class="kw">);</span></span></code></pre></div>
+</div>
+<p>Then, I define the <code>generator</code> as a derivation from its Cabal file and the corresponding “Site” executable key defined in <code>./generator/</code>. <code>generator-with-thirdparty</code> makes what I imported as thirdparty content available under the <code>$THIRDPARTY</code> environment variable.</p>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header>
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+NOTE
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p><code>myHaskellPackages.callCabal2nix "Site" ./generator {};</code> is a great tool to quickly make haskell programms available through Nix.</p>
+<p>Similar helpers also exist for Stack.</p>
+</div>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb11"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --------------- Commands ----------------</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">generate-website</span> = script {</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">name</span> = <span class="st">&quot;generate-website&quot;</span><span class="kw">;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">paths</span> = [generator-with-thirdparty git]<span class="kw">;</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">script</span> = <span class="st">''</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    generator rebuild</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">''</span><span class="kw">;</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="er">}</span><span class="kw">;</span></span></code></pre></div>
+</div>
+<p><code>generate-website</code> is supposed to be a build command which, at this state, only runs <code>generator rebuild</code>.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb12"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------- Shell ------------------</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="ex">haskell-env</span> = myHaskellPackages.ghcWithHoogle <span class="er">(</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">hp:</span> with hp<span class="kw">;</span> <span class="bu">[</span> cabal-install <span class="bu">]</span> <span class="ex">++</span> generator.buildInputs <span class="kw">);</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="ex">shell</span> = { enable-hie <span class="pp">?</span> false }: mkShell {</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">name</span> = <span class="st">&quot;blog-env&quot;</span><span class="kw">;</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">buildInputs</span> = [</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    <span class="co"># put packages here.</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    <span class="co"># generator</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    haskell-env</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    <span class="er">(</span><span class="ex">lib.optional</span> <span class="er">(</span><span class="ex">enable-hie</span><span class="kw">)</span> <span class="ex">hie</span><span class="kw">)</span> <span class="co"># optionally setup hie</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="ex">]</span><span class="kw">;</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="ex">shellHook</span> = <span class="st">''</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    export THIRDPARTY=<span class="st">&quot;</span><span class="va">${thirdparty}</span><span class="st">&quot;</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    export HIE_HOOGLE_DATABASE=<span class="st">&quot;</span><span class="va">${haskell</span><span class="er">-env</span><span class="va">}</span><span class="st">/share/doc/hoogle/default.hoo&quot;</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    export NIX_GHC=<span class="st">&quot;</span><span class="va">${haskell</span><span class="er">-env</span><span class="va">}</span><span class="st">/bin/ghc&quot;</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    export NIX_GHCPKG=<span class="st">&quot;</span><span class="va">${haskell</span><span class="er">-env</span><span class="va">}</span><span class="st">/bin/ghc-pkg&quot;</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    export NIX_GHC_DOCDIR=<span class="st">&quot;</span><span class="va">${haskell</span><span class="er">-env</span><span class="va">}</span><span class="st">/share/doc/ghc/html&quot;</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    export NIX_GHC_LIBDIR=<span class="va">$(</span> <span class="va">$NIX_GHC</span> <span class="at">--print-libdir</span> <span class="va">)</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>  <span class="st">''</span><span class="kw">;</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a><span class="er">}</span><span class="kw">;</span></span></code></pre></div>
+</div>
+<p>Finally, I bundle everything together to build an environment with <code>ghc</code> and a Hoogle index containing the generators dependencies as well as <code>cabal-install</code> <strong>for reasons</strong>.</p>
+<p>The shell has this Haskell environment and optionally the <code>hie</code> executable exposed. It also sets some exports that hie needs to properly function as well as the <code>$THIRDPARTY</code> variable to build the blog:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb13"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="er">in</span> <span class="kw">{</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inherit</span> shell generator generate-website <span class="kw">;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ci</span> = {</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    compile = generate-website<span class="kw">;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">};</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+</div>
+<p>All important parts are exported.</p>
+<h3 class="y-header" id="shell.nix-and-nixpkgs.nix"><span><code>shell.nix</code> and <code>nixpkgs.nix</code></span><a href="#shell.nix-and-nixpkgs.nix" class="anchor las la-anchor" title="shell.nix-and-nixpkgs.nix"></a></h3>
+<p>The first file is used by nix-shell by default. All it does is call the shell attribute of the <code>default.nix</code> and controlling if hie is added, making use of the lazy nature of nix: hie will not get evaluated unless enabled.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb14"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span> <span class="ex">pin</span> <span class="pp">?</span> null, enable-hie <span class="pp">?</span> false } @ args:</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">import</span> ./default.nix args<span class="kw">)</span><span class="ex">.shell</span> { inherit enable-hie<span class="kw">;</span> <span class="kw">}</span></span></code></pre></div>
+</div>
+<p>The <code>nixpkgs.nix</code> file defines a common snapshot of the nixpkgs repo, and is therefore important to ensure everything works on other machines.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb15"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">{}:</span> import <span class="er">(</span><span class="ex">builtins.fetchTarball</span> {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">url</span> = <span class="st">&quot;https://github.com/NixOS/nixpkgs/archive/88d9f776091.tar.gz&quot;</span><span class="kw">;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">sha256</span> = <span class="st">&quot;sha256:0z8a0g69fmbbzi77jhvhwafv73dn5fg3gsr0q828lss6j5qpx995&quot;</span><span class="kw">;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="er">}</span><span class="kw">)</span> <span class="ex">{}</span></span></code></pre></div>
+</div>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header>
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+NOTE
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p>Snapshots like these also allow rollbacks as they define which versions of dependencies get passed on.</p>
+</div>
+<h2 class="y-header" id="nix-and-github-actions"><span>Nix and GitHub Actions</span><a href="#nix-and-github-actions" class="anchor las la-anchor" title="nix-and-github-actions"></a></h2>
+<p>Nix has some integration with GitHub Actions through <a href="https://github.com/marketplace/actions/install-nix">install-nix</a>, an action that <strong>installs nix</strong> •_•</p>
+<p>With nix installed, I run <code>$(nix-build -A ci.compile --no-out-link)</code> to make Nix build the blog generator and rebuild the blog’s content into <code>build/site</code>. This works because <code>nix-build --no-out-link</code> will just print the path of the resulting package to <code>stdout</code>, which in this case is only an executable script produced by the <code>script</code> function above. The next step is to take that content and push it to the deployment branch.</p>
+<p><a href="https://github.com/ysndr/blog/blob/release/.github/workflows/main.yml">See more…</a></p>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header>
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+NOTE
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p>I previously did even more with nix but specific GitHub Actions tend to do the job well enough.</p>
+</div>
+<h2 class="y-header" id="epilog"><span>Epilog</span><a href="#epilog" class="anchor las la-anchor" title="epilog"></a></h2>
+<p>I see this has become more of a roundup about Nix. Nix is <strong>huge</strong> though.. and this article does not try to capture everything (obviously). From reading this, I hope you have a rough idea of what nix does and how it was applied here. If you knew Nix already, maybe you found something new or interesting among this pile of words and snippets. If you did not know Nix before, I hope this article was still of interest to you.</p>
+<div class="info box y-fill-horizontal" data-header>
+<div class="header">
+<div>
+<span class="las la-info"></span>
+<div class="badge">
+INFO
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p>If you are hooked on the idea now, further fine grained introduction and resources are:</p>
+<ul>
+<li>The <a href="https://nixos.org/nixos/nix-pills/">Nix-Pills</a></li>
+<li>The <strong>unofficial</strong> <a href="https://nixos.wiki/wiki/Nix">wiki</a></li>
+<li>The nixpkgs <a href="https://github.com/nixos/nixpkgs">repo</a>. Trust me, if you plan to try out nix, bookmark this project and use the issue search.</li>
+</ul>
+</div>
+<p><strong>Thank you for getting here!</strong> I hope you enjoyed it and have learned something. If you have questions, improvements, or any other comment, do not hesitate to get in touch on <a href="https://github.com/ysndr/blog/issues/new">GitHub</a>.</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p><a href="https://github.com/ajeetdsouza/zoxide"><code>zoxide</code></a> (a great (fast) replacement for <code>z</code><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></p>
+
+</article>
+
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+<!--[if lt IE 9]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+<![endif]-->
+
+    </div>
+  </main>
+
+
+  <footer class="font-standout text-sm py-8 px-4 text-mutedDark bg-footer dark">
+      <div class="container grid sm:grid-cols-3 gap-8">
+        <div>
+
+            <h3 class="text-emphasizedDark">Contact</h3>
+            <ul class="ml-1 list-none">
+            <li><a href="mailto:contact@ysndr.de" class="text-emphasizedDark no-underline"><i class="las la-envelope-open-text"></i> contact@ysndr.de</a></li>
+            <li><a href="https://linkedin.com/in/yannik-sander" class="text-emphasizedDark no-underline"><i class="lab la-linkedin"></i></svg> yannik-sander</a></li>
+            <li>
+            <a href="https://github.com/ysndr" class="text-emphasizedDark no-underline"><i class="las la-code-branch"></i> ysndr</a></li>
+          </ul>
+
+
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">Legal</h3>
+          <ul class="ml-1 list-none">
+            <li class="inline-flex justify-items-start items-baseline mb-0">
+              <span class="las la-check-circle block mr-2"></span> No analytics are used here your data is safe :)
+            </li>
+            <li class="inline-flex items-baseline">
+              <span class="las la-check-circle block mr-2"></span> The content of this blog is licensed under CC0 terms if not otherwise noted</span>
+            </li>
+          </ul>
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">About this blog</h3>
+          <ul class="ml-1 list-none">
+            <li>
+              Built with <i class="las la-code"></i> and <i class="lar la-heart"></i> using <a class="text-emphasizedDark no-underline" href="https://jaspervdj.be/hakyll/">Hakyll</a>
+            </li>
+            <li class="text-muted"><i class="las la-code-branch"></i> last updated: <a class="text-emphasizedDark no-underline" href="https://github.com/ysndr/blog">6edbb66: Move components css into their own file (2021-06-13 10:32:08 +0200)</a>
+            </li>
+            <li>
+              <a class="no-underline" href="https://builtwithnix.org" rel="nofollow">
+                <img src="https://builtwithnix.org/badge.svg" style="max-width:100%;">
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+  </footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit-icons.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+  <script>
+    window.cookieconsent.initialise({
+    container: document.getElementById("content"),
+    palette:{
+     popup: {background: "#fff"},
+     button: {background: "#aa0000"},
+    },
+    revokable:true,
+    onStatusChange: function(status) {
+     console.log(this.hasConsented() ?
+      'enable cookies' : 'disable cookies');
+    },
+    law: {
+     regionalLaw: false,
+    },
+    location: false,
+   });
+  </script> -->
+</body>
+
+</html>

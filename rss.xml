@@ -1,0 +1,1187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <channel>
+        <title>y|sndr blog - Alot of stuff about alot of stuff</title>
+        <link>https://blog.ysndr.de</link>
+        <description><![CDATA[Caution this feed might contain oxidized iron and functional ideas.]]></description>
+        <atom:link href="https://blog.ysndr.de/rss.xml" rel="self"
+                   type="application/rss+xml" />
+        <lastBuildDate>Fri, 01 Jan 2021 00:00:00 UT</lastBuildDate>
+        <item>
+    <title>Building with Nix Flakes for, eh .. reasons!</title>
+    <link>https://blog.ysndr.de/posts/internals/2021-01-01-flake-ification/index.html</link>
+    <description><![CDATA[<h1 class="y-header" id="walking-through-snow-eh-nix-flakes-for-oss"><span>Walking through Snow, eh Nix Flakes for OSS</span><a href="#walking-through-snow-eh-nix-flakes-for-oss" class="anchor las la-anchor" title="walking-through-snow-eh-nix-flakes-for-oss"></a></h1>
+<div class="uk-alert-primary note box y-fill-horizontal">
+<p>This article is an update to my series on how this blog is built using <a href="/tags/haskell.html">Haskell</a> and <a href="/tags/nix.html">Nix</a>.</p>
+<ul>
+<li>Building a reproducible blog with Nix (<a href="/posts/internals/2020-04-10-built-with-nix">link</a>)</li>
+<li>How this page is generated (<a href="/posts/internal/2019-12-31-built-with-hakyll-part-1.html">Part 01</a>, <a href="/posts/internal/2020-03-22-built-with-hakyll-part-2.html">Part 02</a>)</li>
+</ul>
+</div>
+<p>I am happy to get back posting on this blog again after a while of silence. I had been kept busy lately with finishing my Bachelor’s and moving to Stockholm to start my Master’s at the Royal Institute of Technology. In the meantime I also started working for <a href="https://www.ngi.eu/ngi-projects/ngi-zero/">NGI-ZERO</a>, an initiative supporting open source projects led by the European Commission. As part of my work for them I package supported projects for the Nix ecosystem. The goal of this effort is to provide a reproducible and easy way to install and use this software. Due to the fact that those projects come in various shapes and sizes, need to be reviewed and should not clutter <code>nixpkgs</code> unnecessarily, <a href="https://github.com/ngi-nix">nig-nix</a> from builds on top of the latest feature to be added to Nix, <strong>Flakes</strong>.</p>
+<p>Although still not available in stable Nix, Flakes can already be used using wrappers and the unstable nix package. Inspired by my work and eager to try them for some private project i migrated my blog’s tooling to use Flakes while also keeping up with the latest additions to the Haskell/Hakyll world.</p>
+<p>Was it worth it? We will see but first, what am I even talking about?</p>
+<h1 class="y-header" id="flake-noun-fleɪk"><span>Flake (<strong>noun</strong>, /fleɪk/)</span><a href="#flake-noun-fleɪk" class="anchor las la-anchor" title="flake-noun-fleɪk"></a></h1>
+<blockquote>
+<p>a person you cannot trust to remember things or to do what they promise, or someone who behaves in a strange way</p>
+<p>Cambridge Dictionary<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+</blockquote>
+<p>Well, this was not too helpful and does not sound too promising either. So which other definition do we find there?</p>
+<blockquote>
+<p>a small, thin piece of something, especially if it has come from a surface covered with a layer of something</p>
+</blockquote>
+<p>This will definitely sound relatable in a moment.</p>
+<h2 class="y-header" id="why"><span>Why?</span><a href="#why" class="anchor las la-anchor" title="why"></a></h2>
+<p>Nix derivations are not completely sand boxed! Well the build is, meaning during the phases no network access, or access to to the hosts file system is possible. What is not so hermetic is the nix expression itself. Have you ever seen this line?</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb1"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">{pkgs</span> <span class="pp">?</span> import <span class="op">&lt;</span>nixpkgs<span class="op">&gt;</span> {}}:</span></code></pre></div>
+</div>
+<p>Yes you have, certainly! One of the reasons why a derivation might fail on your system is due to this. The problem is that it relies on the <code>nixpkgs</code> channel currently active on <em>your system</em>, which is a major impurity, because people tend to not have the same version active or might even set it to different releases (<code>release-xx.xx</code>, <code>unstable</code>, …).<br />
+The common way around this is to pin the <code>nixpkgs</code> used by the developer. This is only a convention though. There is no definite way how to do this. You can see an example in my <a href="/posts/internals/2020-04-10-built-with-nix#default.nix">previous aticle</a> about how I use nix on this blog. The main idea is to state the current version of <code>nixpkgs</code> in a file, fetch the tarball of that version and build against that. This is fine but requires us to update the version manually, and is not consistent among projects.<br />
+Alternatively, the tool that emerged from this is <a href="https://github.com/nmattia/niv"><code>niv</code></a>. Niv provides an easi interface to add external sources and import them from the projects Nix file. Niv in the background writes a lockfile and streamlines updating.</p>
+<p>So there might be a way to pin packages and with some discipline we can get around this impurity. How about this then?</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb2"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span> <span class="ex">develop</span> <span class="pp">?</span> true }:</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="ex">develop</span> then ...</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>           <span class="cf">else</span> <span class="ex">...</span></span></code></pre></div>
+</div>
+<p>So easily your derivation becomes dependent on some command line argument. In this case it’s a simple flag (<em>how do you know?</em>). In other cases it could expect a string even, like setting the ghc version used. This poses multiple problems. First you create an impurity, you depend on some command line flag to be given. More importantly, these inputs are not discoverable without inspecting the nix file, for string inputs, it might even be hard to figure out which values it takes, in which format, etc for this you need to dig through the definition. Also, even with defaults set, importing the project from another place expects the importer to know which arguments they can/must give and require them to inspect the definition again.</p>
+<p>Another issue you might come across:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb3"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">{...}:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">let</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="er">in</span> <span class="kw">{</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inherit</span> shell app some-other-app<span class="kw">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div>
+</div>
+<p>How do you know what to import, what does it do? There are simply no inherent semantics and also no conventions.</p>
+<p>Additionally to this Eelco also <a href="https://www.tweag.io/blog/2020-05-25-flakes/">lists</a> some more issues with this. Firstly, due to missing strong conventions and semantics composing packages is difficult, or not nice of an experience for the user. It also means that discovering packages can not be automated easily.</p>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header="Summary of problems">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+NOTE
+</div>
+</div>
+<div>
+<p>Summary of problems</p>
+</div>
+</div>
+<p>Lets summarize the shortcomings we just discussed:</p>
+<ol type="1">
+<li>impure imports</li>
+<li>no ultimate way to pin <code>nixpkgs</code></li>
+<li>no common (import) interface</li>
+<li>impure arguments</li>
+<li>no common (output) interface</li>
+<li>poor discoverability</li>
+<li>poor composability</li>
+</ol>
+</div>
+<h1 class="y-header" id="creating-a-flake-for-this-blog"><span>Creating a flake for this blog</span><a href="#creating-a-flake-for-this-blog" class="anchor las la-anchor" title="creating-a-flake-for-this-blog"></a></h1>
+<p>To understand how flakes aim to solve those problems, lets - once again - have a look on the new definition of this blog.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb4" data-caption="./flake.nix"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">description</span> = <span class="st">&quot;Flake utils demo&quot;</span><span class="kw">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.nixpkgs.url</span> = <span class="st">&quot;github:nixos/nixpkgs&quot;</span><span class="kw">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.nur.url</span> = <span class="st">&quot;github:nix-community/NUR&quot;</span><span class="kw">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.flake-utils.url</span> = <span class="st">&quot;github:numtide/flake-utils&quot;</span><span class="kw">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.uikit-src</span> = {</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">url</span> = <span class="st">&quot;https://github.com/uikit/uikit/archive/v3.5.8.tar.gz&quot;</span><span class="kw">;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="ex">flake</span> = false<span class="kw">;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">};</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="ex">outputs</span> = { self, nixpkgs, nur, flake-utils, uikit-src }:</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">let</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="er">in</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>      <span class="ex">flake-utils.lib.eachDefaultSystem</span> <span class="er">(</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="ex">system:</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>          <span class="bu">let</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>            <span class="ex">pkgs</span> = import nixpkgs { inherit system<span class="kw">;</span> <span class="ex">overlays</span> = [ nur.overlay ]<span class="kw">;</span> <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>            <span class="ex">blog</span> = pkgs.callPackage ./blog.nix {</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>              <span class="ex">inherit</span> pkgs<span class="kw">;</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>              <span class="ex">nur</span> = pkgs.nur<span class="kw">;</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>              <span class="ex">thirdparty</span> = [</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>                <span class="kw">{</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>                  <span class="ex">name</span> = <span class="st">&quot;uikit&quot;</span><span class="kw">;</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                  <span class="ex">path</span> = <span class="st">&quot;</span><span class="va">${uikit</span><span class="er">-src</span><span class="va">}</span><span class="st">/src&quot;</span><span class="kw">;</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>                <span class="kw">}</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>              <span class="ex">]</span><span class="kw">;</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>            <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>          <span class="er">in</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>            <span class="ex">rec</span> {</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>              <span class="ex">packages</span> = { inherit <span class="er">(</span><span class="ex">blog</span><span class="kw">)</span> <span class="ex">generator</span> generator-with-thirdparty ci shell<span class="kw">;</span> <span class="ex">htop</span> = pkgs.htop<span class="kw">;</span> <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>              <span class="ex">defaultPackage</span> = blog.generator-with-thirdparty<span class="kw">;</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>              <span class="ex">apps.compile</span> =</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>                <span class="ex">flake-utils.lib.mkApp</span> { drv = blog.ci.compile<span class="kw">;</span> <span class="ex">exePath</span> = <span class="st">&quot;&quot;</span><span class="kw">;</span> <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>              <span class="ex">defaultApp</span> = apps.compile<span class="kw">;</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>              <span class="ex">devShell</span> = blog.shell<span class="kw">;</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>            <span class="er">}</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>      <span class="kw">);</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+</div>
+<p>So that’s a lot! And notice, its even simplified through the use of <a href="https://github.com/numtide/flake-utils"><code>flake-utils</code></a>. But it does come with some structure, which we will inspect more closely now.</p>
+<p><em>So what do we see here?</em></p>
+<h2 class="y-header" id="pure-imports"><span>Pure imports</span><a href="#pure-imports" class="anchor las la-anchor" title="pure-imports"></a></h2>
+<p>In flake mode nix expects the flake files to only contain the top level attributes <code>description::string</code>, <code>inputs::set</code> , <code>outputs::{inputs..}-&gt;set</code>. Notice, flakes are not a function at the top level anymore.<br />
+What does that imply? First, there are no arguments to be given by command line (via <code>--arg</code>/<code>--argstr</code>). This means no <code>nixpkgs</code> attribute to be passed from a higher level. Instead, your dependencies are expected to be included in <code>inputs</code> you give. <code>inputs</code> is a set where each attribute is the identifier of one input.</p>
+<p>The corresponding part in the above <code>flake.nix</code> is</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb5"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>  <span class="ex">description</span> = <span class="st">&quot;Flake utils demo&quot;</span><span class="kw">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.nixpkgs.url</span> = <span class="st">&quot;github:nixos/nixpkgs&quot;</span><span class="kw">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.nur.url</span> = <span class="st">&quot;github:nix-community/NUR&quot;</span><span class="kw">;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.flake-utils.url</span> = <span class="st">&quot;github:numtide/flake-utils&quot;</span><span class="kw">;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.uikit-src</span> = {</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">url</span> = <span class="st">&quot;https://github.com/uikit/uikit/archive/v3.5.8.tar.gz&quot;</span><span class="kw">;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="ex">flake</span> = false<span class="kw">;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="er">}</span><span class="kw">;</span></span></code></pre></div>
+</div>
+<p>Each of these input follows this structure:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb6"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">inputs.</span><span class="op">&lt;</span>inputname<span class="op">&gt;</span> = {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">url</span> = git+<span class="op">&lt;</span>url-to-git-repo<span class="op">&gt;</span>[<span class="pp">?</span>ref=<span class="pp">****</span>[<span class="kw">&amp;</span><span class="va">rev</span><span class="op">=</span><span class="pp">****</span>]]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>      <span class="kw">|</span> <span class="kw">(</span><span class="ex">github</span><span class="kw">|</span><span class="ex">gitlab</span><span class="kw">)</span><span class="bu">:</span><span class="op">&lt;</span>user<span class="op">&gt;</span>/<span class="op">&lt;</span>repo<span class="op">&gt;</span>[/<span class="op">&lt;</span>ref<span class="op">&gt;</span> <span class="kw">|</span> <span class="ex">?ref=****[</span><span class="kw">&amp;</span><span class="va">rev</span><span class="op">=</span><span class="pp">****</span>]]<span class="kw">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>      <span class="kw">|</span> <span class="op">&lt;</span>known-flake<span class="op">&gt;</span>[/<span class="op">&lt;</span>ref<span class="op">&gt;</span> <span class="kw">|</span> <span class="ex">?ref=****[</span><span class="kw">&amp;</span><span class="va">rev</span><span class="op">=</span><span class="pp">****</span>]]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>      <span class="kw">|</span> <span class="ex">/absolute/path</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>      <span class="kw">|</span> <span class="ex">./relative/path</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">flake</span> = true <span class="kw">|</span> <span class="fu">false</span><span class="kw">;</span> <span class="co"># default = true</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+</div>
+<dl>
+<dt>Input url</dt>
+<dd>use <code>git+&lt;url&gt;</code> to checkout a git repository at <code>&lt;url&gt;</code>
+</dd>
+<dd>use <code>/local/absolute/path</code> or <code>./relative/path</code> to load a local source
+</dd>
+<dd>use <code>gitlab:&lt;user&gt;/&lt;repo&gt;</code>/<code>github:&lt;user&gt;/&lt;repo&gt;</code> to shortcut gitlab or github repositories
+</dd>
+<dd>use <code>&lt;known-flake&gt;</code> to shortcut to a globally defined alias
+</dd>
+<dt><code>known-flake</code></dt>
+<dd>nix will manage a registry of named flakes that can be included as is and are a shortcut to another repo
+</dd>
+<dd><p>by default following global registry items are defined in <a href="https://github.com/NixOS/flake-registry">this repo</a> and available in every nix installation:</p>
+<pre><code>global flake:blender-bin github:edolstra/nix-warez
+global flake:dwarffs github:edolstra/dwarffs
+global flake:hydra github:NixOS/hydra
+global flake:nimble github:nix-community/flake-nimble
+global flake:nix github:NixOS/nix
+global flake:nixops github:NixOS/nixops
+global flake:nixos-hardware github:NixOS/nixos-hardware
+global flake:nixos-homepage github:NixOS/nixos-homepage/flake
+global flake:nur github:nix-community/NUR
+global flake:nixpkgs/release-19.09 github:edolstra/nixpkgs/release-19.09
+global flake:nixpkgs github:NixOS/nixpkgs
+global flake:templates github:NixOS/templates
+global flake:patchelf github:NixOS/patchelf</code></pre>
+</dd>
+<dd>read more about registry on the <a href="https://nixos.wiki/wiki/Nix_command/registry">wiki</a>
+</dd>
+<dt>Specifying a commit or branch</dt>
+<dd>by default, the main branch of the repository pointed to will be used as to provide the dependency flake.
+</dd>
+<dd>Nix will also update dependencies to the latest commit on <code>nix flake update</code> calls
+</dd>
+<dd>to pin repositories to a certain commit or override the default branch append a <code>?ref=commit-ref</code> or <code>?&lt;branch&gt;</code> respectively
+</dd>
+<dt>Non flake inputs</dt>
+<dd>nix will try to interpret inputs as flakes, to suppress that, set <code class="sourceCode bash"><span class="op">&lt;</span>inputname<span class="op">&gt;</span>.flake <span class="ex">=</span> false</code>
+</dd>
+<dt>Overriding dependency inputs</dt>
+<dd>traditionally, if one wanted a dependency to use a certain nixpkgs version (i.e. to make use of binary caches) one would specify a certain <code>nixpkgs</code> argument while <code>import</code>’ing. Flakes allow the same thing by setting <code>inputs.&lt;inputname&gt;.inputs.&lt;inputname&gt;.follows = &lt;local inputsname&gt;</code>
+</dd>
+</dl>
+<div class="notice box y-fill-horizontal">
+<p>If using a <code>&lt;known-flake&gt;</code> nix will not use your respective channel even if one with the same name such as <code>nixpkgs</code> exists.</p>
+</div>
+<p>See also the <a href="#reference">reference below</a> for more information and examples.</p>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header="Issues solved here:">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+NOTE
+</div>
+</div>
+<div>
+<p>Issues solved here:</p>
+</div>
+</div>
+<ol type="1">
+<li>impure imports</li>
+<li>no ultimate way to pin <code>nixpkgs</code></li>
+<li>no common (import) interface</li>
+</ol>
+<p>First, a formal definition even a simple one as this alleviates us from the danger of importing dependencies impurely. All imports are formally defined and locked to a specific revision in the projects <code>flake.lock</code> file. By being able to also add a specific <code>ref</code> tag to inputs, this interface allows for intuitive pinning of dependencies. Finally, the way imports are specified and overridden is the same for all flakes, providing a familiar and unified interface.</p>
+</div>
+<p>So far so good, but we have only discussed about 10 lines of the flake s far…</p>
+<h2 class="y-header" id="pure-outputs"><span>Pure outputs</span><a href="#pure-outputs" class="anchor las la-anchor" title="pure-outputs"></a></h2>
+<p>As mentioned above, nix flakes do not serve as top level function anymore. That does not mean there is no function involved. For flakes the output is the result of a function as well.</p>
+<pre><code>outputs = { self, nixpkgs, nur, flake-utils, uikit-src }:
+  ...</code></pre>
+<p>This third and last attribute takes as arguments all the inputs defined earlier. But unlike classical nix approaches, only a certain set of attributes are allowed and expected as the result of this function.<br />
+<em>An extensive list of output attributes is provided <a href="#output-attributes">below</a></em>.</p>
+<p>Generally the format for these is:</p>
+<pre><code>&lt;kind&gt;.&lt;arch&gt;.&lt;output&gt; = ...;</code></pre>
+<p>or concretely</p>
+<pre><code>packages.&quot;x86_64-darwin&quot;.generator = blog.generator;</code></pre>
+<p>Notice how the architecture and OS of the target platform is explicitly encoded, allowing for specializations or exclusive packaging for specific platforms. This also means that the used <code>nixpkgs</code> needs to be instantiated for all desired platforms. In practice one will want to use a shortcut for that and while this is used for all our <a href="https://github.com/ngi-nix">projects packaged for NGI</a> so far, for my blog this shortcut is provided by <a href="https://github.com/numtide/flake-utils"><code>flake-utils</code></a>.</p>
+<p>Using these, defining the outputs for this blog just becomes:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb11"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>  <span class="bu">let</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="er">in</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>      <span class="ex">flake-utils.lib.eachDefaultSystem</span> <span class="er">(</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        <span class="ex">system:</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>          <span class="bu">let</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>            <span class="ex">pkgs</span><span class="st">&#39; = import nixpkgs { inherit system; overlays = [ nur.overlay ]; };</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="st">            blog = pkgs&#39;</span><span class="ex">.callPackage</span> ./blog.nix {</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>              <span class="ex">pkgs</span> = pkgs<span class="st">&#39;;</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="st">              nur = pkgs&#39;</span>.nur<span class="kw">;</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>              <span class="ex">thirdparty</span> = [</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>                <span class="kw">{</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>                  <span class="ex">name</span> = <span class="st">&quot;uikit&quot;</span><span class="kw">;</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>                  <span class="ex">path</span> = <span class="st">&quot;</span><span class="va">${uikit</span><span class="er">-src</span><span class="va">}</span><span class="st">/src&quot;</span><span class="kw">;</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>                <span class="kw">}</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>              <span class="ex">]</span><span class="kw">;</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>            <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>          <span class="er">in</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>            <span class="ex">rec</span> {</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>              <span class="ex">packages</span> = {</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>                <span class="ex">inherit</span> <span class="er">(</span><span class="ex">blog</span><span class="kw">)</span> <span class="ex">generator</span> generator-with-thirdparty ci shell<span class="kw">;</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>              <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>              <span class="ex">defaultPackage</span> = blog.generator-with-thirdparty<span class="kw">;</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>              <span class="ex">apps.compile</span> =</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>                <span class="ex">flake-utils.lib.mkApp</span> { drv = blog.ci.compile<span class="kw">;</span> <span class="ex">exePath</span> = <span class="st">&quot;&quot;</span><span class="kw">;</span> <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>              <span class="ex">defaultApp</span> = apps.compile<span class="kw">;</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>              <span class="ex">devShell</span> = blog.shell<span class="kw">;</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>            <span class="er">}</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>      <span class="kw">);</span></span></code></pre></div>
+</div>
+<p>To take this apart again, we face three different sections here.</p>
+<ol type="1">
+<li><code>flake-utils.lib.eachDefaultSystem</code>, like its name suggests will provide the attribute set in its scope for all default systems (basically linux and darwin on x86_64 hardware). Hence, we don’t need to worry about these tags.</li>
+<li>The actual output still needs to conform to flakes’ expected attributes. In this case we set <code>packages</code>, <code>defaultPackage</code>, <code>apps</code>, <code>defaultApp</code> and <code>devShell</code>. There are even more most importantly <code>overlay</code> which are referenced <a href="#output-attributes">below</a></li>
+<li>third one is the middle part and shows an important aspect of nix flakes. Because there is no access to impure variables (<code>--arg</code>, environment variables, the current system, etc.), <code>nixpkgs</code> must be imported explicitly for each system. Additionally, this gives the opportunity to apply any possible overlay. In the case of this blog everything is defined in an external <code>blog.nix</code> file and imported from there.</li>
+</ol>
+<h3 class="y-header" id="output-attributes"><span>Output attributes</span><a href="#output-attributes" class="anchor las la-anchor" title="output-attributes"></a></h3>
+<div class="uk-alert-warning warning box y-fill-horizontal">
+<p>This section highlights some commands that are not yet available on stable nix. In fact, you will need to run either <code>nixUnstable</code> or <code>nixFlakes</code> from a recent <code>nixpkgs</code> set, at best <code>unstable</code>. Also you need to add <code>experimental-features = nix-command flakes</code> to your <code>nix.conf</code> file.</p>
+<p>With that set trying out the commands can be done in a shell using</p>
+<pre><code>$ nix-shell -p nixUnstable</code></pre>
+</div>
+<p>Coming back to the outputs. <code>packages</code> is the actual output that is used with <code>nix shell</code> and <code>nix build</code> commands in particular (yes there are/will be <a href="https://nixos.org/manual/nix/unstable/command-ref/experimental-commands.html">a lot more</a>).</p>
+<p>To open a shell with specific packages available (alike <code>nix-shell -p</code>) run:</p>
+<pre><code>$ nix shell ./#generator-with-thirdparty
+
+or from an external repo:
+
+$ nix shell &quot;gitlab:pi-lar/neuropil#generator-with-thirdparty&quot;</code></pre>
+<div class="info box y-fill-horizontal">
+<p>Replace <code>shell</code> with <code>build</code> to build it to a <code>./result</code> output link.</p>
+<p>Shell does actually accept multiple derivation arguments so</p>
+<pre><code>$ nix shell nixpkgs#{htop,nodePackages.act,tealdeer}</code></pre>
+<p>is possible to use.</p>
+<p><em>Notice</em> that some inputs might need to be quoted due to substitution rules in your shell.</p>
+</div>
+<p><code>apps</code> is used together with <code>nix run</code>, similarly to <code>npm run</code>. You can define binaries that can then be run directly without explicitly building them first. This allowed me to change the somewhat cryptic <code>$(nix-build -A packages.x86_64-linux.ci.compile --no-out-link)</code> to <code>nix run ./#compile</code> in the CI script. Actually given that <code>defaultApp</code> point to the same <code>compile</code> attribute, the argument <code>./#compile</code> could be elided paying with decreased clarity.</p>
+<p><code>devShell</code> is another special one used in combination with <code>nix develop</code> which opens a <em><code>bash</code></em> shell with the given derivation prepared.</p>
+<p>Of course, project shells using for example <code>mkShell</code> do also still work (and are used here as well). Either by using <code>nix develop</code> with such a derivation or <code>nix shell</code> in combination with <code>buildEnv</code>.</p>
+<div class="uk-alert-warning warning box y-fill-horizontal">
+<p><code>nix develop</code> <strong>always</strong> opens a <em><code>bash</code></em> shell. If you use <code>zsh</code> some work-arounds or relying on legacy <code>nix-shell</code> is needed for <code>zsh</code> enabled shells.</p>
+<p>Using flakes, one alternative is to use a <code>buildEnv</code> derivation which is loaded using <code>nix</code><strong><code>shell</code></strong>.</p>
+</div>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header="Issues solved here">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+NOTE
+</div>
+</div>
+<div>
+<p>Issues solved here</p>
+</div>
+</div>
+<ol type="1">
+<li>impure arguments</li>
+<li>no common (output) interface</li>
+<li>poor discoverability</li>
+</ol>
+<p>Here we see how a defined output interface helps to understand to organize the specific outputs and give the user semantic cues what the outputs are used for. It also allows nix to be more ergonomic as seen in the case of <code>nix run</code>. Although, being a matter of the tooling as well, having a well defined <code>flake.nix</code> file available to inspect, discovering attributes over several repositories becomes much more feasible. Finally due to the missing impurity, guaranties that some derivation will actually produce the same outputs are getting even stronger.</p>
+</div>
+<h3 class="y-header" id="composing-flakes"><span>Composing flakes</span><a href="#composing-flakes" class="anchor las la-anchor" title="composing-flakes"></a></h3>
+<p>In the last two sections I presented solutions for six of the seven problems that were identified in the beginning. That leaves us with:</p>
+<ol start="7" type="1">
+<li>poor composability</li>
+</ol>
+<p>Actually we’re almost there.. Remember how I mentioned the possibility to inject overlays when importing <code>nixpkgs</code>? Composing multiple sources of packages is easy if one can just drop them in there.<br />
+Moreover, there are conventional output arguments <code>overlay</code> and <code>overlays</code> that make discovering the fakes; overlay(s) a bit easier.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb15"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">description</span> = <span class="st">&quot;Flake utils demo&quot;</span><span class="kw">;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.flake-utils.url</span> = <span class="st">&quot;github:numtide/flake-utils&quot;</span><span class="kw">;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># assuming that this flake exports an overlay attribute</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.someflake.url</span> = <span class="st">&quot;foo.com/bar&quot;</span><span class="kw">;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">outputs</span> = { self, nixpkgs, flake-utils, someflake }:</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="ex">flake-utils.lib.eachDefaultSystem</span> <span class="er">(</span><span class="ex">system:</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>      <span class="bu">let</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        <span class="ex">artifacts</span> = final: prev: {</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>          <span class="ex">my_hello</span> = prev.hello<span class="kw">;</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>        <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>        <span class="ex">pkgs</span> = import nixpkgs {</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>          <span class="ex">overlays</span> = [ someflake.overlay artifacts ]<span class="kw">;</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>        <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>      <span class="er">in</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>      <span class="co"># and here is the core of the consumer flake</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>      <span class="kw">{</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>        <span class="ex">defaultPackage</span> = pkgs.my_hello<span class="kw">;</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>        <span class="ex">overlay</span> = artifacts<span class="kw">;</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>      <span class="kw">}</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">);</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div>
+</div>
+<p>Adapted from <a href="https://discourse.nixos.org/t/how-to-determine-intended-use-of-nix-flakes-outputs/8633/2">this answer on the forum</a> this example shows how <code>someflake</code>’s overlay can be imported, and how to define your own overlay in the same manner. Here it is used rather uselessly, but one can imagine to define outputs in a separate file as overlay, that can then be plugged for use and export in the flake.</p>
+<div class="info box y-fill-horizontal">
+<p>As a kind of <em>new</em> convention now enforced by <code>nix check</code> is to call your overlay arguments <code>final: prev:</code> for greater clarity than the classical <code>self: super:</code> combination.</p>
+</div>
+<h1 class="y-header" id="retrospective"><span>Retrospective</span><a href="#retrospective" class="anchor las la-anchor" title="retrospective"></a></h1>
+<p>So I changed the nix setup of this blog to flakes… Was it worth it?</p>
+<p>Of course it depends. For the project that is this blog the benefits of committing to flakes are rather unconvincing. No one uses this as a dependency or wants to discover it as such. I am the only one developing this, so I might have my own conventions to import things, pin my dependencies and define my interface. Also, maybe I do want to use CLI arguments to nix.</p>
+<p>Personally though it did convince me (obviously). I am a great supporter of the Nix philosophy and the Flakes do make a great addition to the ecosystem. I first got into contact with them when starting to work on the NGI0 project at which time Eelco had just written the first public post about flakes and the documentation was sparse to say the least… But as a new thing it still caught my interest. Looking for projects outside NGI this blog seemed like a great candidate to apply this new technology to as it posed literally no risk whatsoever if it didn’t work out. It gave me a chance to make myself comfortable with the technology and dig deeper to write this article.</p>
+<p>Now I really like how this turned out, especially the <code>nix run</code> part comes in handy here and the native caching might come in handy for quicker <code>direnv</code> shells.</p>
+<p>One downturn is still that <code>nix develop</code> is not able to open zsh shells so the usual <code>mkShell</code> technique does not work with flakes and one needs to fall back to <code>nix-shell</code> or <code>buildEnv</code> alternatives. Also there are still flags and a special nix binary required to make use of the flake related nix features.</p>
+<h1 class="y-header" id="references"><span>References</span><a href="#references" class="anchor las la-anchor" title="references"></a></h1>
+<h2 class="y-header" id="flake-reference-conventions"><span>Flake reference conventions</span><a href="#flake-reference-conventions" class="anchor las la-anchor" title="flake-reference-conventions"></a></h2>
+<p>Nix commands will eventually reference outputs. There are multiple ways how these can be referenced depending on where they come from:</p>
+<p>A flake reference is actually structured similar to an URL:</p>
+<pre><code>&lt;flake url&gt;[?&lt;git ref/rev&gt;][#&lt;output&gt;]
+    │
+    ├── git+&lt;url&gt;
+    ├── gitlab:&lt;user&gt;/&lt;repo&gt; or github:&lt;user&gt;/&lt;repo&gt;
+    ├── /local/absolute/path or ./relative/path
+    └── a known source such as `nixpkgs`</code></pre>
+<p>If git repositories are pointed to directly query parameters can be added to select a specific branch and/or commit.</p>
+<p>As nix has not yet adapted to some git providers renaming their <code>master</code> branches to <code>main</code> you might occasionally be confronted with an error similar to</p>
+<blockquote>
+
+</blockquote>
+<pre><code>fetching Git repository &#39;https://gitlab.com/pi-lar/neuropil&#39;fatal: couldn&#39;t find remote ref refs/heads/master</code></pre>
+<p>To resolve this the actual branch <code>main</code> or any tag might be explicated using the <code>ref</code> argument:</p>
+<pre><code>git+https://gitlab.com/pi-lar/neuropil.git?ref=main</code></pre>
+<p>If using the abbreviated GitLab/GitHub urls this can be expressed like this:</p>
+<pre><code>gitlab:pi-lar/neuropil/main</code></pre>
+<p>Similarly, if an exact commit is targeted, this can be pointed to using the <code>rev</code> argument</p>
+<pre><code>   gitlab:pi-lar/neuropil?rev=1043b9c1736c2a9b92938f0304ddb55ce4ab68a6
+or gitlab:pi-lar/neuropil/1043b9c1736c2a9b92938f0304ddb55ce4ab68a6</code></pre>
+<p>The output is finally selected in the format known from the <code>-A</code> argument of old nix commands such as <code>nix-shell</code>:</p>
+<pre><code>   nixpkgs#haskellPackages.pandoc
+or .#generator-with-thirdparty      (used to build this blog&#39;s generator)</code></pre>
+<h2 class="y-header" id="output-attributes-1"><span>Output attributes</span><a href="#output-attributes-1" class="anchor las la-anchor" title="output-attributes-1"></a></h2>
+<p>Following is a quick reference over all flake output attributes.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb22"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Executed by `nix flake check`</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">checks.</span><span class="st">&quot;&lt;system&gt;&quot;</span><span class="ex">.</span><span class="st">&quot;&lt;attr&gt;&quot;</span> = derivation<span class="kw">;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Executed by `nix build .#&lt;name&gt;`</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">packages.</span><span class="st">&quot;&lt;system&gt;&quot;</span><span class="ex">.</span><span class="st">&quot;&lt;attr&gt;&quot;</span> = derivation<span class="kw">;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Executed by `nix build .`</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="ex">defaultPackage.</span><span class="st">&quot;&lt;system&gt;&quot;</span> = derivation<span class="kw">;</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># the derivation that is prepared when running `nix develop`</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># defaults to defaultPackage.&quot;&lt;system&gt;&quot;</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    <span class="ex">devShell.</span><span class="st">&quot;&lt;system&gt;&quot;</span> = derivation<span class="kw">;</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Executed by `nix run .#&lt;name&gt;</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>    <span class="ex">apps.</span><span class="st">&quot;&lt;system&gt;&quot;</span><span class="ex">.</span><span class="st">&quot;&lt;attr&gt;&quot;</span> = {</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>      <span class="bu">type</span> = <span class="st">&quot;app&quot;</span><span class="kw">;</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>      <span class="ex">program</span> = <span class="st">&quot;&lt;store-path&gt;&quot;</span><span class="kw">;</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">};</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    <span class="ex">defaultApp.</span><span class="st">&quot;&lt;system&gt;&quot;</span> = { type = <span class="st">&quot;app&quot;</span><span class="kw">;</span> <span class="ex">program</span> = <span class="st">&quot;...&quot;</span><span class="kw">;</span> <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># </span><span class="al">TODO</span><span class="co">: Only seen used in connection with nixpkgs</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>    <span class="ex">legacyPackages</span> = TODO<span class="kw">;</span></span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># overlay to easily override/packages in the package set of the importer</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    <span class="ex">overlay</span> = final: prev: { }<span class="kw">;</span></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># </span><span class="al">TODO</span><span class="co">: Same idea as overlay but several.</span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>    <span class="ex">overlays.</span><span class="st">&quot;&lt;attr&gt;&quot;</span> = final: prev: { }<span class="kw">;</span></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Additionally to packages also modules for Nixos can be provided (Flakes can be used with `nixos-rebuild`)</span></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>    <span class="ex">nixosModule</span> = Module definition<span class="kw">;</span></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># </span><span class="al">TODO</span><span class="co">: Same idea as nixosModule but several</span></span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>    <span class="ex">nixosModules.</span><span class="st">&quot;&lt;attr&gt;&quot;</span> = Module definition<span class="kw">;</span></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Attrset of nixos configurations by hostname.</span></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>    <span class="ex">nixosConfigurations.</span><span class="st">&quot;&lt;hostname&gt;&quot;</span> = {}<span class="kw">;</span></span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Hydra checks</span></span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>    <span class="ex">hydraJobs.</span><span class="st">&quot;&lt;attr&gt;&quot;</span><span class="ex">.</span><span class="st">&quot;&lt;system&gt;&quot;</span> = derivation<span class="kw">;</span></span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Used by `nix flake init -t &lt;flake&gt;`</span></span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>    <span class="ex">defaultTemplate</span> = {</span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>      <span class="ex">path</span> = <span class="st">&quot;&lt;store-path&gt;&quot;</span><span class="kw">;</span></span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>      <span class="ex">description</span> = <span class="st">&quot;template description goes here?&quot;</span><span class="kw">;</span></span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>    <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Used by `nix flake init -t &lt;flake&gt;#&lt;attr&gt;`</span></span>
+<span id="cb22-49"><a href="#cb22-49" aria-hidden="true" tabindex="-1"></a>    <span class="ex">templates.</span><span class="st">&quot;&lt;attr&gt;&quot;</span> = { path = <span class="st">&quot;&lt;store-path&gt;&quot;</span><span class="kw">;</span> <span class="ex">description</span> = <span class="st">&quot;&quot;</span><span class="kw">;</span> <span class="er">)</span><span class="kw">;</span></span>
+<span id="cb22-50"><a href="#cb22-50" aria-hidden="true" tabindex="-1"></a>  <span class="er">}</span></span></code></pre></div>
+</div>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header="Further Reading/Resources">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+NOTE
+</div>
+</div>
+<div>
+<p>Further Reading/Resources</p>
+</div>
+</div>
+<ul>
+<li><a href="https://nixos.wiki/wiki/Flakes">wiki page on flakes</a></li>
+<li><a href="https://zimbatm.com/NixFlakes/">zimbatm’s blog article</a></li>
+<li>Eelco’s blog article over at tweag.io
+<ul>
+<li><a href="https://www.tweag.io/blog/2020-05-25-flakes/">Part 1</a></li>
+<li><a href="https://www.tweag.io/blog/2020-06-25-eval-cache/">Part 2</a></li>
+<li><a href="https://www.tweag.io/blog/2020-07-31-nixos-flakes/">Part 3</a></li>
+</ul></li>
+<li><a href="https://nixos.wiki/wiki/Nix_command"><code>nix</code> commands</a></li>
+</ul>
+</div>
+<p>As always, thank you for reading this far I hope you enjoyed this article!</p>
+<p>It helped me a lot to structure my knowledge about nix flakes and I am glad to share this to a wider audience.</p>
+<p>If you have comments drop me a mail, or comment publicly on the media you where found this. For additions or corrections and critique feel free to use <a href="https://github.com/ysndr/blog/issues/new">GitHub issue tracker</a>.</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p><a href="https://dictionary.cambridge.org/dictionary/english/flake">Definition of Flake</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>]]></description>
+    <pubDate>Fri, 01 Jan 2021 00:00:00 UT</pubDate>
+    <guid>https://blog.ysndr.de/posts/internals/2021-01-01-flake-ification/index.html</guid>
+    <dc:creator>Yannik Sander</dc:creator>
+</item>
+<item>
+    <title>Building a reproducible blog with Nix</title>
+    <link>https://blog.ysndr.de/posts/internals/2020-04-10-built-with-nix/index.html</link>
+    <description><![CDATA[<h1 class="y-header" id="building-a-reproducible-blog-with-nix"><span>Building a reproducible blog with Nix</span><a href="#building-a-reproducible-blog-with-nix" class="anchor las la-anchor" title="building-a-reproducible-blog-with-nix"></a></h1>
+<p>This blog is hosted by <a href="https://pages.github.com/">GitHub Pages</a>. GitHub Pages, aside static HTML content, only supports building Jekyll pages natively. At some point a website like this one has to be <strong>generated</strong>, i.e. turned into static HTML content. This means Markdown has to be converted to HTML static pages (like the <a href="/">homepage</a>), an <a href="/archive.html">archive</a> has to be created, and <a href="/rss.xml">RSS</a> and <a href="/atom.xml">ATOM</a> feeds have to be produced. In this blog’s case, this is done by a Haskell DSL called <a href="https://jaspervdj.be/hakyll/">Hakyll</a>. More details about that can be found in <a href="2019-12-31-built-with-hakyll-part-1.html">prior articles</a>.</p>
+<p>In order to keep everything in the same place, I use <a href="https://github.com/features/actions">GitHub Actions</a> as a mean to automatically build and publish this blog whenever I push updates or merge pull requests.</p>
+<p><strong>Was this not an article about Nix?</strong></p>
+<p>Yes indeed it is. In order to create reproducible builds of this blog I employ the <a href="https://nixos.org/nix">Nix</a> package manager. But in order…</p>
+<div class="info box y-fill-horizontal">
+<p>Jump to <a href="#nix-on-this-blog">Nix on this blog</a> if you know nix already.</p>
+</div>
+<h2 class="y-header" id="what-is-nix"><span>What is Nix?</span><a href="#what-is-nix" class="anchor las la-anchor" title="what-is-nix"></a></h2>
+<p>Nix is sort of a hybrid tool between a package manager and a build system. The Nix homepage states:</p>
+<blockquote>
+<p>Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible. It provides atomic upgrades and rollbacks, side-by-side installation of multiple versions of a package, multi-user package management and easy setup of build environments.</p>
+</blockquote>
+<p>Sounds… good? What does all of that mean though?</p>
+<p>Nix (the package manager) is built around the functional programming language <code>nix</code> (what a coincidence, ha?). A program, library, etc. is built by Nix as the output of a pure function. Runtime/buildtime dependencies go in mix with the sources of the package, are built in an isolated space, and output an executable or whatever you want to build. Such a function is called a <strong>Derivation</strong>.</p>
+<p>Everything that should be built with Nix has to be described as such a function. In fact, the whole set of packages that is there is just <a href="https://github.com/nixos/nixpkgs">a giant collection</a> of functions, each defined in their own files.</p>
+<p>The isolated manner in which the packages are built also shows in the way they are managed. All packages are installed as such:</p>
+<pre><code>/nix/store/6fgjp1wsv1w44f890f6kvwywjnc32svr-zoxide-0.2.1/bin/zoxide</code></pre>
+<p>Lets take this apart:</p>
+<dl>
+<dt><code>/nix/store/</code></dt>
+<dd>This is the nix store all packages are contained in this folder
+</dd>
+<dt><code>6fgjp1wsv1w44f890f6kvwywjnc32svr</code></dt>
+<dd>This is a hash of the producing function, it takes into account the function itself, and its inputs
+</dd>
+<dd>It also easens binary caching.
+</dd>
+<dt><code>zoxide</code></dt>
+<dd>the package’s name
+</dd>
+<dt><code>0.2.1</code></dt>
+<dd>the packaged version
+</dd>
+<dt><code>/bin/zoxide</code></dt>
+<dd>the actual executable
+</dd>
+<dd>actually the file structure of packages is similar to what you would normally find in places like <code>/usr</code> or <code>~/.local/</code>
+</dd>
+</dl>
+<p>Yet, while that package might exists in the store, this does not mean it is <em>installed</em> or usable. — Huh?</p>
+<p>You see, the hash we have seen right now is there for a reason. It allows to have multiple versions of one and the same program at the same time, even with the same version. Normally all packages are built according to one specific state of the <code>nixpkgs</code> repo. <code>.nix</code> files get evaluated by writing a build instruction file (<code>.drv</code>). This resolves all dependencies (building them if they do not exist yet), prepares the package’s source and combines those into a hash. If one instead builds it with a newer version where some dependency was updated or changed, not only this derivation hash changes, but it also happens to change the target derivation’s hash, forcing it to be rebuilt using the new dependency. The same happens if sources change. As a result, many different versions of a package can coexist in the store.</p>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header="">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+NOTE
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p>As nix functions are pure, <strong>wherever</strong> one uses the same <code>nixpkgs</code> instance, the exact same inputs are used to create the exact same output. Also, it makes little to no difference on which machine the package is built. The binary will be the same(ish).</p>
+<p>Actually, there is a <a href="https://r13y.com/">project</a> tracking how many builds (of a vital subset of nix) are reproducible on two different machines.</p>
+</div>
+<h3 class="y-header" id="how-to-installuse-packages"><span>How to install/use packages?</span><a href="#how-to-installuse-packages" class="anchor las la-anchor" title="how-to-installuse-packages"></a></h3>
+<h4 class="y-header" id="global-installation"><span>Global installation</span><a href="#global-installation" class="anchor las la-anchor" title="global-installation"></a></h4>
+<p>There are different ways to achive this. Using nix locally, the easiest but least idiomatic would be:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> nix-env <span class="at">-iA</span> zoxide</span></code></pre></div>
+</div>
+<p>This installs <code>zoxide</code><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>) globally for the current user, by linking all of zoxides contents to a special directory (<code>~/.nix-profile/</code>). The <code>bin</code> contents of this directory are on the <code>$PATH</code> making the package’s binary available to the user.</p>
+<p>As mentioned this is not idiomatic Nix, which focuses on declerativity. If you want something installed, consider using <a href="https://github.com/rycee/home-manager"><code>home-manager</code></a> or add packages to your <code>configuration.nix</code> if you are on <a href="https://nixos.org/nixos">NixOS</a>.</p>
+<h4 class="y-header" id="local-usage"><span>Local usage</span><a href="#local-usage" class="anchor las la-anchor" title="local-usage"></a></h4>
+<p>If you need a program but do not want to install it because you don’t need it often and you don’t want to clutter your <code>$PATH</code>, or it’s a project specific tool you can make use of either <code>nix run</code> or <code>nix-shell</code>.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> nix run nixpkgs.git</span></code></pre></div>
+</div>
+<p>This will drop you into a Bash shell with git available.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> nix-shell <span class="at">-p</span> git</span></code></pre></div>
+</div>
+<p>This will essentially do the same but can do much more.</p>
+<ul>
+<li><p><code>nix-shell</code> accepts multiple packages</p></li>
+<li><p>can be used as a shebang (<a href="https://gist.github.com/travisbhartwell/f972aab227306edfcfea">see</a>)</p></li>
+<li><p>can drop you into development environments of a specific derivation (<a href="https://nixos.org/nixos/nix-pills/developing-with-nix-shell.html">see</a>)</p></li>
+<li><p>can be used to make development environments for a project.</p></li>
+</ul>
+<p>Let’s focus on the last point for this article.</p>
+<h2 class="y-header" id="nix-on-this-blog"><span>Nix on this blog</span><a href="#nix-on-this-blog" class="anchor las la-anchor" title="nix-on-this-blog"></a></h2>
+<p>This blog uses a shell environment in which I have all the tools I need at hand. Let’s look at the structure file by file.</p>
+<h3 class="y-header" id="default.nix"><span><code>default.nix</code></span><a href="#default.nix" class="anchor las la-anchor" title="default.nix"></a></h3>
+<p>By default, Nix commands such as <code>nix-build</code> read the <a href="https://github.com/ysndr/blog/default.nix"><code>default.nix</code></a> file in the directory they are executed from. In my projects, I use them to define and export everything that might be useful. This might include build tools, language environments, scripts or shells.</p>
+<p>Generally my <code>default.nix</code> file looks like this:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb5"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">{pkgs</span> <span class="pp">?</span> import <span class="er">(</span><span class="cf">if</span> <span class="ex">pin</span> == false then <span class="op">&lt;</span>nixpkgs<span class="op">&gt;</span> else pin<span class="kw">)</span> <span class="ex">{},</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a> <span class="ex">pin</span> <span class="pp">?</span> ./nixpkgs.nix, ... }:</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">with</span> pkgs<span class="kw">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">let</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span>some <span class="ex">packages</span> and configuration<span class="op">&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">shell</span> = mkShell {</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    name = <span class="st">&quot;&lt;name&gt;&quot;</span><span class="kw">;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    buildInputs = [ <span class="op">&lt;</span>packages I want in my shell<span class="op">&gt;</span> ]<span class="kw">;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    shellHook = <span class="st">&#39;&#39;</span> <span class="co"># shell command to be executed when I enter the shell</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    <span class="st">&#39;&#39;</span><span class="kw">;</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="er">in</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    inherit shell<span class="kw">;</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    inherit packageA, packageB, ...<span class="kw">;</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div>
+</div>
+<p>This exposes a shell environment for <code>nix-shell</code> and programs to be executed directy using <code>nix-build</code>.</p>
+<p>So what about this blog’s <code>default.nix</code>?</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb6"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">let</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">all-hies</span> = import <span class="er">(</span><span class="ex">builtins.fetchTarball</span> <span class="st">&quot;https://github.com/infinisil/all-hies/tarball/master&quot;</span><span class="kw">)</span> <span class="ex">{}</span><span class="kw">;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="er">in</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">{pkgs</span> <span class="pp">?</span> import <span class="er">(</span><span class="cf">if</span> <span class="ex">pin</span> == false then <span class="op">&lt;</span>nixpkgs<span class="op">&gt;</span> else pin<span class="kw">)</span> <span class="ex">{},</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a> <span class="ex">pin</span> <span class="pp">?</span> ./nixpkgs.nix, ... }:</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">with</span> pkgs<span class="kw">;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="bu">let</span></span></code></pre></div>
+</div>
+<p>Aside from the default, I only priorly import <code>all-hies</code>, which is a project that maintains the <a href="https://github.com/infinisil/all-hies">Haskell Ide Engine</a> on Nix.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb7"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------- Utils -------------</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">nur</span> = import <span class="er">(</span><span class="ex">builtins.fetchTarball</span> <span class="st">&quot;https://github.com/nix-community/NUR/archive/master.tar.gz&quot;</span><span class="kw">)</span> <span class="kw">{</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    pkgs=pkgs<span class="kw">;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">};</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">script</span> = {...} @ args: nur.repos.ysndr.lib.wrap <span class="er">(</span><span class="kw">{</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">shell</span> = true<span class="kw">;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span> <span class="ex">//</span> args<span class="kw">);</span></span></code></pre></div>
+</div>
+<p>This are utilities I might use. <a href="https://github.com/nix-community/NUR">NUR</a> is the nix version of arch’s AUR, albeit not nearly as active sadly. From my own collection, I use the <code>shell</code> script which helps me putting together runnable scripts.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb8"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------- Haskell ------------</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">hie</span> = all-hies.selection { selector = p: { inherit <span class="er">(</span><span class="ex">p</span><span class="kw">)</span> <span class="ex">ghc865</span><span class="kw">;</span> <span class="er">}</span><span class="kw">;</span> <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">myHaskellPackages</span> = haskell.packages.ghc865.extend<span class="er">(</span> <span class="ex">self:</span> super: { }<span class="kw">);</span></span></code></pre></div>
+</div>
+<p>These lines prepare the Haskell environment I use here. I do not override anything from GHC so this is a bit superflous.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb9"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------ dist ---------------</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">thirdparty</span> = linkFarm <span class="st">&quot;thirdparty&quot;</span> [</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">{</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    name = <span class="st">&quot;uikit&quot;</span><span class="kw">;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    path = <span class="er">(</span><span class="ex">fetchTarball</span> <span class="st">&quot;https://github.com/uikit/uikit/archive/v3.2.4.tar.gz&quot;</span><span class="kw">)</span> <span class="ex">+</span> <span class="st">&quot;/src&quot;</span><span class="kw">;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">}</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="ex">]</span><span class="kw">;</span></span></code></pre></div>
+</div>
+<p>I import all third party tools (only uikit currently) into the nix store.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb10"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------- generator -----------</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">generator</span> = myHaskellPackages.callCabal2nix <span class="st">&quot;Site&quot;</span> ./generator {}<span class="kw">;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="ex">generator-with-thirdparty</span> = generator.overrideAttrs<span class="er">(</span><span class="ex">old:</span> {</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">nativeBuildInputs</span> = old.nativeBuildInputs or [] ++ [makeWrapper]<span class="kw">;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">installPhase</span> = old.installPhase + <span class="st">&quot;\n&quot;</span> + <span class="st">&#39;&#39;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    wrapProgram <span class="va">$out</span>/bin/generator <span class="at">--set</span> THIRDPARTY <span class="va">${thirdparty}</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">&#39;&#39;</span><span class="kw">;</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="er">}</span><span class="kw">);</span></span></code></pre></div>
+</div>
+<p>Then, I define the <code>generator</code> as a derivation from its Cabal file and the corresponding “Site” executable key defined in <code>./generator/</code>. <code>generator-with-thirdparty</code> makes what I imported as thirdparty content available under the <code>$THIRDPARTY</code> environment variable.</p>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header="">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+NOTE
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p><code>myHaskellPackages.callCabal2nix "Site" ./generator {};</code> is a great tool to quickly make haskell programms available through Nix.</p>
+<p>Similar helpers also exist for Stack.</p>
+</div>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb11"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --------------- Commands ----------------</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">generate-website</span> = script {</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">name</span> = <span class="st">&quot;generate-website&quot;</span><span class="kw">;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">paths</span> = [generator-with-thirdparty git]<span class="kw">;</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">script</span> = <span class="st">&#39;&#39;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    generator rebuild</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">&#39;&#39;</span><span class="kw">;</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="er">}</span><span class="kw">;</span></span></code></pre></div>
+</div>
+<p><code>generate-website</code> is supposed to be a build command which, at this state, only runs <code>generator rebuild</code>.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb12"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------- Shell ------------------</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="ex">haskell-env</span> = myHaskellPackages.ghcWithHoogle <span class="er">(</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">hp:</span> with hp<span class="kw">;</span> <span class="bu">[</span> cabal-install <span class="bu">]</span> <span class="ex">++</span> generator.buildInputs <span class="kw">);</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="ex">shell</span> = { enable-hie <span class="pp">?</span> false }: mkShell {</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">name</span> = <span class="st">&quot;blog-env&quot;</span><span class="kw">;</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">buildInputs</span> = [</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    <span class="co"># put packages here.</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    <span class="co"># generator</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    haskell-env</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    <span class="er">(</span><span class="ex">lib.optional</span> <span class="er">(</span><span class="ex">enable-hie</span><span class="kw">)</span> <span class="ex">hie</span><span class="kw">)</span> <span class="co"># optionally setup hie</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="ex">]</span><span class="kw">;</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="ex">shellHook</span> = <span class="st">&#39;&#39;</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    export THIRDPARTY=<span class="st">&quot;</span><span class="va">${thirdparty}</span><span class="st">&quot;</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    export HIE_HOOGLE_DATABASE=<span class="st">&quot;</span><span class="va">${haskell</span><span class="er">-env</span><span class="va">}</span><span class="st">/share/doc/hoogle/default.hoo&quot;</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    export NIX_GHC=<span class="st">&quot;</span><span class="va">${haskell</span><span class="er">-env</span><span class="va">}</span><span class="st">/bin/ghc&quot;</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    export NIX_GHCPKG=<span class="st">&quot;</span><span class="va">${haskell</span><span class="er">-env</span><span class="va">}</span><span class="st">/bin/ghc-pkg&quot;</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    export NIX_GHC_DOCDIR=<span class="st">&quot;</span><span class="va">${haskell</span><span class="er">-env</span><span class="va">}</span><span class="st">/share/doc/ghc/html&quot;</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    export NIX_GHC_LIBDIR=<span class="va">$(</span> <span class="va">$NIX_GHC</span> <span class="at">--print-libdir</span> <span class="va">)</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>  <span class="st">&#39;&#39;</span><span class="kw">;</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a><span class="er">}</span><span class="kw">;</span></span></code></pre></div>
+</div>
+<p>Finally, I bundle everything together to build an environment with <code>ghc</code> and a Hoogle index containing the generators dependencies as well as <code>cabal-install</code> <strong>for reasons</strong>.</p>
+<p>The shell has this Haskell environment and optionally the <code>hie</code> executable exposed. It also sets some exports that hie needs to properly function as well as the <code>$THIRDPARTY</code> variable to build the blog:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb13"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="er">in</span> <span class="kw">{</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inherit</span> shell generator generate-website <span class="kw">;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ci</span> = {</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="ex">​</span>    compile = generate-website<span class="kw">;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">};</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+</div>
+<p>All important parts are exported.</p>
+<h3 class="y-header" id="shell.nix-and-nixpkgs.nix"><span><code>shell.nix</code> and <code>nixpkgs.nix</code></span><a href="#shell.nix-and-nixpkgs.nix" class="anchor las la-anchor" title="shell.nix-and-nixpkgs.nix"></a></h3>
+<p>The first file is used by nix-shell by default. All it does is call the shell attribute of the <code>default.nix</code> and controlling if hie is added, making use of the lazy nature of nix: hie will not get evaluated unless enabled.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb14"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span> <span class="ex">pin</span> <span class="pp">?</span> null, enable-hie <span class="pp">?</span> false } @ args:</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">import</span> ./default.nix args<span class="kw">)</span><span class="ex">.shell</span> { inherit enable-hie<span class="kw">;</span> <span class="kw">}</span></span></code></pre></div>
+</div>
+<p>The <code>nixpkgs.nix</code> file defines a common snapshot of the nixpkgs repo, and is therefore important to ensure everything works on other machines.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb15"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">{}:</span> import <span class="er">(</span><span class="ex">builtins.fetchTarball</span> {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">url</span> = <span class="st">&quot;https://github.com/NixOS/nixpkgs/archive/88d9f776091.tar.gz&quot;</span><span class="kw">;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">sha256</span> = <span class="st">&quot;sha256:0z8a0g69fmbbzi77jhvhwafv73dn5fg3gsr0q828lss6j5qpx995&quot;</span><span class="kw">;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="er">}</span><span class="kw">)</span> <span class="ex">{}</span></span></code></pre></div>
+</div>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header="">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+NOTE
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p>Snapshots like these also allow rollbacks as they define which versions of dependencies get passed on.</p>
+</div>
+<h2 class="y-header" id="nix-and-github-actions"><span>Nix and GitHub Actions</span><a href="#nix-and-github-actions" class="anchor las la-anchor" title="nix-and-github-actions"></a></h2>
+<p>Nix has some integration with GitHub Actions through <a href="https://github.com/marketplace/actions/install-nix">install-nix</a>, an action that <strong>installs nix</strong> •_•</p>
+<p>With nix installed, I run <code>$(nix-build -A ci.compile --no-out-link)</code> to make Nix build the blog generator and rebuild the blog’s content into <code>build/site</code>. This works because <code>nix-build --no-out-link</code> will just print the path of the resulting package to <code>stdout</code>, which in this case is only an executable script produced by the <code>script</code> function above. The next step is to take that content and push it to the deployment branch.</p>
+<p><a href="https://github.com/ysndr/blog/blob/release/.github/workflows/main.yml">See more…</a></p>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header="">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+NOTE
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p>I previously did even more with nix but specific GitHub Actions tend to do the job well enough.</p>
+</div>
+<h2 class="y-header" id="epilog"><span>Epilog</span><a href="#epilog" class="anchor las la-anchor" title="epilog"></a></h2>
+<p>I see this has become more of a roundup about Nix. Nix is <strong>huge</strong> though.. and this article does not try to capture everything (obviously). From reading this, I hope you have a rough idea of what nix does and how it was applied here. If you knew Nix already, maybe you found something new or interesting among this pile of words and snippets. If you did not know Nix before, I hope this article was still of interest to you.</p>
+<div class="info box y-fill-horizontal" data-header="">
+<div class="header">
+<div>
+<span class="las la-info"></span>
+<div class="badge">
+INFO
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p>If you are hooked on the idea now, further fine grained introduction and resources are:</p>
+<ul>
+<li>The <a href="https://nixos.org/nixos/nix-pills/">Nix-Pills</a></li>
+<li>The <strong>unofficial</strong> <a href="https://nixos.wiki/wiki/Nix">wiki</a></li>
+<li>The nixpkgs <a href="https://github.com/nixos/nixpkgs">repo</a>. Trust me, if you plan to try out nix, bookmark this project and use the issue search.</li>
+</ul>
+</div>
+<p><strong>Thank you for getting here!</strong> I hope you enjoyed it and have learned something. If you have questions, improvements, or any other comment, do not hesitate to get in touch on <a href="https://github.com/ysndr/blog/issues/new">GitHub</a>.</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p><a href="https://github.com/ajeetdsouza/zoxide"><code>zoxide</code></a> (a great (fast) replacement for <code>z</code><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>]]></description>
+    <pubDate>Fri, 10 Apr 2020 00:00:00 UT</pubDate>
+    <guid>https://blog.ysndr.de/posts/internals/2020-04-10-built-with-nix/index.html</guid>
+    <dc:creator>Yannik Sander</dc:creator>
+</item>
+<item>
+    <title>How this page is generated - Part 02</title>
+    <link>https://blog.ysndr.de/posts/internals/2020-03-22-built-with-hakyll-part-2/index.html</link>
+    <description><![CDATA[<h1 class="y-header" id="built-with-hakyll-part-02-custom-fields"><span>Built with Hakyll – Part 02: Custom Fields</span><a href="#built-with-hakyll-part-02-custom-fields" class="anchor las la-anchor" title="built-with-hakyll-part-02-custom-fields"></a></h1>
+<ul>
+<li>Part 01: <a href="2019-12-31-built-with-hakyll-part-1.html">Hakyll basics and context</a></li>
+<li>Part 02: A collection of Custom Fields <em>this article</em></li>
+</ul>
+<p>In the <a href="2019-12-31-built-with-hakyll-part-1.html">previous article</a> I introduced the basic mechanisms of Hakyll. Part of this introduction was that every content lives in Hakyll as an <code>Item</code>. An <code>Item</code> is created by loading some content from a file (or a wildcarded list of files). In most cases these are Markdown files. For example, this is what loading an <code>Item</code> looks like:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>match <span class="st">&quot;posts/**.md&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    route <span class="op">$</span> setExtension <span class="st">&quot;html&quot;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    compile</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">$</span>   pandocCompiler</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/post.html&quot;</span> postCtx</span></code></pre></div>
+</div>
+<p>For each <code>*.md</code> file inside <code>posts/</code> an <code>.html</code> file is generated by compiling the document using pandoc (which turnsthe markup it into html) and including this content in a template, namely the <code>templates/post.html</code> template, by loading the template and applying it with a given <code>Context</code>.</p>
+<p>What is a Context? Contexts deliver meta information to the templating engine. The information is constructed for each document individually and by default contains (in that order)</p>
+<ol>
+<li>A <span class="math inline"><em>b</em><em>o</em><em>d</em><em>y</em></span> field: current content of the document (usually after conversion using pandoc)</li>
+<li>Metadata fields defined in the document’s frontmatter</li>
+<li>A <span class="math inline"><em>u</em><em>r</em><em>l</em></span> urlField: url of the final document</li>
+<li>A <span class="math inline"><em>p</em><em>a</em><em>t</em><em>h</em></span> pathField: path of the original file</li>
+<li>A <span class="math inline"><em>t</em><em>i</em><em>t</em><em>l</em><em>e</em></span> titleField: title defined in frontmatter</li>
+</ol>
+<p>These variables can in turn be used in the template and will be substituted by Hakyll. You can read more about templates, again, on the official <a href="https://jaspervdj.be/hakyll/tutorials/04-compilers.html">Hakyll Website</a></p>
+<h1 class="y-header" id="custom-fields"><span>Custom fields</span><a href="#custom-fields" class="anchor las la-anchor" title="custom-fields"></a></h1>
+<p>Generally <code>Context</code>s are the only way to include dynamic content. Anything that is not plain text from the template or the document comes through a context <code>Field</code>. <code>Field</code>s hold data that is individually derived from each <code>Item</code> i.e. document. They are composed to form a full context which is fed into the templating engine. As <code>Field</code>s are implemented as <code>Monoids</code> composing gets very easy:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">context ::</span> <span class="dt">Context</span> <span class="dt">String</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>context <span class="ot">=</span> <span class="fu">mconcat</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    [ defaultContext</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    , pathField <span class="st">&quot;sourcefile&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- or</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>context <span class="ot">=</span> defaultContext</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>       <span class="op">&lt;&gt;</span> pathField <span class="st">&quot;sourcefile&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>       <span class="op">&lt;&gt;</span> constField <span class="st">&quot;field&quot;</span> <span class="st">&quot;value&quot;</span></span></code></pre></div>
+</div>
+<p>Hakyll comes with a range of default fields:</p>
+<ul>
+<li><a href="http://hackage.haskell.org/package/hakyll-4.13.2.0/docs/Hakyll-Web-Template-Context.html#v:boolField"><code>boolFields</code></a></li>
+<li><a href="http://hackage.haskell.org/package/hakyll-4.13.2.0/docs/Hakyll-Web-Template-Context.html#v:constField"><code>constField</code></a></li>
+<li><a href="http://hackage.haskell.org/package/hakyll-4.13.2.0/docs/Hakyll-Web-Template-Context.html#v:modificationTimeField">’modificationTimeField</a></li>
+<li>and some more that you can find <a href="http://hackage.haskell.org/package/hakyll-4.13.2.0/docs/Hakyll-Web-Template-Context.html">here</a></li>
+</ul>
+<p>While setting up the structure of this blog I found the “need” of having some more fields available though. This is how I started to adapt some implementations I found on the internet, and developed my own. Find those in <a href="https://github.com/ysndr/blog/blob/release/generator/Fields.hs"><code>generator/Fields.hs</code></a>.</p>
+<p>Most fields are created by giving an implementation of <code>(Item a -&gt; Compiler String)</code> to the following field function.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">field ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> (<span class="dt">Item</span> a <span class="ot">-&gt;</span> <span class="dt">Compiler</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> <span class="dt">Context</span> a</span></code></pre></div>
+</div>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header="">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+NOTE
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p>I am by no means an expert in Haskell at this point. I have learned alot writing the engine behind all this (Which in the end is actually my main motivator). But I am certain some implementations could be done more idiomatically and/or efficiently. Thus, take the ideas that I had critically.</p>
+<p>I do welcome any coments in form of issues on <a href="https://github.com/ysndr/blog">Github</a>. :)</p>
+</div>
+<h2 class="y-header" id="peekfield"><span><code>peekField</code></span><a href="#peekfield" class="anchor las la-anchor" title="peekfield"></a></h2>
+<p>I showed this field already in the previous article, it is one of the first fields I made to understand the logic behind them. It simply takes the fist <code>length</code> words and makes them availlable to the template engine under <code>key</code>. As templates are applied after pandoc converted the document to html I needed to take the original content from an earlier created <code>snapshot</code> of the document.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>peekField</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    ::</span> <span class="dt">String</span>           <span class="co">-- ^ Key to use</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="ot">-&gt;</span> <span class="dt">Int</span>              <span class="co">-- ^ length to peak</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">-&gt;</span> <span class="dt">Snapshot</span>         <span class="co">-- ^ Snapshot to load</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span>   <span class="co">-- ^ Resulting context</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>peekField key <span class="fu">length</span> snapshot <span class="ot">=</span> field key <span class="op">$</span> \item <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    body <span class="ot">&lt;-</span> itemBody <span class="op">&lt;$&gt;</span> loadSnapshot (itemIdentifier item) snapshot</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> (peak body)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span> peak <span class="ot">=</span> T.unpack <span class="op">.</span> T.unwords <span class="op">.</span> <span class="fu">take</span> <span class="fu">length</span> <span class="op">.</span> T.words <span class="op">.</span> T.pack</span></code></pre></div>
+</div>
+<p>Problem with this is undeniably that it does not that markup into account at all. That way Code blocks are included without any styling and look very bad.</p>
+<h2 class="y-header" id="git-fields"><span>Git Fields</span><a href="#git-fields" class="anchor las la-anchor" title="git-fields"></a></h2>
+<p>I wanted to allow readers of my blog to follow the history of an article. As the sourceof this blog is hosted on GitHub using GitHub’s history view would be an easy way to achieve this, I thought.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Git related fields</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">--------------------------------------------------------------------------------</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">GitVersionContent</span> <span class="ot">=</span> <span class="dt">Hash</span> <span class="op">|</span> <span class="dt">Commit</span> <span class="op">|</span> <span class="dt">Full</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>     <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Read</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">GitVersionContent</span> <span class="kw">where</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show</span> content <span class="ot">=</span> <span class="kw">case</span> content <span class="kw">of</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Hash</span> <span class="ot">-&gt;</span> <span class="st">&quot;%h&quot;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Commit</span> <span class="ot">-&gt;</span> <span class="st">&quot;%h: %s&quot;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Full</span> <span class="ot">-&gt;</span> <span class="st">&quot;%h: %s (%ai)&quot;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">-- Query information of a given file tracked with git</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="ot">getGitVersion ::</span> <span class="dt">GitVersionContent</span> <span class="co">-- Kind of information</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>              <span class="ot">-&gt;</span> <span class="dt">FilePath</span>          <span class="co">-- File to query information of</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>              <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">String</span>         <span class="co">--</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>getGitVersion content path <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    (status, stdout, _) <span class="ot">&lt;-</span> readProcessWithExitCode <span class="st">&quot;git&quot;</span> [</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;log&quot;</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;-1&quot;</span>,</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;--format=&quot;</span> <span class="op">++</span> (<span class="fu">show</span> content),</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;--&quot;</span>,</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;src/&quot;</span><span class="op">++</span>path] <span class="st">&quot;&quot;</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="op">$</span> <span class="kw">case</span> status  <span class="kw">of</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>        <span class="dt">ExitSuccess</span> <span class="ot">-&gt;</span> trim stdout</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>        _           <span class="ot">-&gt;</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span> trim <span class="ot">=</span> dropWhileEnd <span class="fu">isSpace</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="co">-- Field that contains the latest commit hash that hash touched the current item.</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="ot">versionField ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">GitVersionContent</span> <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>versionField name content <span class="ot">=</span> field name <span class="op">$</span> \item <span class="ot">-&gt;</span> unsafeCompiler <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> path <span class="ot">=</span> toFilePath <span class="op">$</span> itemIdentifier item</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    getGitVersion content  path</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="co">-- Field that contains the commit hash of HEAD.</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="ot">headVersionField ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">GitVersionContent</span> <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>headVersionField name content  <span class="ot">=</span> field name <span class="op">$</span> \_ <span class="ot">-&gt;</span> unsafeCompiler <span class="op">$</span> getGitVersion content  <span class="st">&quot;.&quot;</span></span></code></pre></div>
+</div>
+<p>With the current implementation of <code>getGitVersion</code> I am able to get the latest commit that changed any given document. It spawns a <code>git</code> process and reads its output afterwards.</p>
+<p>I can even choose from predefined formats:</p>
+<ul>
+<li><code>Hash</code> gives the Commit’s hash,</li>
+<li><code>Commit</code> the Hash+Message</li>
+<li><code>Full</code> Hash+Message+Time</li>
+</ul>
+<p>Although I think for many pages the number of <code>git</code> invocations might lead to significantly longer build times, for the time being it works rather well.</p>
+<h2 class="y-header" id="readtimefield"><span><code>readTimeField</code></span><a href="#readtimefield" class="anchor las la-anchor" title="readtimefield"></a></h2>
+<p>Another really simple but usefull function that naïvely computes the reading time of a document. Essentially it counts the words of the docutment snapshot and devides it by the average reading velocoty of about 200 words/min.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">readTimeField ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Snapshot</span> <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>readTimeField name snapshot <span class="ot">=</span> field name <span class="op">$</span> \item <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    body <span class="ot">&lt;-</span> itemBody <span class="op">&lt;$&gt;</span> loadSnapshot (itemIdentifier item) snapshot</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="fu">words</span> <span class="ot">=</span> <span class="fu">length</span> (T.words <span class="op">.</span> T.pack <span class="op">$</span> body)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="op">$</span> <span class="fu">show</span> <span class="op">$</span> <span class="fu">div</span> <span class="fu">words</span> <span class="dv">200</span></span></code></pre></div>
+</div>
+<h2 class="y-header" id="publishedgroupfield"><span><code>publishedGroupField</code></span><a href="#publishedgroupfield" class="anchor las la-anchor" title="publishedgroupfield"></a></h2>
+<p>Adapted from <a href="https://biosphere.cc/software-engineering/hakyll-group-posts-by-year/">biosphere.cc</a></p>
+<p>This field is actually a <code>listField</code>. It is used on the archive page to group posts by year. It is also a quite intimidating one at first sight, but it works perfectly, so 🤷🏼‍♂️.</p>
+<p>It works by first extracting the year out of the date of every post using <code>extractYear</code>. It then groups the resulting tuples by the year item and merges the groups.</p>
+<p>Have I already mentioned that working with elements contained in a <code>Compiler</code> Monad is incredibly weird? - <em>It is!</em></p>
+<p>Anyway, in the end the template can use the list referenced by <code>name</code> that exposes a field <code>year</code> containing the actual year of a list of posts that is accessable as <code>posts</code> and that have a given <code>postContext</code> applied.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">publishedGroupField ::</span> <span class="dt">String</span>           <span class="co">-- name</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                    <span class="ot">-&gt;</span> [<span class="dt">Item</span> <span class="dt">String</span>]    <span class="co">-- posts</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                    <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span>   <span class="co">-- Post context</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                    <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span>   <span class="co">-- output context</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>publishedGroupField name posts postContext <span class="ot">=</span> listField name groupCtx <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    tuples <span class="ot">&lt;-</span> <span class="fu">traverse</span> extractYear posts</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> grouped <span class="ot">=</span> groupByYear tuples</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> merged <span class="ot">=</span> <span class="fu">fmap</span> merge <span class="op">$</span> grouped</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> itemized <span class="ot">=</span> <span class="fu">fmap</span> makeItem <span class="op">$</span> merged</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sequence</span> itemized</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span> groupCtx <span class="ot">=</span> field <span class="st">&quot;year&quot;</span> (<span class="fu">return</span> <span class="op">.</span> <span class="fu">show</span> <span class="op">.</span> <span class="fu">fst</span> <span class="op">.</span> itemBody)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                  <span class="op">&lt;&gt;</span> listFieldWith <span class="st">&quot;posts&quot;</span> postContext (<span class="fu">return</span> <span class="op">.</span> <span class="fu">snd</span> <span class="op">.</span> itemBody)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="ot">          merge ::</span> [(<span class="dt">Integer</span>, [<span class="dt">Item</span> <span class="dt">String</span>])]  <span class="ot">-&gt;</span> (<span class="dt">Integer</span>, [<span class="dt">Item</span> <span class="dt">String</span>])</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>          merge gs <span class="ot">=</span> <span class="kw">let</span> conv (year, acc) (_, toAcc) <span class="ot">=</span> (year, toAcc <span class="op">++</span> acc)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                      <span class="kw">in</span>  <span class="fu">foldr</span> conv (<span class="fu">head</span> gs) (<span class="fu">tail</span> gs)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>          groupByYear <span class="ot">=</span> groupBy (\(y, _) (y&#39;, _) <span class="ot">-&gt;</span> y <span class="op">==</span> y&#39;)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="ot">          extractYear ::</span> <span class="dt">Item</span> a <span class="ot">-&gt;</span> <span class="dt">Compiler</span> (<span class="dt">Integer</span>,  [<span class="dt">Item</span> a])</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>          extractYear item <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>             time <span class="ot">&lt;-</span> getItemUTC defaultTimeLocale (itemIdentifier item)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>             <span class="kw">let</span>    (year, _, _) <span class="ot">=</span> (toGregorian <span class="op">.</span> utctDay) time</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>             <span class="fu">return</span> (year, [item])</span></code></pre></div>
+</div>
+<h2 class="y-header" id="concatfield"><span><code>concatField</code></span><a href="#concatfield" class="anchor las la-anchor" title="concatfield"></a></h2>
+<p>An actual use of <code>functionFields</code> – yey.</p>
+<p>It is used to dynamically apply a different header in the base template. There I construct a path to a partial template using another <code>constField</code> (<code>item-type</code>) which, for posts will display a customized header</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb8"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>$partial(concat(&quot;templates/includes/&quot;,item-type, &quot;-header.html&quot;))</span></code></pre></div>
+</div>
+<p>The implementation is simply:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">concatField ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>concatField name <span class="ot">=</span> functionField name (\args item <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="op">$</span> <span class="fu">concat</span> args)</span></code></pre></div>
+</div>
+<h3 class="y-header" id="functionfields"><span><code>FunctionFields</code></span><a href="#functionfields" class="anchor las la-anchor" title="functionfields"></a></h3>
+<p>For the unintroduced, function fields are defined as:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">functionField ::</span> <span class="dt">String</span>                                  <span class="co">-- name</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>              <span class="ot">-&gt;</span> ([<span class="dt">String</span>] <span class="ot">-&gt;</span> <span class="dt">Item</span> a <span class="ot">-&gt;</span> <span class="dt">Compiler</span> <span class="dt">String</span>) <span class="co">-- actual function</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>              <span class="ot">-&gt;</span> <span class="dt">Context</span> a</span></code></pre></div>
+</div>
+<p>When used, like in the above example (<code>concat("hello", " ", "world")</code>) the function</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>(\args item <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="op">$</span> <span class="fu">concat</span> args)</span></code></pre></div>
+</div>
+<p>is evaluated where args contains exactly the arguments given (<code>args == ["hello"," ",  "world"]</code>). as well as the <code>Item</code> it is used on i.e. the document. You can now do all you want with the document’s body and arguments given. Apparently though calling the functionField with the same field as argument is not possible.</p>
+<p>For another explanation see also <a href="https://beerendlauwers.be/posts/2015-09-21-hakylls-functionfield.html">Beerend Lauwens’ post</a></p>
+<h2 class="y-header" id="plaintocfield"><span><code>plainTocField</code></span><a href="#plaintocfield" class="anchor las la-anchor" title="plaintocfield"></a></h2>
+<p>Although I have written another implementation of this one that allows additional classes applied on certain elements I would like to show this anyway. To generate a simple table of contents pandocs builtin toc gereator is leveraged. I load the documents body, give it to panodc to parse it into a <code>Pandoc _ [Block]</code> and use that to write html with the template <code>$table-of-contents$</code>. The output of that is only the table of contents and nothing else.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">plainTocField ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>plainTocField name depth snapshot <span class="ot">=</span> field name <span class="op">$</span> \item <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    body <span class="ot">&lt;-</span> loadSnapshot (itemIdentifier item) snapshot</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> writerOptions <span class="ot">=</span> def</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>            {</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>              writerTableOfContents <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>            , writerTOCDepth <span class="ot">=</span> depth</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>            , writerTemplate <span class="ot">=</span> <span class="dt">Just</span> <span class="st">&quot;$table-of-contents$&quot;</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>        toc <span class="ot">=</span> <span class="kw">case</span> runPure (readHtml defaultHakyllReaderOptions</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>                                     (T.pack <span class="op">$</span> itemBody body))</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>               <span class="op">&gt;&gt;=</span> \pandoc <span class="ot">-&gt;</span> runPure ( writeHtml5String writerOptions pandoc) <span class="kw">of</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>                   <span class="dt">Left</span> err    <span class="ot">-&gt;</span> <span class="fu">fail</span> <span class="op">$</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>                   <span class="dt">Right</span> item&#39; <span class="ot">-&gt;</span> T.unpack item&#39;</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> toc</span></code></pre></div>
+</div>
+<h1 class="y-header" id="final-words"><span>Final Words</span><a href="#final-words" class="anchor las la-anchor" title="final-words"></a></h1>
+<p>As I have already mentioned above, I am not the expert in Haskell that I’d like to be. But writing this blog’s engine has taught me much and was a great excuse to dive Haskell and understand its ideas.</p>
+<p>I hope you enjoyed this post anyway. For ideas critic and about this use the <a href="https://github.com/ysndr/blog/issues/new">GitHub issue tracker</a></p>]]></description>
+    <pubDate>Sun, 22 Mar 2020 00:00:00 UT</pubDate>
+    <guid>https://blog.ysndr.de/posts/internals/2020-03-22-built-with-hakyll-part-2/index.html</guid>
+    <dc:creator>Yannik Sander</dc:creator>
+</item>
+<item>
+    <title>How this page is generated - Part 01</title>
+    <link>https://blog.ysndr.de/posts/internals/2019-12-31-built-with-hakyll-part-1/index.html</link>
+    <description><![CDATA[<h1 class="y-header" id="hakyll-the-basics"><span>Hakyll: The Basics</span><a href="#hakyll-the-basics" class="anchor las la-anchor" title="hakyll-the-basics"></a></h1>
+<p>Hakyll is tool to build static webpages and written in Haskell borrowing part of its name from it and the other from the renown static site engine <a href="https://jekyllrb.com/">Jekyll</a>. The fundamental difference is that instead of being a standalone program, Hakyll is implemented as a library offering a rich DSL to define the contents of a website. The DSL can be used to include static assets, compile pages using templates and even generate whole pages by itself i.e. RSS and ATOM feeds. As Hakyll is written in Haskell combining it with the great text conversion tool <a href="https://pandoc.org/">pandoc</a> is a low hanging fruit. The combination of both allows compiling from several different file formats including (an extended version of) Markdown, <a href="http://docutils.sourceforge.net/docs/ref/rst/introduction.html">RST</a> and Emacs <a href="http://orgmode.org/">Org-Mode</a>.</p>
+<div class="uk-alert-warning warning box y-fill-horizontal" data-header="Attention">
+<div class="header">
+<div>
+<span class="las la-exclamation-circle"></span>
+<div class="badge">
+WARN
+</div>
+</div>
+<div>
+<p>Attention</p>
+</div>
+</div>
+<p><em>I won’t go into all the things used in this article, instead there will be individual posts going into more detail about different elements</em></p>
+</div>
+<ul>
+<li>Part 01: Hakyll basics and context <em>(this article)</em></li>
+<li>Part 02: <a href="./2020-03-22-built-with-hakyll-part-2.html">Custom Fields</a></li>
+</ul>
+<h2 class="y-header" id="setup"><span>Setup</span><a href="#setup" class="anchor las la-anchor" title="setup"></a></h2>
+<p>Setting up Hakyll in general using stack or cabal is already documented extensively. My take on this project involves using <a href="https://nixos.org/nix/">nix</a> as dependency/package manager. How I set up this blog using nix will also be discussed another time.</p>
+<h2 class="y-header" id="basic-concepts"><span>Basic Concepts</span><a href="#basic-concepts" class="anchor las la-anchor" title="basic-concepts"></a></h2>
+<p>In this article I would like to introduce the basic concepts of Hakyll in an applied way.</p>
+<p>The heart of this page is <a href="https://github.com/ysndr/blog/blob/release/generator/Main.hs"><code>generator/Main.hs</code></a>.</p>
+<p>At it’s bare minimum a basic Hakyll generator looks like this:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">config ::</span> <span class="dt">Configuration</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>config <span class="ot">=</span> defaultConfiguration {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- config overrides such as the path to the page content source</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- and compiled item&#39;s destination</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- A context extending the default context by a date field</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ot">postCtx ::</span> <span class="dt">Tags</span> <span class="ot">-&gt;</span> <span class="dt">Tags</span> <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>postCtx tags category <span class="ot">=</span> dateField <span class="st">&quot;date&quot;</span> <span class="st">&quot;%B %e, %Y&quot;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                     <span class="op">&lt;&gt;</span> defaultContext</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> hakyllWith config <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    match <span class="st">&quot;posts/**.md&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        route <span class="op">$</span> setExtension <span class="st">&quot;html&quot;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        compile</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            <span class="op">$</span>   pandocCompiler</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>            <span class="co">-- applies the post template</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>            <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/post.html&quot;</span> postCtx</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>            <span class="co">-- embeds the rendered post into the page template</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>            <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/default.html&quot;</span> postCtx</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>            <span class="op">&gt;&gt;=</span> relativizeUrls</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    create [<span class="st">&quot;archive.html&quot;</span>] <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>            route idRoute</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>            compile <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>                posts <span class="ot">&lt;-</span> recentFirst <span class="op">=&lt;&lt;</span> loadAll <span class="st">&quot;posts/**&quot;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>                <span class="kw">let</span> postCtx <span class="ot">=</span> postCtx tags categories</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>                <span class="kw">let</span> archiveCtx <span class="ot">=</span> listField <span class="st">&quot;posts&quot;</span> postCtx (<span class="fu">return</span> posts)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>                            <span class="op">&lt;&gt;</span> constField <span class="st">&quot;title&quot;</span> <span class="st">&quot;Archive&quot;</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>                            <span class="op">&lt;&gt;</span> customBaseContext</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>                makeItem <span class="st">&quot;&quot;</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>                    <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/archive.html&quot;</span> archiveCtx</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>                    <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/default.html&quot;</span> archiveCtx</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>                    <span class="op">&gt;&gt;=</span> relativizeUrls</span></code></pre></div>
+</div>
+<p>This will render all markdown files under <code>posts/</code> to html files under our build route and setup an archive site listing all posts.</p>
+<p>In this snipped we see several things lets go through them individually:</p>
+<ol type="1">
+<li>config</li>
+<li>matching routes</li>
+<li>compiling with pandoc</li>
+<li>templates</li>
+<li>contexts</li>
+</ol>
+<h3 class="y-header" id="config"><span>config</span><a href="#config" class="anchor las la-anchor" title="config"></a></h3>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">config ::</span> <span class="dt">Configuration</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>config <span class="ot">=</span> defaultConfiguration { }</span></code></pre></div>
+</div>
+<p>This sets up the runtime configuration of hakyll itself. With it we can override among others the folder in which Hakyll searches for its content and where the result should be stored. All available options can be found inside the <a href="https://jaspervdj.be/hakyll/reference/Hakyll-Core-Configuration.html">documentation</a></p>
+<h3 class="y-header" id="matching-routes"><span>matching routes</span><a href="#matching-routes" class="anchor las la-anchor" title="matching-routes"></a></h3>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>match <span class="st">&quot;posts/**.md&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    route <span class="op">$</span> setExtension <span class="st">&quot;html&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    compile</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">$</span>   pandocCompiler</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- applies the post template</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/post.html&quot;</span> postCtx</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- embeds the rendered post into the page template</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/default.html&quot;</span> postCtx</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;=</span> relativizeUrls</span></code></pre></div>
+</div>
+<p>In order to create a page from an existing source we use the match function. It takes a <code>FilePath</code> and a function telling it what to do with the file. <code>route</code> will then map the matched items to the paths created by <code>setExtension</code> which unsurprisingly only changes the resulting files extension to <code>html</code>. There are a few other functions that can be used here (basically all functions that return <code>Routes</code>). Those can be used to do more advanced route editing such as creating fancy paths using <code>index.html</code><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+<p>But what does this function actually do in particular? 1. It searches for all markdown files under the <code>posts/</code> directory. 2. Defines their final route 3. Compiles them to html using pandoc 4. Embedds them into a post template 5. Embedds raw posts into the default page template 6. And finally relativizes urls, which is a fancy function that keeps track of the resources referenced locally and keeps their links up to date.</p>
+<h3 class="y-header" id="compiling-with-pandoc"><span>Compiling with Pandoc</span><a href="#compiling-with-pandoc" class="anchor las la-anchor" title="compiling-with-pandoc"></a></h3>
+<p>In the snippet above the default <code>pandocCompiler</code> function is used to read the content of the file and transform it into HTML using Hakyll’s default options for pandoc. Aside <code>pandocCompiler</code> there are a few more low level functions available that allow deeper customization in the regards of which pandoc templates are used, which extensions activated and so forth. There are also <code>pandocCompilerWithTransform</code> and <code>pandocCompilerWithTransformM</code> that allow editing the intermediate parsed content pandoc uses internally. At this point rich postprocessing can be applied, just alike the usual pandoc filters. The only grain is that existing pandoc filters (i.e. <a href="https://github.com/jgm/pandocfilters">pandocfilters</a> or <a href="https://github.com/sergiocorreia/panflute">panflute</a>) cannot be easily applied with Hakyll.</p>
+<h3 class="y-header" id="creating-routes"><span>Creating Routes</span><a href="#creating-routes" class="anchor las la-anchor" title="creating-routes"></a></h3>
+<p>Additionally to matching existing files and compiling them, one can also generate fully independent files using the <code>create</code> function.</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>create [<span class="st">&quot;archive.html&quot;</span>] <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    route idRoute</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    compile <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        posts <span class="ot">&lt;-</span> recentFirst <span class="op">=&lt;&lt;</span> loadAll <span class="st">&quot;posts/**&quot;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> postCtx <span class="ot">=</span> postCtx tags categories</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> archiveCtx <span class="ot">=</span> listField <span class="st">&quot;posts&quot;</span> postCtx (<span class="fu">return</span> posts)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                    <span class="op">&lt;&gt;</span> constField <span class="st">&quot;title&quot;</span> <span class="st">&quot;Archive&quot;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                    <span class="op">&lt;&gt;</span> customBaseContext</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        makeItem <span class="st">&quot;&quot;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>            <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/archive.html&quot;</span> archiveCtx</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>            <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/default.html&quot;</span> archiveCtx</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>            <span class="op">&gt;&gt;=</span> relativizeUrls</span></code></pre></div>
+</div>
+<p>This creates a files <code>archive.html</code> which is built using the compile function that basically wraps an <code>Item a</code> in the <code>Compiler</code> monad. The corresponding item is created using <code>makeItem</code> that itroduces an empty String Item that is enriched first using the archive template and subsequently the default page template.</p>
+<p>Notice the use of <code>loadAll</code> that makes the set of all posts availlable inside he compile scope. Most importantly though are the both contexts, especially the <code>archiveCtx</code> that makes the posts available to the template engine as a list of <code>postCtx</code>s.</p>
+<h3 class="y-header" id="contexts"><span>Contexts</span><a href="#contexts" class="anchor las la-anchor" title="contexts"></a></h3>
+<p>Contexts contain the meta information that is available to the templating engine when building an <code>Item</code>. Thus allowing the usage of the computed value in the template files. A context holds a number of fields which are contexts as well. Each field’s value is created for every compilation item (this is every item the context will be applied on, usually individual posts).</p>
+<p>Take for example the following field definition:</p>
+<div class="y-fill-horizontal">
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>peekField</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    ::</span> <span class="dt">String</span>           <span class="co">-- ^ Key to use</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="ot">-&gt;</span> <span class="dt">Int</span>              <span class="co">-- ^ length to peak</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">-&gt;</span> <span class="dt">Snapshot</span>         <span class="co">-- ^ Snapshot to load</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span>   <span class="co">-- ^ Resulting context</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>peekField key <span class="fu">length</span> snapshot <span class="ot">=</span> field key <span class="op">$</span> \item <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    body <span class="ot">&lt;-</span> itemBody <span class="op">&lt;$&gt;</span> loadSnapshot (itemIdentifier item) snapshot</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> (peak body)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span> peak <span class="ot">=</span> T.unpack <span class="op">.</span> T.unwords <span class="op">.</span> <span class="fu">take</span> <span class="fu">length</span> <span class="op">.</span> T.words <span class="op">.</span> T.pack</span></code></pre></div>
+</div>
+<p>This is a very simple field once created to serve as my own version of a teaser field. As you can see a <code>field</code> is created from a key and a function mapping an item to a string. In this case the item’s body is extracted from a <a href="https://jaspervdj.be/hakyll/tutorials/05-snapshots-feeds.html#snapshots">snapshot</a> of the item’s content. Then <code>length</code> words are taken and returned. (If you are in the actual need of a teaser field I would advice you though to use the <a href="https://jaspervdj.be/hakyll/reference/Hakyll-Web-Template-Context.html#v:teaserField"><code>teaserField</code></a>).</p>
+<p>Yet what this example demonstate is the integral importance of <code>Item</code>s in Hakyll.</p>
+<h4 class="y-header" id="items"><span>Items</span><a href="#items" class="anchor las la-anchor" title="items"></a></h4>
+<p><code>Item</code>s are a simple datatypes that wrap a <code>body</code> of some type <code>a</code> (usually <code>String</code>) and an identifier.</p>
+<p>Most of Hakyll’s functions that deal with content are working with <code>Item</code>s. As seen above <code>Item</code>s can also be stored in snapshots and retrieved later on. Especially in <code>field</code>s <code>Item</code>s contain the content from which the desired <code>field</code> can be derived from.</p>
+<hr />
+<p>I don’t mean to write an extensive documentation of all the concepts in Hakyll, an complete introductory tutorial as well as links to other peoples takes can be found at Jasper’s (the founder of Hakyll) <a href="https://jaspervdj.be/hakyll/tutorials.html">website</a>.</p>
+<p>In a follow up article I would like to share a compilation of custom fields that I created or adapted from other blogs.</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p><a href="rohanjain.in/hakyll-clean-urls/">rohanjain.in/hakyll-clean-urls/</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>]]></description>
+    <pubDate>Tue, 31 Dec 2019 00:00:00 UT</pubDate>
+    <guid>https://blog.ysndr.de/posts/internals/2019-12-31-built-with-hakyll-part-1/index.html</guid>
+    <dc:creator>Yannik Sander</dc:creator>
+</item>
+<item>
+    <title>git commit -m "Initial Commit"</title>
+    <link>https://blog.ysndr.de/posts/2019-12-24-Welcome/index.html</link>
+    <description><![CDATA[<h1 class="y-header" id="welcome"><span>✨🎉 Welcome ✨🎉</span><a href="#welcome" class="anchor las la-anchor" title="welcome"></a></h1>
+<p>Hej, and welcome!</p>
+<p>You appear to have successfully stumbled upon my Blog, nice to have you here.</p>
+<p>This blog will be home to all the ideas that I mind worthy to be yelled out in the wild. Expect random thoughts posts about <a href="https://nixos.org/nix/">Nix</a>, <a href="https://www.rust-lang.org/">rust</a>, contents of my studies as well as the internals of this blog.</p>]]></description>
+    <pubDate>Tue, 24 Dec 2019 00:00:00 UT</pubDate>
+    <guid>https://blog.ysndr.de/posts/2019-12-24-Welcome/index.html</guid>
+    <dc:creator>Yannik Sander</dc:creator>
+</item>
+
+    </channel>
+</rss>
