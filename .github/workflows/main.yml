@@ -86,7 +86,7 @@ jobs:
       uses: crazy-max/ghaction-github-pages@v2
       with:
         target_branch: gh-pages2
-        build_dir: ./.
+        build_dir: ./release
         committer_name: github-ci
         committer-email: notifications+ci-blog@ysndr.de
       env:
