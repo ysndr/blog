@@ -1,0 +1,4 @@
+{
+    "haskell.languageServerVariant": "haskell-language-server",
+    "haskell.serverExecutablePath": "/nix/store/wn1kxbb8dg1f5k121wc3sa779lvhgc03-ghc-8.8.4-with-packages/bin/haskell-language-server"
+}
