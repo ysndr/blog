@@ -2,14 +2,14 @@ name: "Build Site and Deploy"
 
 on:
   push:
-    branches:
-      - release
+    branches: "release"
+  pull_request:
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Install Nix
       uses: cachix/install-nix-action@v12
       with:
@@ -20,8 +20,29 @@ jobs:
       run: nix run ./#compile
     - name: Disable Jekyll rendering
       run: touch build/site/.nojekyll
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup preview (Download release)
+      if: github.event_name == "pull_request"
+      uses: actions/checkout@v2
+      with:
+        ref: gh-pages
+        path: release
+    - name: Setup preview (move preview)
+      if: github.event_name == "pull_request"
+      run: |
+        export PR_PATH="./gh-pages/preview/${{ github.event.pull_request.number }}"
+        mkdir -p $PR_PATH
+        rm -r $PR_PATH/* || true
+        cp -r build/site $PR_PATH
+        mv ./gh_pages build/site
+
+
+
     - name: Deploy
-      if: success()
       uses: crazy-max/ghaction-github-pages@v2
       with:
         target_branch: gh-pages
