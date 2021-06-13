@@ -83,7 +83,8 @@ in
         export THIRDPARTY="${thirdparty'}"
         export HAKYLL_ENV="development"
 
-        export NODE_PATH="$NODE_PATH:${css-tools.shell.nodeDependencies}/lib/node_modules"
+        export POSTCSS_MODULES="${css-tools.shell.nodeDependencies}/lib/node_modules"
+        export NODE_PATH="$POSTCSS_MODULES:$NODE_PATH"
         export NODE_ENV="$HAKYLL_ENV"
 
         export HIE_HOOGLE_DATABASE="${haskell-env}/share/doc/hoogle/default.hoo"
