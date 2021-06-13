@@ -48,6 +48,9 @@ jobs:
         ref: gh-pages
         path: release
 
+    - name: Remove git dir
+      run: rm -rf ./release/.git/
+
     - name: Download Current Build
       uses: actions/download-artifact@v2
       with:
@@ -78,7 +81,6 @@ jobs:
         name: blog-build
         path: |
           release
-          !./release/.git
 
 
 
