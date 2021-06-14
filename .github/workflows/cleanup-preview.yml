@@ -1,0 +1,38 @@
+name: "Cleanup Preview"
+
+on:
+  pull_request:
+    types: [ closed ]
+
+env:
+  GITHUB_PR_NUMBER: "${{github.event.number}}"
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Pull release
+      uses: actions/checkout@v2
+      with:
+        repository: ysndr/beta
+        ref: gh-pages
+        path: preview
+
+    - name: Remove Preview
+      run: |
+        [[ -d ./preview/${{ env.GITHUB_PR_NUMBER }} ]] && rm -r ./preview/${{ env.GITHUB_PR_NUMBER }}
+        true
+
+        rm  -rf preview/.git
+
+
+    - name: Push
+      uses: crazy-max/ghaction-github-pages@v2
+      with:
+        repo: ysndr/beta
+        target_branch: gh-pages
+        build_dir: ./preview
+        committer: github-ci <notifications+ci-blog@ysndr.de>
+        verbose: true
+      env:
+        GH_PAT: ${{ secrets.DEPLOY_TOKEN }}

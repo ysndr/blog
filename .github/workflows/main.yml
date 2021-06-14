@@ -24,10 +24,12 @@ jobs:
     # - name: Disable Jekyll rendering
     #   run: touch build/site/.nojekyll
     - name: Compile Document
+      # run: nix run ./#compile
       run: |
-        pwd
         mkdir -p build/site
-        touch build/site/index.html
+        touch build/site/test.html
+    - name: Disable Jekyll rendering
+      run: touch build/site/.nojekyll
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
