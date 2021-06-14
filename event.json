@@ -1,0 +1,13 @@
+{
+    "action": "synchronize",
+    "after": "abcdefg",
+    "before": "1234567",
+    "number": 12,
+    "pull_request": {
+
+    },
+    "repository": {
+    },
+    "sender": {
+    }
+  }

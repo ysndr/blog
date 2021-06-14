@@ -2,14 +2,20 @@ name: "Build Site and Deploy"
 
 on:
   push:
-    branches:
-      - release
+    branches: "release"
+  pull_request:
+
+env:
+  GITHUB_PR_NUMBER: "${{github.event.number}}"
+  PREVIEW_PATH: "./preview"
+
 
 jobs:
-  build-and-deploy:
+  build:
+    name: "Build"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Install Nix
       uses: cachix/install-nix-action@v12
       with:
@@ -17,19 +23,95 @@ jobs:
         extra_nix_config: |
           experimental-features = nix-command flakes
     - name: Compile Document
-      run: nix run ./#compile
+      # run: nix run ./#compile
+      run: |
+        mkdir -p build/site
+        touch build/site/test.html
     - name: Disable Jekyll rendering
       run: touch build/site/.nojekyll
-    - name: Deploy
-      if: success()
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: blog-build
+        path: ./build/site
+
+  deploy-preview:
+    name: Deploy Preview
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+    - name: Download Preview Repo
+      uses: actions/checkout@v2
+      with:
+        repository: ysndr/beta
+        ref: gh-pages
+        path: preview
+
+    - name: Untrack preview
+      run: rm -rf ./preview/.git
+
+
+    - name: Download Current Build
+      uses: actions/download-artifact@v2
+      with:
+        name: blog-build
+        path: current
+
+    - name: Apply Preview
+      run: |
+        export PR_PATH="$PREVIEW_PATH/$GITHUB_PR_NUMBER"
+
+        mkdir -p $PREVIEW_PATH
+        [ -d $PR_PATH ] && rm -r $PR_PATH
+
+        mv ./current $PR_PATH
+
+    - name: Deploy to GitHub
+      uses: crazy-max/ghaction-github-pages@v2
+      with:
+        repo: ysndr/beta
+        target_branch: gh-pages
+        build_dir: ./preview
+        committer: github-ci <notifications+ci-blog@ysndr.de>
+        keep_history: true;
+      env:
+        GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+
+    - name: Notify User
+      uses: mshick/add-pr-comment@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        message: |
+          **__Deployed preview__** 🚀
+
+          [#${{ env.GITHUB_PR_NUMBER }}](https://ysndr.de/beta/${{ env.GITHUB_PR_NUMBER }})
+
+  deploy-release:
+    name: Deploy Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+    - name: Download Current Build
+      uses: actions/download-artifact@v2
+      with:
+        name: blog-build
+        path: release
+
+    - name: Deploy to GitHub
       uses: crazy-max/ghaction-github-pages@v2
       with:
         target_branch: gh-pages
-        build_dir: build/site
-        committer_name: github-ci
-        committer-email: notifications+ci-blog@ysndr.de
+        build_dir: ./release
+        name: github-ci <notifications+ci-blog@ysndr.de>
+
       env:
         GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+
+
+
   always-run:
     runs-on: ubuntu-latest
     steps:
