@@ -36,3 +36,11 @@ jobs:
         verbose: true
       env:
         GH_PAT: ${{ secrets.DEPLOY_TOKEN }}
+
+    - name: Notify User
+      uses: mshick/add-pr-comment@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        message: |
+          **__Preview Undeployed__**
