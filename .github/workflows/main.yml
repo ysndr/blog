@@ -23,10 +23,7 @@ jobs:
         extra_nix_config: |
           experimental-features = nix-command flakes
     - name: Compile Document
-      # run: nix run ./#compile
-      run: |
-        mkdir -p build/site
-        touch build/site/test.html
+      run: nix run ./#compile
     - name: Disable Jekyll rendering
       run: touch build/site/.nojekyll
     - name: Upload artifact
