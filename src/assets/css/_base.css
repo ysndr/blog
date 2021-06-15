@@ -255,6 +255,7 @@
   }
 
   .la, .lab, .lad, .lal, .lar, .las {
-    font-size: 125%;
+    font-size: 150%;
+    vertical-align: text-bottom;
   }
 }
