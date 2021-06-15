@@ -42,5 +42,5 @@ jobs:
       with:
         step: deactivate-env
         token: ${{ secrets.GITHUB_TOKEN }}
-        env: preview
+        env: preview (#${{ env.GITHUB_PR_NUMBER }})
         desc: Deployment was pruned

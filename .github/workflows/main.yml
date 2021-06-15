@@ -44,7 +44,7 @@ jobs:
       with:
         step: start
         token: ${{ secrets.GITHUB_TOKEN }}
-        env: preview
+        env: preview (#${{ env.GITHUB_PR_NUMBER }})
         desc: Preview deployment of PR \#${{ env.GITHUB_PR_NUMBER }}
         ref: ${{ github.event.pull_request.head.ref }}
     - name: Download Preview Repo
