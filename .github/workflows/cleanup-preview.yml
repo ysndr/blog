@@ -37,10 +37,10 @@ jobs:
       env:
         GH_PAT: ${{ secrets.DEPLOY_TOKEN }}
 
-    - name: Notify User
-      uses: mshick/add-pr-comment@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Deactivate deploy
+      uses: bobheadxi/deployments@v0.6.0
       with:
-        message: |
-          **__Preview Undeployed__**
+        step: deactivate-env
+        token: ${{ secrets.GITHUB_TOKEN }}
+        env: preview (#${{ env.GITHUB_PR_NUMBER }})
+        desc: Deployment was pruned
