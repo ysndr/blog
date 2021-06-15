@@ -38,6 +38,14 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
+    - name: Start deployment
+      uses: bobheadxi/deployments@v0.6.0
+      id: deployment
+      with:
+        step: start
+        token: ${{ secrets.GITHUB_TOKEN }}
+        env: preview
+        desc: Preview deployment of PR #${{ env.GITHUB_PR_NUMBER }}
     - name: Download Preview Repo
       uses: actions/checkout@v2
       with:
@@ -75,15 +83,16 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
 
-    - name: Notify User
-      uses: mshick/add-pr-comment@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: update deployment status
+      uses: bobheadxi/deployments@v0.6.0
+      if: always()
       with:
-        message: |
-          **__Deployed preview__** 🚀
+        step: finish
+        token: ${{ secrets.GITHUB_TOKEN }}
+        status: ${{ job.status }}
+        deployment_id: preview
+        env_url: https://ysndr.de/beta/${{ env.GITHUB_PR_NUMBER }}
 
-          [#${{ env.GITHUB_PR_NUMBER }}](https://ysndr.de/beta/${{ env.GITHUB_PR_NUMBER }})
 
   deploy-release:
     name: Deploy Release
