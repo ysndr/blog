@@ -90,7 +90,7 @@ jobs:
         step: finish
         token: ${{ secrets.GITHUB_TOKEN }}
         status: ${{ job.status }}
-        deployment_id: preview
+        deployment_id: ${{ steps.deployment.outputs.deployment_id }}
         env_url: https://ysndr.de/beta/${{ env.GITHUB_PR_NUMBER }}
 
 
