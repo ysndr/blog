@@ -103,4 +103,23 @@
     .align-right {
       @apply float-right ml-4;
     }
-}
+
+    span.citation>span.citation {
+      @apply ml-1 text-emphasis
+    }
+
+
+    div.references {
+
+
+      div.csl-entry {
+        &>* {
+          @apply inline
+        }
+
+        &:not(:last-child) {
+          @apply mb-2
+        }
+      }
+    }
+  }
