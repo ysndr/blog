@@ -9,11 +9,11 @@ date: 2021-04-30
 status:
 description: This essay aims to present a functional description of the Rust build system that exemplifies outstanding efforts of open source CI/CD
 bibliography: ./the-rust-build-system/references.bib
-image: ../the-rust-build-system/lead.jpg
+image: /posts/essays/the-rust-build-system/lead.jpg
 status: published
 ...
 
-:::{.Note, header="Background and Acknowledgement"}
+:::{.note header="Background and Acknowledgement"}
 
 This essay was part of the DD2482 DevOps Course at KTH [(open on github)](https://github.com/kth/devops-course).
 
