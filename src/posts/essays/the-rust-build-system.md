@@ -26,7 +26,7 @@ This essay is the product of a pair project by:
 - **Aron Hansen Berggen** (aronber@kth.se)
 - and **Yannik Sander** (yannik@kth.se / contact@ysndr.de)
 
-*If you want to use this article, please consult either of us. A PDF version is available [here](../the-rust-build-system/Sander-Berggren_The-Rust-Build-System.pdf*
+*If you want to use this article, please consult either of us. A PDF version is available [here](../the-rust-build-system/Sander-Berggren_The-Rust-Build-System.pdf)*
 
 :::
 
