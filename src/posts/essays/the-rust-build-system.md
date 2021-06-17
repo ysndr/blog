@@ -77,7 +77,7 @@ reviews, automated tests, code compilation, packaging of compiled code
 and further validation of the packages before publishing.
 
 ![Figure 1: CI pipelines are run by different events, depicted are the
-standard tests for Rust PR's.](../the-rust-build-system/1619420761_screenshot
+standard tests for Rust PR's.](../the-rust-build-system/1619420761_screenshot.png
 ){#fig:rust_ci}
 
 Throughout this process, one of the most important aspects is to monitor
