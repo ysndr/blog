@@ -25,11 +25,12 @@ import           Text.Sass.Options              ( SassOptions(..)
                                                 , defaultSassOptions
                                                 , SassOutputStyle(..)
                                                 )
-import           Text.Pandoc.Options            ( WriterOptions (..) )
-import           Text.Pandoc.Definition         ( Pandoc(..), Block(..), Inline(..) )
+import           Text.Pandoc.Options            ( WriterOptions (..), ReaderOptions, Extension (Ext_citations) )
+import           Text.Pandoc.Definition         ( Pandoc(..), Block(..), Inline(..), nullAttr )
 import           Text.Pandoc.Walk
-import Text.Pandoc (runPure)
+import Text.Pandoc (runPure, lookupMeta, ReaderOptions (readerExtensions), enableExtension)
 import Text.Pandoc.Readers (readMarkdown)
+import Text.Pandoc.Citeproc (processCitations)
 import System.Exit (ExitCode(ExitSuccess))
 import System.Process (readProcessWithExitCode)
 
@@ -65,6 +66,11 @@ feedConfiguration = FeedConfiguration
     , feedAuthorEmail = "contact@ysndr.de"
     , feedRoot        = "https://blog.ysndr.de"
     }
+
+readerOptions:: ReaderOptions
+readerOptions = def {
+    readerExtensions = enableExtension Ext_citations (readerExtensions defaultHakyllReaderOptions)
+}
 
 -- Global Consts
 --------------------------------------------------------------------------------
@@ -188,6 +194,9 @@ main = do
                 route $ setExtension "css"
                 compile postCssCompiler
 
+        match "assets/*.bib" $ compile biblioCompiler
+        match "assets/*.csl" $ compile cslCompiler
+
         -- assemble static pages
         match (fromList ["about.md", "contact.md"]) $ do
             route $ cleanRoute
@@ -237,8 +246,12 @@ main = do
         matchMetadata postsGlob (\m -> isDevelopment || lookupString "status" m == Just "published") $ do
             let postCtx' = postCtx tags categories
             route $ composeRoutes ensureDateRoute $ composeRoutes cleanRoute idRoute
+
+
+            -- postRoute
             compile
-                $   pandocCompilerWithTransform defaultHakyllReaderOptions  defaultHakyllWriterOptions htmlFilter
+                $   pandocCompilerWithTransform readerOptions defaultHakyllWriterOptions (htmlFilter)
+                >>= biblioStuff
                 >>= saveSnapshot "posts-content"
                 >>= loadAndApplyTemplate "templates/post.html" postCtx'
                 >>= saveSnapshot "posts-rendered"
@@ -292,7 +305,28 @@ main = do
             route idRoute
             compile $ makeItem domain
 
-parse body = case (runPure $ readMarkdown defaultHakyllReaderOptions body)
+biblioStuff :: Item String -> Compiler (Item String)
+biblioStuff item = do
+    csl <- load $ fromFilePath "assets/ieee.csl"
+    bib <- load $ fromFilePath "assets/resources.bib"
+    pandoc <- readPandocBiblio readerOptions csl bib item
+
+    return $ writePandoc $ walk replaceElements pandoc where
+
+        -- replaceElements (Span (_, ["citation"], [("data-cites", reference)]) [ Span attrs@(_, _, _) inner ]) =
+        --     Span attrs [ Link nullAttr inner (T.append "#ref-" reference, reference)]
+
+        replaceElements refs@(Div ("refs", _, _) _) = Div ("", ["box", "y-fill-horizontal", "info"] , []) [header, refs]
+
+        replaceElements block = block
+
+        icon = Div nullAttr [Plain [ Span ("", ["las", "la-book"],[]) []], Div ("", ["badge"], []) [Plain [Str "References"]]]
+        header = Div ("", ["header"], []) [icon]
+
+
+
+
+parse body = case runPure $ readMarkdown defaultHakyllReaderOptions body
                  of
                     Left err    -> error $ "Could not parse"
                     Right (Pandoc meta blocks) -> blocks
