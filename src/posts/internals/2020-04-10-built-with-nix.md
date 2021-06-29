@@ -2,7 +2,7 @@
 title: Building a reproducible blog with Nix
 subtitle: How I use Nix to manage the development and CI of this blog
 tags: internal, technical, nix, haskell
-description: Nix is a purely functional package manger that allows isolated development environments and builds. This blog uses it to provide a development environment and to build the blog in a GitHub Action
+description: Nix is a purely functional package manager that allows isolated development environments and builds. This blog uses it to provide a development environment and to build the blog in a GitHub Action
 image: https://images.unsplash.com/photo-1565058290014-df9bd491a29c
 status: published
 image-credits: |
