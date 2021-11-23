@@ -46,7 +46,7 @@ Nix derivations are not completely sand boxed! Well the build is, meaning during
 
 Yes you have, certainly! One of the reasons why a derivation might fail on your system is due to this. The problem is that it relies on the `nixpkgs` channel currently active on *your system*, which is a major impurity, because people tend to not have the same version active or might even set it to different releases (`release-xx.xx`, `unstable`, ...).\
 The common way around this is to pin the `nixpkgs` used by the developer. This is only a convention though. There is no definite way how to do this. You can see an example in my [previous aticle](/posts/internals/2020-04-10-built-with-nix#default.nix) about how I use nix on this blog. The main idea is to state the current version of `nixpkgs` in a file, fetch the tarball of that version and build against that. This is fine but requires us to update the version manually, and is not consistent among projects.\
-Alternatively, the tool that emerged from this is [`niv`](https://github.com/nmattia/niv). Niv provides an easi interface to add external sources and import them from the projects Nix file. Niv in the background writes a lockfile and streamlines updating.
+Alternatively, the tool that emerged from this is [`niv`](https://github.com/nmattia/niv). Niv provides an easy interface to add external sources and import them from the projects Nix file. Niv in the background writes a lockfile and streamlines updating.
 
 So there might be a way to pin packages and with some discipline we can get around this impurity. How about this then?
 
