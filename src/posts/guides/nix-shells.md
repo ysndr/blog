@@ -24,7 +24,10 @@ Yet, unlike some of the other commands which received a more or less one-to-one 
 
 Yes, but from the start...
 
-## Development shells (`nix-shell [<derivation>]`)
+If you are here just for the commands you can read the tl;dr for [`nix develop`](#tldr-nix-develop), [`nix shell`](#tldr-nix-shell), or [`nix run`](#tldr-nix-run) directly or jump to the [notes](#notes-and-resources) section .
+
+
+## Development shells (`nix-shell [DERIVATION]`)
 
 Development shells using the new `nix` command are now created with `nix develop`.
 
@@ -40,15 +43,15 @@ This allows you to build a package step by step, or better phase by phase, meani
 
 To make this process even easier, `nix develop` now comes with special arguments to run those phases directly.
 
-:::{.note header="Recap"}
+:::{.note #tldr-nix-develop header="tl;dr"}
 
-`nix develop` creates a shell with _all `buildInputs`_ and environment variables of a derivation loaded.
+`nix develop` creates a shell with _all `buildInputs`_ and environment variables of a derivation loaded and `shellHook`s executed.
 
 This allows to _run phases_ individually in the shell using `$ unpackPhase`, `$ configurePhase` `$ buildPhase`, etc. 
 
-...or directly using `nix develop --<PHASE>` or `nix develop --phase <PHASE>` (for non-standard phases).
+...or directly using `nix develop --<PHASE>` or `nix develop --phase PHASE` (for non-standard phases).
 
-...or run an arbitrary command in the shell using `nix develop --command <COMMAND> [<ARGS>+]`
+...or run an arbitrary command in the shell using `nix develop --command COMMAND [ARGS...]`
 
 **Why should you use this?**
 
@@ -79,7 +82,7 @@ Practically, `nix-shell` was also used for another purpose; reproducible develop
 Particularly useful combined with tools like [`direnv`](https://direnv.net/), one can leverage the fact that the resulting shell of ~~`nix-shell`~~ `nix develop` includes all declared `buildInputs` and environment variables to put together an environment with all sorts of dependencies and development tools available. Importantly, nix will ensure the `setupHook` is run when the shell is opened allowing for some impure setup to happen.
 
 :::{.help}
-A helpful tool to achieve this is `mkShell`. This functions provides an easy interface to collect packages for an evironement.
+A helpful tool to achieve this is `mkShell`. This function provides an easy interface to collect packages for an evironement.
 
 ```nix
 pkgs.mkShell = {
@@ -203,7 +206,28 @@ $ nix shell nixpkgs#asciidoc
 
 Like `nix-shell` this command supports multiple arguments.
 
+:::{.note #tldr-nix-shell header="tl;dr"}
+
+`nix shell` creates a shell from the _specified inputs_.
+
+This is useful to install temporary software
+
+...from a [flake specifier](../internals/2021-01-01-flake-ification/#flake-reference-conventions). 
+
+...from a `*.nix` file/arbitrary expression using `--impure --expr EXPR` flags
+
+**Why should you use this?**
+
+The strong point about Nix is its declarative way to manage installations. Software that is used constantly can and should be packaged by the respective tool, be it a system configuration, home configuration.
+
+For project development tools one can use development shells as discussed above.
+
+Yet, sometimes a program or library is needed temporarily only, or once in a different version etc. In these cases programs can be loaded into the shell using `nix shell`. Derivations from this kind command are eventually garbage collected and removed from the nix store, so they do not use up dist space unnecessarily.
+:::
 ## Run scripts
+
+
+
 ### `nix shell -c`
 
 ### `nix run`
@@ -214,8 +238,10 @@ Like `nix-shell` this command supports multiple arguments.
 
 ## To flake or not to flake
 
-Most of the new nix commands are designed in a flake first way. Most notably `nix {shell,develop,run}` expect [flake URLs](../internals/2021-01-01-flake-ification/#flake-reference-conventions) as argument. Traditional `*.nx` files can be used with the `--expr` argument all commands support. As flake mode imposes greater purity strictness, imports have to happen with the `--impure` flag given:
+Most of the new nix commands are designed in a flake first way. Most notably `nix {shell,develop,run}` expect [flake URLs](../internals/2021-01-01-flake-ification/#flake-reference-conventions) as argument. Traditional `*.nix` files can be used with the `--expr` argument all commands support. As flake mode imposes greater purity strictness, imports have to happen with the `--impure` flag given:
 
 ```sh
 $ nix shell --impure --expr "import my.nix {}"
 ```
+
+## A word about `shellHook`s
