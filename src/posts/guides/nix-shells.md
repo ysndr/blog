@@ -40,7 +40,7 @@ This allows you to build a package step by step, or better phase by phase, meani
 
 To make this process even easier, `nix develop` now comes with special arguments to run those phases directly.
 
-:::{.note header="Recap `nix develop`"}
+:::{.note header="Recap"}
 
 `nix develop` creates a shell with _all `buildInputs`_ and environment variables of a derivation loaded.
 
@@ -67,7 +67,8 @@ As the default implementation in nix's `stdenv` is done as functions an internal
 
 **Solution**
 
-Enter a shell using `nix develop` and run the overriden phases using `eval $buildPhase` or `--command eval '\$buildPhase'`
+Enter a shell using `nix develop` and run the overriden phases using `eval \$buildPhase` or `--command eval '\$buildPhase'`.
+
 :::
 
 
@@ -98,4 +99,123 @@ _All extra attributes get are applied as env variables._
 
 :::
 
-Being closely connected to flakes `nix develop` supports loading a flakes development shell directly if a `devShell` out put is defined (see my previous [post](../internals/2021-01-01-flake-ification.md) for an example).
+Being closely connected to flakes `nix develop` supports loading a flakes development shell directly if a `devShell` output is defined.
+
+:::{.help header=Example caption="(Adapted from my previous [post](../internals/2021-01-01-flake-ification.md)).
+"}
+
+```nix
+{
+  description = "Flake utils demo";
+
+  inputs.nixpkgs.url = "github:nixos/nixpkgs";
+  inputs.flake-utils.url = "github:numtide/flake-utils";
+
+  outputs = { self, nixpkgs, flake-utils }:
+    let
+    in
+      flake-utils.lib.eachDefaultSystem (
+        system:
+          let
+            pkgs' = import nixpkgs { inherit system; };
+          in
+            rec {
+              packages = { myPackage = ... }; # packages defined here
+              devShell  = pkgs'.mkShell = {
+                # a list of packages to add to the shell environment
+                packages ? [ jq ]
+                , # propagate all the inputs from the given derivations
+                  # this adds all the tools that can build myPackage to the environment
+                inputsFrom ? [ pacakges.myPackage ]
+              };
+            }
+      );
+}
+```
+
+
+:::
+
+
+
+## Temporary Programs
+
+The fact that nix is built on the idea of the nix store from which user environments are created by cherry-picking the desired packages may raise the question, whether we may be able to amend our current environment imperatively^[Functional purists, please bear with me here].
+And in fact we can. It is possible to add software to a user's profile by imperatively by the means of ~~`nix-env -iA`~~ or nowadays `nix profile install`.
+
+:::{.warning}
+Beware that `nix profile` is incompatible with `nix-env` and therefore (today) also with `home-manager`.
+:::
+
+Yet, we also know that installing software this way is _not the Nix way_ of doing things. 
+
+For the times when we *do* want to have some program at our disposal, either to try it out, use a different version or just needing it only temporarily, there should be a way to get this without going through the effort of adding it to your `configuration.nix`, `home.nix`, project `default.nix`, etc. and rebuilding your environment. In these cases traditional distributions reach back to installing software or relying on containerization (i.e. docker). In Nix, while you could install the piece of software, the aforementioned usage of the nix store allows making software available temporarily without installing it.
+
+This is what `nix-shell -p <package+>` is used for. `nix-shell` will retrieve the desired packages and open a shell with these packages mixed in.
+
+:::{.help header="Example"}
+
+Given you need to quickly convert some `asciidoc` to HTML usually the response of your terminal will be
+
+```
+$ asciidoc -b html5 manual.adoc
+zsh: command not found: asciidoc
+```
+
+While you could go and add asciidoc to your configuration you might need it just once. In that case we can make use of `nix-shell`:
+
+```
+$ nix-shell -p asciidoc
+[nix-shell] $ asciidoc -b html5 manual.adoc
+```
+
+This should now just work. Likewise, this works with almost anything available to install through `nixpkgs`.
+:::
+
+
+:::{.info header="Under the hood"}
+Internally what happens when `nix-shell -p asciidoc` is called is that nix constructs a derivation with the programs as `buildInputs` and popularizes them through the same mechanism described above.
+
+In this case the derivation shell'ed into is:
+
+```
+with import <nixpkgs> { }; (pkgs.runCommandCC or pkgs.runCommand) "shell" { buildInputs = [ (asciidoc) ]; } ""
+```
+
+Note that instead of derivations you can also add expressions as the `-p` argument as these are just plugged in, i.e.:
+
+```
+$ nix-shell -p "import ./some.nix {}" 
+```
+:::
+
+But this is not about `nix-shell`...
+
+Nix 2.4 allows the same thing using `nix shell` now focussing on flakes.
+
+With `nix shell` any output of a flake can be added to the environment by running
+
+```
+$ nix shell nixpkgs#asciidoc
+```
+
+> Here, nix strictly expects a [flake URL](../internals/2021-01-01-flake-ification/#flake-reference-conventions). 
+
+Like `nix-shell` this command supports multiple arguments.
+
+## Run scripts
+### `nix shell -c`
+
+### `nix run`
+
+
+## Shell interpreter \#!
+# Notes and Resources
+
+## To flake or not to flake
+
+Most of the new nix commands are designed in a flake first way. Most notably `nix {shell,develop,run}` expect [flake URLs](../internals/2021-01-01-flake-ification/#flake-reference-conventions) as argument. Traditional `*.nx` files can be used with the `--expr` argument all commands support. As flake mode imposes greater purity strictness, imports have to happen with the `--impure` flag given:
+
+```sh
+$ nix shell --impure --expr "import my.nix {}"
+```
