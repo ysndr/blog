@@ -226,12 +226,74 @@ Yet, sometimes a program or library is needed temporarily only, or once in a dif
 :::
 ## Run scripts
 
+Apart from dropping into development shells `nix-shell` can also be used to run commands and programs from derivation not currently installed to the user's profile. This is it can build a shell as before and run a command inside transparently.
+
+We discussed the use of `nix-shell --command COMMAND ARGS` above, where we would run a command from within the build environment of a derivation. Similarly, we may want to just run a program provided by a derivation. For this `nix-shell` provided the `--run` argument
+
+:::{.note header="\"`--command`\" vs \"`run`\""}
+
+As a development aid, `--command` is interactive, meaning among other things, that *if a command fails or is interrupted by the user, the user is dropped into the shell with the build environment loaded*.
+
+This behavior translates into an invocation using the `-p PROGRAM` argument as well as seen in the following box.
+
+
+```bash
+$ asciidoc 
+zsh: command not found: asciidoc
+
+$ nix-shell -p asciidoc --command asciidoc
+Man page:     asciidoc --help manpage
+Syntax:       asciidoc --help syntax
+
+$ asciidoc # still available as were in the build shell with asciidoc present
+Man page:     asciidoc --help manpage
+Syntax:       asciidoc --help syntax
+```
+
+`--run` runs non-interactive and closes the shell after the command returns
+```bash
+$ asciidoc 
+zsh: command not found: asciidoc
+
+$ nix-shell -p asciidoc --run asciidoc
+Man page:     asciidoc --help manpage
+Syntax:       asciidoc --help syntax
+
+$ asciidoc # not available anymore
+zsh: command not found: asciidoc
+```
+
+:::
 
 
 ### `nix shell -c`
 
+As the functions of `nix-shell DERIVATION` and `nix-shell -p DERIVATION` were separated, the new tools come with new clearer semantics.
+
+The generic `nix-shell --run` function is now `nix shell -c`. Given an installable, nix allows to run any command in an environment where the installable is present. Note that this command is run in a non-interactive shell. The shell is dropped as the command ends.
+
 ### `nix run`
 
+Yet, `nix shell -c` will still require to type the name of the executed program. As for most programs this command is the same as the derivation name e.g. `nix shell -c nixpkgs#asciidoc -c asciidoc` another command was introduced named `nix run`. With `nix run` the previous command can be run as `nix run nixpkgs#asciidoc`.
+
+Naturally, the functionality of `nix run` goes further and as is the case for many other new commands mainly concerns flakes. Next to `packages`, `nixosModules` and others, flakes can now also define `apps`. Written as records with two fields -`type` (currently, necessarily `app`) and `program` (an executable path) - these apps can be run directly using `nix run`.
+
+This app definition
+
+```nix
+...
+outputs = {self}: {
+  ...
+  apps.x86_64-linux.watch = {
+    type = "app";
+    program = "${generator-watch}";
+  };
+}
+```
+
+... could be used to watch and build this blogs source directly using `nix run .#watch`, given `generator-watch` is a script in the nix store. Note that *`program` only accepts paths* in the store and *no default arguments*.
+
+If an attribute to `nix run` is not found as an app, nix will look up a `program` using this key instead and execute `programs.\${<program>}/bin/<program>` instead.
 
 ## Shell interpreter \#!
 # Notes and Resources
