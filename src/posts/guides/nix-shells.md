@@ -64,7 +64,7 @@ If your workflow includes things that are not part of a phase use `nix develop -
 In essence, this is exactly what `nix-shell` was intended for!
 
 
-:::{.warning}
+:::{.warning header=}
 A slight annoyance with phases arises when the targeted derivation overrides standard phases, i.e. `{unpack,configure,build,install}Phase`s.
 As the default implementation in nix's `stdenv` is done as functions an internal use of `runHook` will give precedence to those functions over the overriden phases stored as environment variables.
 
@@ -146,7 +146,7 @@ Being closely connected to flakes `nix develop` supports loading a flakes develo
 The fact that nix is built on the idea of the nix store from which user environments are created by cherry-picking the desired packages may raise the question, whether we may be able to amend our current environment imperatively^[Functional purists, please bear with me here].
 And in fact we can. It is possible to add software to a user's profile by imperatively by the means of ~~`nix-env -iA`~~ or nowadays `nix profile install`.
 
-:::{.warning}
+:::{.warning header=}
 Beware that `nix profile` is incompatible with `nix-env` and therefore (today) also with `home-manager`.
 :::
 
