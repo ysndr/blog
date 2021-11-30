@@ -66,23 +66,23 @@ In essence, this is exactly what `nix-shell` was intended for!
 
 :::{.warning header=}
 A slight annoyance with phases arises when the targeted derivation overrides standard phases, i.e. `{unpack,configure,build,install}Phase`s.
-As the default implementation in nix's `stdenv` is done as functions an internal use of `runHook` will give precedence to those functions over the overriden phases stored as environment variables.
+As the default implementation in nix's `stdenv` is done as functions an internal use of `runHook` will give precedence to those functions over the overridden phases stored as environment variables.
 
 **Solution**
 
-Enter a shell using `nix develop` and run the overriden phases using `eval \$buildPhase` or `--command eval '\$buildPhase'`.
+Enter a shell using `nix develop` and run the overridden phases using `eval \$buildPhase` or `--command eval '\$buildPhase'`.
 
 :::
 
 
-Practically, `nix-shell` was also used for another purpose; reproducible development environemts.
+Practically, `nix-shell` was also used for another purpose; reproducible development environments.
 
 ### Development environments
 
 Particularly useful combined with tools like [`direnv`](https://direnv.net/), one can leverage the fact that the resulting shell of ~~`nix-shell`~~ `nix develop` includes all declared `buildInputs` and environment variables to put together an environment with all sorts of dependencies and development tools available. Importantly, nix will ensure the `setupHook` is run when the shell is opened allowing for some impure setup to happen.
 
 :::{.help}
-A helpful tool to achieve this is `mkShell`. This function provides an easy interface to collect packages for an evironement.
+A helpful tool to achieve this is `mkShell`. This function provides an easy interface to collect packages for an environement.
 
 ```nix
 pkgs.mkShell = {
@@ -202,7 +202,7 @@ With `nix shell` any output of a flake can be added to the environment by runnin
 $ nix shell nixpkgs#asciidoc
 ```
 
-> Here, nix strictly expects a [flake URL](../internals/2021-01-01-flake-ification/#flake-reference-conventions). 
+*Here, nix strictly expects a [flake URL](../internals/2021-01-01-flake-ification/#flake-reference-conventions).*
 
 Like `nix-shell` this command supports multiple arguments.
 
