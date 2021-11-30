@@ -235,7 +235,7 @@ Apart from dropping into development shells `nix-shell` can also be used to run 
 
 We discussed the use of `nix-shell --command COMMAND ARGS` above, where we would run a command from within the build environment of a derivation. Similarly, we may want to just run a program provided by a derivation. For this `nix-shell` provided the `--run` argument
 
-:::{.note header="\"`--command`\" vs \"`run`\""}
+:::{.info header="\"`--command`\" vs \"`run`\""}
 
 As a development aid, `--command` is interactive, meaning among other things, that *if a command fails or is interrupted by the user, the user is dropped into the shell with the build environment loaded*.
 
