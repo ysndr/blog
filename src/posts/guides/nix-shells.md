@@ -224,6 +224,11 @@ For project development tools one can use development shells as discussed above.
 
 Yet, sometimes a program or library is needed temporarily only, or once in a different version etc. In these cases programs can be loaded into the shell using `nix shell`. Derivations from this kind command are eventually garbage collected and removed from the nix store, so they do not use up dist space unnecessarily.
 :::
+
+:::{.warning header=}
+Notably not mentioned here is the use of `nix shell` to load `FANCYLANGUAGE` with `FANCYLANGUAGEPACKAGES`. Sadly this hits the limits of the new command. See the section about `shellHook`s [below](#shell-hooks)
+:::
+
 ## Run scripts
 
 Apart from dropping into development shells `nix-shell` can also be used to run commands and programs from derivation not currently installed to the user's profile. This is it can build a shell as before and run a command inside transparently.
