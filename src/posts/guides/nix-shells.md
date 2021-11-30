@@ -420,3 +420,13 @@ Picking up the confusion mentioned in the beginning, there is another problem wi
 Being so closely named to its _semantically different_ predecessor, it is impossible to query google for meaningful, targeted results. This is a pain for newcomers and more experienced nix'ers alike. And indeed, there is a heated [discussion](https://github.com/NixOS/nix/issues/4715) on renaming the shell command. Yet, until that is resolved, I hope this guide helps to understand the differences a bit better.
 
 *newnixshellguide*
+
+# Appendix
+## Summary table
+
+|             /           | `nix-shell` | `nix develop`                     | `nix shell`                       | `nix run`                         |
+|------------------------|-------------|-----------------------------------|-----------------------------------|-----------------------------------|
+| **runs `shellHook`s**  | yes         | yes                               | no                                | no                                |
+| **use as interpreter** | yes         | no                                | no                                | no                                |
+| **supports flakes**    | no          | yes                               | yes                               | only                              |
+| **evaluate nix file**  | yes         | with `--impure`, `-f` or `--expr` | with `--impure`, `-f` or `--expr` | with `--impure`, `-f` or `--expr` |
