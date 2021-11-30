@@ -9,7 +9,7 @@ description: Nix 2.4+ introduces replacements for commonly known nix commands. T
 image: https://images.unsplash.com/photo-1562530370-8f4fe23d1e8d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1920
 status: published
 image-credits: |
-   Photo by Joshua J. Cotten on Unsplash: https://unsplash.com/photos/04ZHiZFgTqQ
+   Photo by Joshua J. Cotten on <a hrep=https://unsplash.com/photos/04ZHiZFgTqQ>Unsplash</a>:
 ...
 
 # A new Nix command
@@ -18,13 +18,13 @@ This post follows the [release](https://discourse.nixos.org/t/nix-2-4-released/1
 
 The `nix` command aims to collect most common commands such as `nix-build`, `nix-copy-closure`, `nix-env`, ... as subcommands of one common program. Unsurprisingly, this does not spare `nix-shell`.
 
-Yet, unlike some of the other commands which received a more or less one-to-one replacement it is not so easy with `nix-shell`. This command was actually broken up into two commands both with different semantics: `nix shell` and `nix develop`. Yet, depending on what you used `nix-shell` for before the new commands may not exactly do what you would expect. Indeed, they happen to cause quite some [confusion](https://www.reddit.com/r/NixOS/comments/r15hx4/nix_shell_vs_nix_develop/) already. Most notably, while `nix-shell` invoked without any other flags previously set up the build environment of a derivation (which could be somewhat abused to define general development environments) that is _not_ what `nix shell` will do...
+Yet, unlike some of the other commands which received a more or less one-to-one replacement it is not so easy with `nix-shell`. This command was actually broken up into multiple commands with different semantics: `nix shell`, `nix develop` and `nix run`. Yet, depending on what you used `nix-shell` for in the past the new commands may not exactly do what you would expect. Indeed, they happen to cause quite some [confusion](https://www.reddit.com/r/NixOS/comments/r15hx4/nix_shell_vs_nix_develop/) already. Most notably, while `nix-shell` invoked without any other flags previously set up the build environment of a derivation (which could be somewhat abused to define general development environments) that is _not_ what `nix shell` will do...
 
 # What the shell...^[Seemingly, no-one has given any thought about google'ability of the new commands... google **"newnixshellguide"** to find this post in the meantime] 
 
 Yes, but from the start...
 
-If you are here just for the commands you can read the tl;dr for [`nix develop`](#tldr-nix-develop), [`nix shell`](#tldr-nix-shell), or [`nix run`](#tldr-nix-run) directly or jump to the [notes](#notes-and-resources) section .
+If you are here just for the commands you can read the tl;dr for [`nix develop`](#tldr-nix-develop), [`nix shell`](#tldr-nix-shell), or [`nix run`](#tldr-nix-run) directly or jump to the [notes](#notes-and-resources) section.
 
 
 ## Development shells (`nix-shell [DERIVATION]`)
@@ -66,11 +66,11 @@ In essence, this is exactly what `nix-shell` was intended for!
 
 :::{.warning header=}
 A slight annoyance with phases arises when the targeted derivation overrides standard phases, i.e. `{unpack,configure,build,install}Phase`s.
-As the default implementation in nix's `stdenv` is done as functions an internal use of `runHook` will give precedence to those functions over the overridden phases stored as environment variables.
+As the default implementation in nix's `stdenv` is done as functions, an internal use of `runHook` will give precedence to those functions over the overridden phases stored as environment variables.
 
 **Solution**
 
-Enter a shell using `nix develop` and run the overridden phases using `eval \$buildPhase` or `--command eval '\$buildPhase'`.
+Enter a shell using `nix develop` and run the overridden phases using `eval \$buildPhase` `or `--command eval '\$buildPhase'``.
 
 :::
 
@@ -79,10 +79,10 @@ Practically, `nix-shell` was also used for another purpose; reproducible develop
 
 ### Development environments
 
-Particularly useful combined with tools like [`direnv`](https://direnv.net/), one can leverage the fact that the resulting shell of ~~`nix-shell`~~ `nix develop` includes all declared `buildInputs` and environment variables to put together an environment with all sorts of dependencies and development tools available. Importantly, nix will ensure the `setupHook` is run when the shell is opened allowing for some impure setup to happen.
+Particularly useful combined with tools like [`direnv`](https://direnv.net/), one can leverage the fact that the resulting shell of ~~`nix-shell`~~ `nix develop` includes all declared `buildInputs` and environment variables to put together an environment with all sorts of dependencies and development tools available. Importantly, nix will also ensure all `setupHook`s are run when the shell is opened allowing for some impure setup to happen.
 
 :::{.help}
-A helpful tool to achieve this is `mkShell`. This function provides an easy interface to collect packages for an environement.
+A helpful tool to achieve this is `mkShell`. This function provides an easy interface to collect packages for an environment.
 
 ```nix
 pkgs.mkShell = {
@@ -98,11 +98,13 @@ pkgs.mkShell = {
 }: ...
 ```
 
-_All extra attributes get are applied as env variables._
+_All extra attributes unknown to `mkDerivation` are applied as env variables._
+
+You can provide a `shellHook` to run commands whenever you enter the shell
 
 :::
 
-Being closely connected to flakes `nix develop` supports loading a flakes development shell directly if a `devShell` output is defined.
+Being closely connected to flakes, `nix develop` supports loading a flake's development shell directly if a `devShell` output is defined.
 
 :::{.help header=Example caption="(Adapted from my previous [post](../internals/2021-01-01-flake-ification.md)).
 "}
@@ -144,7 +146,7 @@ Being closely connected to flakes `nix develop` supports loading a flakes develo
 ## Temporary Programs
 
 The fact that nix is built on the idea of the nix store from which user environments are created by cherry-picking the desired packages may raise the question, whether we may be able to amend our current environment imperatively^[Functional purists, please bear with me here].
-And in fact we can. It is possible to add software to a user's profile by imperatively by the means of ~~`nix-env -iA`~~ or nowadays `nix profile install`.
+And in fact, we can. It is possible to add software to a user's profile by imperatively by the means of ~~`nix-env -iA`~~ or nowadays `nix profile install`.
 
 :::{.warning header=}
 Beware that `nix profile` is incompatible with `nix-env` and therefore (today) also with `home-manager`.
@@ -152,7 +154,7 @@ Beware that `nix profile` is incompatible with `nix-env` and therefore (today) a
 
 Yet, we also know that installing software this way is _not the Nix way_ of doing things. 
 
-For the times when we *do* want to have some program at our disposal, either to try it out, use a different version or just needing it only temporarily, there should be a way to get this without going through the effort of adding it to your `configuration.nix`, `home.nix`, project `default.nix`, etc. and rebuilding your environment. In these cases traditional distributions reach back to installing software or relying on containerization (i.e. docker). In Nix, while you could install the piece of software, the aforementioned usage of the nix store allows making software available temporarily without installing it.
+For the times when we *do* want to have some program at our disposal, either to try it out, use a different version or just needing it only temporarily, there should be a way to get this without going through the effort of adding it to your `configuration.nix`, `home.nix`, project `default.nix`, etc. and rebuilding your environment. In these cases, traditional distributions reach back to installing software or relying on containerization (i.e. docker). In Nix, while you could install the piece of software, the aforementioned usage of the nix store allows making software available temporarily without installing it.
 
 This is what `nix-shell -p <package+>` is used for. `nix-shell` will retrieve the desired packages and open a shell with these packages mixed in.
 
@@ -177,7 +179,7 @@ This should now just work. Likewise, this works with almost anything available t
 
 
 :::{.info header="Under the hood"}
-Internally what happens when `nix-shell -p asciidoc` is called is that nix constructs a derivation with the programs as `buildInputs` and popularizes them through the same mechanism described above.
+Internally, what happens when `nix-shell -p asciidoc` is called is that nix constructs a derivation with the programs as `buildInputs` and popularizes them through the same mechanism described above.
 
 In this case the derivation shell'ed into is:
 
@@ -226,12 +228,12 @@ Yet, sometimes a program or library is needed temporarily only, or once in a dif
 :::
 
 :::{.warning header=}
-Notably not mentioned here is the use of `nix shell` to load `FANCYLANGUAGE` with `FANCYLANGUAGEPACKAGES`. Sadly this hits the limits of the new command. See the section about `shellHook`s [below](#shell-hooks)
+Notably, not mentioned here is the use of `nix shell` to load `FANCYLANGUAGE` with `FANCYLANGUAGEPACKAGES`. Sadly, this hits the limits of the new command. See the section about `shellHook`s [below](#shell-hooks).
 :::
 
 ## Run scripts
 
-Apart from dropping into development shells `nix-shell` can also be used to run commands and programs from derivation not currently installed to the user's profile. This is it can build a shell as before and run a command inside transparently.
+Apart from dropping into development shells, `nix-shell` can also be used to run commands and programs from derivation not currently installed to the user's profile. This is it can build a shell as before and run a command inside transparently.
 
 We discussed the use of `nix-shell --command COMMAND ARGS` above, where we would run a command from within the build environment of a derivation. Similarly, we may want to just run a program provided by a derivation. For this `nix-shell` provided the `--run` argument
 
@@ -308,7 +310,7 @@ outputs = {self}: {
 
 If an attribute to `nix run` is not found as an app, nix will look up a `program` using this key instead and execute `programs.\${<program>}/bin/<program>` instead.
 
-:::{.note header="tl;dr"}
+:::{.note #tldr-nix-run header="tl;dr"}
 
 The new `nix` command comes with a new way to run programs not installed in your system for an even greater "run and forget" experience.
 
@@ -416,7 +418,7 @@ nix develop --impure --expr "with import <nixpkgs> {}; pkgs.mkShell { packages =
 Both approaches work to some degree but are clunky (i.e. *not improving UX as promised*) and rely on the supposed-to-be-superseded channels.
 ## The second-hardest problem
 
-Picking up the confusion mentioned in the beginning, there is another problem with `nix shell`,.. naming.
+Picking up the confusion mentioned in the beginning, there is another problem with `nix shell`... naming.
 Being so closely named to its _semantically different_ predecessor, it is impossible to query google for meaningful, targeted results. This is a pain for newcomers and more experienced nix'ers alike. And indeed, there is a heated [discussion](https://github.com/NixOS/nix/issues/4715) on renaming the shell command. Yet, until that is resolved, I hope this guide helps to understand the differences a bit better.
 
 *newnixshellguide*
