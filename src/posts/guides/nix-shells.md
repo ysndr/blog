@@ -4,8 +4,8 @@ authors:
 date: 2021-11-30
 title: One too many shell
 subtitle: Clearing up with nix shells
-tags: nix, tech, guide, flakes
-description: Nix 2.4+ introduces replacements for commonly known nix commands. The `nix-shell` replacements cause some confusion which this post aims to solve.  
+tags: nix, tech, guide, flakes, newnixshellguide
+description: Nix 2.4+ introduces replacements for commonly known nix commands. The `nix-shell` replacements cause some confusion which this post aims to solve. \#newnixshellguide  
 image: https://images.unsplash.com/photo-1562530370-8f4fe23d1e8d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1920
 status: published
 image-credits: |
@@ -20,7 +20,7 @@ The `nix` command aims to collect most common commands such as `nix-build`, `nix
 
 Yet, unlike some of the other commands which received a more or less one-to-one replacement it is not so easy with `nix-shell`. This command was actually broken up into two commands both with different semantics: `nix shell` and `nix develop`. Yet, depending on what you used `nix-shell` for before the new commands may not exactly do what you would expect. Indeed, they happen to cause quite some [confusion](https://www.reddit.com/r/NixOS/comments/r15hx4/nix_shell_vs_nix_develop/) already. Most notably, while `nix-shell` invoked without any other flags previously set up the build environment of a derivation (which could be somewhat abused to define general development environments) that is _not_ what `nix shell` will do...
 
-# What the shell...
+# What the shell...^[Seemingly, no-one has given any thought about google'ability of the new commands... google **"newnixshellguide"** to find this post in the meantime] 
 
 Yes, but from the start...
 
@@ -414,3 +414,9 @@ nix develop --impure --expr "with import <nixpkgs> {}; pkgs.mkShell { packages =
 ```
 
 Both approaches work to some degree but are clunky (i.e. *not improving UX as promised*) and rely on the supposed-to-be-superseded channels.
+## The second-hardest problem
+
+Picking up the confusion mentioned in the beginning, there is another problem with `nix shell`,.. naming.
+Being so closely named to its _semantically different_ predecessor, it is impossible to query google for meaningful, targeted results. This is a pain for newcomers and more experienced nix'ers alike. And indeed, there is a heated [discussion](https://github.com/NixOS/nix/issues/4715) on renaming the shell command. Yet, until that is resolved, I hope this guide helps to understand the differences a bit better.
+
+*newnixshellguide*
