@@ -375,4 +375,42 @@ Most of the new nix commands are designed in a flake first way. Most notably `ni
 $ nix shell --impure --expr "import my.nix {}"
 ```
 
-## A word about `shellHook`s
+
+
+## A word about `shellHook`s {#shell-hooks}
+
+While shell hooks were previously introduced as a means to run certain commands to set up a development shell with `nix develop` and `nix-shell`, they find use in other places. Concretely, neither `nix run` nor `nix shell` are running these hooks. This is even though their `nix-shell` equivalent does so.
+
+What that means is that `nix shell` cannot be used to load e.g. a Python environment with packages directly as python modules use the `shellHook` to set up the `PYTHONPATH`. The same goes for Perl and other ecosystems with similar principles. This means 
+
+```
+nix shell nixpkgs#{python,python3Packages.numpy}
+```
+
+and
+
+```
+nix-shell -p python python3Packages.numpy
+```
+
+Do not evaluate to the same thing.
+
+Instead, one needs to work around with custom expressions or `mkShell`s passed to nix develop.
+
+### Workarounds
+
+For Python in particular we can use `python3.withPackages` to build an ad-hoc derivation with the paths set up correctly:
+
+```
+nix shell --impure --expr "with import <nixpkgs> {}; python.withPackages (pkgs: with pkgs; [ prettytable ])" 
+```
+
+This might work as well with other language ecosystems 
+
+Alternatively, we can (ab)use `nix develop` by passing it a `devShell`:
+
+```
+nix develop --impure --expr "with import <nixpkgs> {}; pkgs.mkShell { packages = [python3 python3Packages.numpy ];}" 
+```
+
+Both approaches work to some degree but are clunky (i.e. *not improving UX as promised*) and rely on the supposed-to-be-superseded channels.
