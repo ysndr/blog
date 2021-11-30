@@ -277,6 +277,14 @@ As the functions of `nix-shell DERIVATION` and `nix-shell -p DERIVATION` were se
 
 The generic `nix-shell --run` function is now `nix shell -c`. Given an installable, nix allows to run any command in an environment where the installable is present. Note that this command is run in a non-interactive shell. The shell is dropped as the command ends.
 
+:::{.info}
+The above example using the new command would look like this:
+
+```
+$ nix shell -c nixpkgs#asciidoc -c asciidoc
+```
+:::
+
 ### `nix run`
 
 Yet, `nix shell -c` will still require to type the name of the executed program. As for most programs this command is the same as the derivation name e.g. `nix shell -c nixpkgs#asciidoc -c asciidoc` another command was introduced named `nix run`. With `nix run` the previous command can be run as `nix run nixpkgs#asciidoc`.
