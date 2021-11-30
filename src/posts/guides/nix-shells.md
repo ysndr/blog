@@ -426,9 +426,10 @@ Being so closely named to its _semantically different_ predecessor, it is imposs
 # Appendix
 ## Summary table
 
-|             /           | `nix-shell` | `nix develop`                     | `nix shell`                       | `nix run`                         |
-|------------------------|-------------|-----------------------------------|-----------------------------------|-----------------------------------|
-| **runs `shellHook`s**  | yes         | yes                               | no                                | no                                |
-| **use as interpreter** | yes         | no                                | no                                | no                                |
-| **supports flakes**    | no          | yes                               | yes                               | only                              |
-| **evaluate nix file**  | yes         | with `--impure`, `-f` or `--expr` | with `--impure`, `-f` or `--expr` | with `--impure`, `-f` or `--expr` |
+| /                        | `nix-shell`                                                     | `nix develop`                                                   | `nix shell`                       | `nix run`                         |
+| ------------------------ | ------------------------ | ------------------------ | ------------------------ | ------------------------ |
+| **runs `shellHook`s**    | yes                                                             | yes                                                             | no                                | no                                |
+| **use as interpreter**   | yes                                                             | no                                                              | no                                | no                                |
+| **supports flakes**      | no                                                              | yes                                                             | yes                               | only                              |
+| **evaluate nix file**    | yes                                                             | with `--impure`, `-f` or `--expr`                               | with `--impure`, `-f` or `--expr` | with `--impure`, `-f` or `--expr` |
+| **modifies environment** | `PATH`, attributes mk`mkDerivation` and changes by `shellHooks` | `PATH`, attributes mk`mkDerivation` and changes by `shellHooks` | `PATH`                            | *nothing*                         |
