@@ -308,8 +308,64 @@ outputs = {self}: {
 
 If an attribute to `nix run` is not found as an app, nix will look up a `program` using this key instead and execute `programs.\${<program>}/bin/<program>` instead.
 
-## Shell interpreter \#!
+:::{.note header="tl;dr"}
+
+The new `nix` command comes with a new way to run programs not installed in your system for an even greater "run and forget" experience.
+
+With `nix shell DERIVATION+ -c COMMAND`
+
+... run any command in an environment with all specified `DERIVATION`s present (again consider the [section about `shellHook`s](#shell-hooks))
+
+With `nix run INSTALLABLE` you can
+
+... run scripts defined in a flake under the `apps` output 
+
+... run the executables of any derivation as long as it is located in `bin/INSTALLABLE` of the derivation with the attribute name `INSTALLABLE`
+:::
+
+## Shell interpreter `#!/usr/bin/env nix-shell`
+
+Lastly, a useful feature of `nix-shell` is its usage as a shell interpreter. What that means is that `nix-shell` can be used to dynamically fetch dependencies for a script file and execute the file in that context. Shell interpreters are defined using a special syntax at the start of script files. 
+
+:::{.info header="Shebang Interpreter Line"}
+
+Bash, Zsh and other shells interpret a first line starting with `#!` as an interpreter instruction. This way, instead of running a file using e.g. bash or python explicitly, we can write `#!/usr/bin/env python` to instruct the shell to use python to execute the file.
+
+
+```{.python caption="file.py"}
+#!/usr/bin/env python
+
+# file.py
+
+print("hello")
+```
+
+Here `$ python file.py` would be equivalent to `./file.py`, given the user has permission to execute the file.
+:::
+
+The `nix-shell` command can be used to use nix to provide the actual interpreter using
+
+```.bash
+#! /usr/bin/env nix-shell
+#! nix-shell -i real-interpreter -p packages
+```
+
+Therefore, the above example would therefore continue to work even without python installed, if defined as
+
+```{.python caption="file.py"}
+#! /usr/bin/env nix-shell
+#! nix-shell -i python -p python3
+print("hello")
+```
+
+:::{.warning}
+As it stands this function does not [yet](https://github.com/NixOS/nix/pull/5189) have a replacement.
+:::
+
 # Notes and Resources
+
+
+
 
 ## To flake or not to flake
 
