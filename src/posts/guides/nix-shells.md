@@ -1,7 +1,7 @@
 ---
 authors:
   - "Yannik Sander"
-date: 2021-11-30
+date: 2021-12-01
 title: One too many shell
 subtitle: Clearing up with nix' shells nix shell and nix-shell
 tags: nix, guide, flakes, newnixshellguide
