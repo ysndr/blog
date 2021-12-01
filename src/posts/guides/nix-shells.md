@@ -5,7 +5,7 @@ date: 2021-12-01
 title: One too many shell
 subtitle: Clearing up with nix' shells nix shell and nix-shell
 tags: nix, guide, flakes, newnixshellguide
-description: Nix 2.4+ introduces replacements for commonly known nix commands. The `nix-shell` replacements cause some confusion which this post aims to solve. \#newnixshellguide  
+description: Nix 2.4+ introduces replacements for commonly known nix commands. The `nix-shell` replacements cause some confusion which this post aims to solve. 
 image: https://images.unsplash.com/photo-1562530370-8f4fe23d1e8d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1920
 status: published
 image-credits: |
