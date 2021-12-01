@@ -1,20 +1,22 @@
 
 $if(image)$
-<div class="h-56 sm:h-xl xl:h-2xl bg-cover w-5/6 mx-auto xl:min-w-full xl:w-auto mb-8 xl:-mx-24 rounded-lg relative shadow-2xl overflow-hidden">
+<div class="h-56 sm:h-xl xl:h-2xl bg-cover w-5/6 mx-auto lg:min-w-full xl:w-auto mb-8 xl:-mx-24 rounded-lg relative shadow-2xl overflow-hidden">
     <img src="$image$" alt="Article image" class="relative w-full h-full object-cover">
 
     <div class="w-full absolute bottom-0">
         <div class="relative">
-            <div class="bg-white rounded-full m-4 w-max float-right p-1" style="line-height: 0;"
+            <div class="bg-white rounded-full m-2 sm:m-4 float-right p-1" style="line-height: 0;"
             ><i class="las la-copyright"></i></div>
-            <div uk-drop="pos: top-right" class="w-max hidden absolute pb-4">
+            <div uk-drop="pos: top-right" class="w-11/12 max-w-sm hidden absolute m-2 p-2 sm:m-4  sm:p-4 ">
                 <div class="bg-white p-6 rounded">
-                    <h4 class="uk-card-title">Credits</h4>
+                    <h4>Credits</h4>
+                    <span class="block text-sm overflow-auto max-w-full">
                     $if(image-credits)$
                     $image-credits$
                     $else$
                     <i>Origin unknown</i>
                     $endif$
+                    </span>
                 </div>
             </div>
         </div>
@@ -25,7 +27,7 @@ $else$
 $endif$
 
 
-<article>
+<article class="lg:w-4/5 lg:mx-auto">
 
     <p class="text-lead text-emphasis italic sm:w-5/6 mx-auto"><i>$description$</i></p>
     <p>$body$</p>

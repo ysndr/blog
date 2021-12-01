@@ -10,7 +10,7 @@
 
           & > .sourceCode {
               @apply -mx-8 sm:-mx-8 lg:-mx-8;
-              @apply rounded-none lg:rounded overflow-hidden;
+              @apply rounded-none lg:rounded overflow-auto;
           }
 
 

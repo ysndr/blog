@@ -112,8 +112,8 @@
     @apply my-6;
     overflow-x: auto;
 
-    &.sourceCode {
-      @apply p-4 min-w-full;
+    .sourceCode {
+      @apply p-4 min-w-full block;
       background-color: var(--bg-code);
       width: fit-content;
 
