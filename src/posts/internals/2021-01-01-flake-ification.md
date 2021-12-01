@@ -170,21 +170,21 @@ inputs.<inputname> = {
       | (github|gitlab):<user>/<repo>[/<ref> | ?ref=****[&rev=****]];
       | <known-flake>[/<ref> | ?ref=****[&rev=****]]
       | /absolute/path
-      | ./relative/path
   flake = true | false; # default = true
 }
 ```
 
 Input url
   ~ use `git+<url>` to checkout a git repository at `<url>`
-  ~ use `/local/absolute/path` or `./relative/path` to load a local source
+  ~ use `/local/absolute/path` to load a local source
   ~ use `gitlab:<user>/<repo>`/`github:<user>/<repo>` to shortcut gitlab or github repositories
   ~ use `<known-flake>` to shortcut to a globally defined alias
 
 `known-flake`
   ~ nix will manage a registry of named flakes that can be included as is and are a shortcut to another repo
   ~ by default following global registry items are defined in [this repo](https://github.com/NixOS/flake-registry) and available in every nix installation:
-    ```
+    
+    ```nix
     global flake:blender-bin github:edolstra/nix-warez
     global flake:dwarffs github:edolstra/dwarffs
     global flake:hydra github:NixOS/hydra
@@ -200,6 +200,7 @@ Input url
     global flake:patchelf github:NixOS/patchelf
     ```
   ~ read more about registry on the [wiki](https://nixos.wiki/wiki/Nix_command/registry)
+
 
 Specifying a commit or branch
   ~ by default, the main branch of the repository pointed to will be used as to provide the dependency flake.
@@ -417,13 +418,14 @@ Nix commands will eventually reference outputs. There are multiple ways how thes
 
 A flake reference is actually structured similar to an URL:
 
-```
+```txt
 <flake url>[?<git ref/rev>][#<output>]
     │
     ├── git+<url>
     ├── gitlab:<user>/<repo> or github:<user>/<repo>
-    ├── /local/absolute/path or ./relative/path
-    └── a known source such as `nixpkgs`
+    ├── /local/absolute/path
+    ├──./relative/path (only as an argument to `nix` commands)
+    └── a known source in the registry such as `nixpkgs`
 ```
 
 If git repositories are pointed to directly query parameters can be added to select a specific branch and/or commit.
