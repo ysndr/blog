@@ -214,7 +214,7 @@ Like `nix-shell` this command supports multiple arguments.
 
 This is useful to install temporary software
 
-...from a [flake specifier](../internals/2021-01-01-flake-ification/#flake-reference-conventions). 
+...from a [flake specifier](../../internals/2021-01-01-flake-ification/#flake-reference-conventions). 
 
 ...from a `*.nix` file/arbitrary expression using `--impure --expr EXPR` flags
 
