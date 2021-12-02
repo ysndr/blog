@@ -315,7 +315,7 @@ Snapshots like these also allow rollbacks as they define which versions of depen
 
 Nix has some integration with GitHub Actions through [install-nix](https://github.com/marketplace/actions/install-nix), an action that **installs nix** •_•
 
-With nix installed, I run `$(nix-build -A ci.compile --no-out-link)` to make Nix build the blog generator and rebuild the blog's content into `build/site`. This works because `nix-build --no-out-link` will just print the path of the resulting package to `stdout`, which in this case is only an executable script produced by the `script` function above. The next step is to take that content and push it to the deployment branch.
+With nix installed, I run `$(nix-build -A ci.compile \--no-out-link)` to make Nix build the blog generator and rebuild the blog's content into `build/site`. This works because `nix-build \--no-out-link` will just print the path of the resulting package to `stdout`, which in this case is only an executable script produced by the `script` function above. The next step is to take that content and push it to the deployment branch.
 
 [See more...](https://github.com/ysndr/blog/blob/release/.github/workflows/main.yml)
 

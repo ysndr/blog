@@ -49,16 +49,16 @@ To make this process even easier, `nix develop` now comes with special arguments
 
 This allows to _run phases_ individually in the shell using `$ unpackPhase`, `$ configurePhase` `$ buildPhase`, etc. 
 
-...or directly using `nix develop --<PHASE>` or `nix develop --phase PHASE` (for non-standard phases).
+...or directly using `nix develop \--<PHASE>` or `nix develop \--phase PHASE` (for non-standard phases).
 
-...or run an arbitrary command in the shell using `nix develop --command COMMAND [ARGS...]`
+...or run an arbitrary command in the shell using `nix develop \--command COMMAND [ARGS...]`
 
 **Why should you use this?**
 
 It is most useful for locally developed packages.
 
 Use it to set up the environment using e.g. the `configurePhase` and perform the subsequent development using `build` and `check` phases.
-If your workflow includes things that are not part of a phase use `nix develop --command`
+If your workflow includes things that are not part of a phase use `nix develop \--command`
 :::
 
 In essence, this is exactly what `nix-shell` was intended for!
@@ -70,7 +70,7 @@ As the default implementation in nix's `stdenv` is done as functions, an interna
 
 **Solution**
 
-Enter a shell using `nix develop` and run the overridden phases using `eval \$buildPhase` or `--command eval '\$buildPhase'`.
+Enter a shell using `nix develop` and run the overridden phases using `eval \$buildPhase` or `\--command eval '\$buildPhase'`.
 
 :::
 
@@ -216,7 +216,7 @@ This is useful to install temporary software
 
 ...from a [flake specifier](../../internals/2021-01-01-flake-ification/#flake-reference-conventions). 
 
-...from a `*.nix` file/arbitrary expression using `--impure --expr EXPR` flags
+...from a `*.nix` file/arbitrary expression using `\--impure \--expr EXPR` flags
 
 **Why should you use this?**
 
@@ -235,11 +235,11 @@ Notably, not mentioned here is the use of `nix shell` to load `FANCYLANGUAGE` wi
 
 Apart from dropping into development shells, `nix-shell` can also be used to run commands and programs from derivation not currently installed to the user's profile. This is it can build a shell as before and run a command inside transparently.
 
-We discussed the use of `nix-shell --command COMMAND ARGS` above, where we would run a command from within the build environment of a derivation. Similarly, we may want to just run a program provided by a derivation. For this `nix-shell` provided the `--run` argument
+We discussed the use of `nix-shell \--command COMMAND ARGS` above, where we would run a command from within the build environment of a derivation. Similarly, we may want to just run a program provided by a derivation. For this `nix-shell` provided the `\--run` argument
 
-:::{.info header="\"`--command`\" vs \"`run`\""}
+:::{.info header="\"`\--command`\" vs \"`run`\""}
 
-As a development aid, `--command` is interactive, meaning among other things, that *if a command fails or is interrupted by the user, the user is dropped into the shell with the build environment loaded*.
+As a development aid, `\--command` is interactive, meaning among other things, that *if a command fails or is interrupted by the user, the user is dropped into the shell with the build environment loaded*.
 
 This behavior translates into an invocation using the `-p PROGRAM` argument as well as seen in the following box.
 
@@ -257,7 +257,7 @@ Man page:     asciidoc --help manpage
 Syntax:       asciidoc --help syntax
 ```
 
-`--run` runs non-interactive and closes the shell after the command returns
+`\--run` runs non-interactive and closes the shell after the command returns
 ```bash
 $ asciidoc 
 zsh: command not found: asciidoc
@@ -277,19 +277,19 @@ zsh: command not found: asciidoc
 
 As the functions of `nix-shell DERIVATION` and `nix-shell -p DERIVATION` were separated, the new tools come with new clearer semantics.
 
-The generic `nix-shell --run` function is now `nix shell -c`. Given an installable, nix allows to run any command in an environment where the installable is present. Note that this command is run in a non-interactive shell. The shell is dropped as the command ends.
+The generic `nix-shell \--run` function is now `nix shell -c`. Given an installable, nix allows to run any command in an environment where the installable is present. Note that this command is run in a non-interactive shell. The shell is dropped as the command ends.
 
 :::{.info}
 The above example using the new command would look like this:
 
 ```
-$ nix shell -c nixpkgs#asciidoc -c asciidoc
+$ nix shell nixpkgs#asciidoc -c asciidoc
 ```
 :::
 
 ### `nix run`
 
-Yet, `nix shell -c` will still require to type the name of the executed program. As for most programs this command is the same as the derivation name e.g. `nix shell -c nixpkgs#asciidoc -c asciidoc` another command was introduced named `nix run`. With `nix run` the previous command can be run as `nix run nixpkgs#asciidoc`.
+Yet, `nix shell -c` will still require to type the name of the executed program. As for most programs this command is the same as the derivation name e.g. `nix shell nixpkgs#asciidoc -c asciidoc` another command was introduced named `nix run`. With `nix run` the previous command can be run as `nix run nixpkgs#asciidoc`.
 
 Naturally, the functionality of `nix run` goes further and as is the case for many other new commands mainly concerns flakes. Next to `packages`, `nixosModules` and others, flakes can now also define `apps`. Written as records with two fields -`type` (currently, necessarily `app`) and `program` (an executable path) - these apps can be run directly using `nix run`.
 
@@ -371,7 +371,7 @@ As it stands this function does not [yet](https://github.com/NixOS/nix/pull/5189
 
 ## To flake or not to flake
 
-Most of the new nix commands are designed in a flake first way. Most notably `nix {shell,develop,run}` expect [flake URLs](../internals/2021-01-01-flake-ification/#flake-reference-conventions) as argument. Traditional `*.nix` files can be used with the `--expr` argument all commands support. As flake mode imposes greater purity strictness, imports have to happen with the `--impure` flag given:
+Most of the new nix commands are designed in a flake first way. Most notably `nix {shell,develop,run}` expect [flake URLs](../internals/2021-01-01-flake-ification/#flake-reference-conventions) as argument. Traditional `*.nix` files can be used with the `\--expr` argument all commands support. As flake mode imposes greater purity strictness, imports have to happen with the `\--impure` flag given:
 
 ```sh
 $ nix shell --impure --expr "import my.nix {}"
@@ -431,5 +431,5 @@ Being so closely named to its _semantically different_ predecessor, it is imposs
 | **runs `shellHook`s**    | yes                                                             | yes                                                             | no                                | no                                |
 | **use as interpreter**   | yes                                                             | no                                                              | no                                | no                                |
 | **supports flakes**      | no                                                              | yes                                                             | yes                               | only                              |
-| **evaluate nix file**    | yes                                                             | with `--impure`, `-f` or `--expr`                               | with `--impure`, `-f` or `--expr` | with `--impure`, `-f` or `--expr` |
+| **evaluate nix file**    | yes                                                             | with `\--impure`, `-f` or `\--expr`                               | with `\--impure`, `-f` or `\--expr` | with `\--impure`, `-f` or `\--expr` |
 | **modifies environment** | `PATH`, attributes mk`mkDerivation` and changes by `shellHooks` | `PATH`, attributes mk`mkDerivation` and changes by `shellHooks` | `PATH`                            | *nothing*                         |

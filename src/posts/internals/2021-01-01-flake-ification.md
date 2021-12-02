@@ -295,7 +295,7 @@ To take this apart again, we face three different sections here.
 1. `flake-utils.lib.eachDefaultSystem`, like its name suggests will provide the attribute set in its scope for all default systems (basically linux and darwin on x86_64 hardware). Hence, we don't need to worry about these tags.
 2. The actual output still needs to conform to flakes' expected attributes. In this case we set `packages`, `defaultPackage`, `apps`, `defaultApp` and `devShell`. There are even more most importantly `overlay` which are referenced [below](#output-attributes)
 3. third one is the middle part and shows an important aspect of nix flakes.
-   Because there is no access to impure variables (`--arg`, environment variables, the current system, etc.), `nixpkgs` must be imported explicitly for each system. Additionally, this gives the opportunity to apply any possible overlay.
+   Because there is no access to impure variables (`\--arg`, environment variables, the current system, etc.), `nixpkgs` must be imported explicitly for each system. Additionally, this gives the opportunity to apply any possible overlay.
    In the case of this blog everything is defined in an external `blog.nix` file and imported from there.
 
 ### Output attributes
@@ -334,7 +334,7 @@ is possible to use.
 *Notice* that some inputs might need to be quoted due to substitution rules in your shell.
 :::
 
-`apps` is used together with `nix run`, similarly to `npm run`. You can define binaries that can then be run directly without explicitly building them first. This allowed me to change the somewhat cryptic `$(nix-build -A packages.x86_64-linux.ci.compile --no-out-link)` to `nix run ./#compile` in the CI script. Actually given that `defaultApp` point to the same `compile` attribute, the argument `./#compile` could be elided paying with decreased clarity.
+`apps` is used together with `nix run`, similarly to `npm run`. You can define binaries that can then be run directly without explicitly building them first. This allowed me to change the somewhat cryptic `$(nix-build -A packages.x86_64-linux.ci.compile \--no-out-link)` to `nix run ./#compile` in the CI script. Actually given that `defaultApp` point to the same `compile` attribute, the argument `./#compile` could be elided paying with decreased clarity.
 
 `devShell` is another special one used in combination with `nix develop` which opens a *`bash`* shell with the given derivation prepared.
 
