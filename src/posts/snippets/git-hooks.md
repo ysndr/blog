@@ -90,7 +90,7 @@ let
     
     rustFormatHook = pkgs.writeShellScriptBin "check-rust-format-hook"
         ''
-            ${rust}/bin/cargo fmt -- --check
+            ${pkgs.rustfmt}/bin/rustfmt --check
             RESULT=$?
             [ $RESULT != 0 ] && echo "Please run \`cargo fmt\` before"
             exit $RESULT
@@ -118,7 +118,9 @@ The above code defines functions to build installation and uninstallation comman
 To run a hook, create a derivation with the hook (or hooks) for one event located in the `bin/` folder, i.e. using. `writeShellScriptBin` :
 
 ```nix
-rustFormatHook = pkgs.writeShellScriptBin "check-rust-format-hook" ''echo "I ran"'';
+rustFormatHook = pkgs.writeShellScriptBin "check-rust-format-hook" ''
+    ${pkgs.rustfmt}/bin/rustfmt --check
+'';
 ```
 
 Then create a `hookInstaller` by adding the derivation to a list of hooks for a specific event type:
