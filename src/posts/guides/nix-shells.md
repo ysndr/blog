@@ -70,7 +70,7 @@ As the default implementation in nix's `stdenv` is done as functions, an interna
 
 **Solution**
 
-Enter a shell using `nix develop` and run the overridden phases using `eval \$buildPhase` `or `--command eval '\$buildPhase'``.
+Enter a shell using `nix develop` and run the overridden phases using `eval \$buildPhase` or `--command eval '\$buildPhase'`.
 
 :::
 
