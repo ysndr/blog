@@ -4,7 +4,7 @@ authors:
 date: 2021-12-02
 title: Hooking up with Git
 subtitle: Managing git hooks with nix
-tags: nix, snippets, 
+tags: nix, git, code, github 
 description: Git hooks can be useful, tracking and managing them with Nix makes removes the barrier of using them.
 image: https://images.unsplash.com/photo-1621298516851-047f72b40bd7?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1920
 status: published
@@ -17,6 +17,12 @@ image-credits: |
 Git hooks are very useful in theory e.g. to enforce style guidelines of code being pushed or doing arbitrary cleanup/analysis in response to various git events. Yet, if you are using nix, the way git hooks are set up and managed goes against the ideas of Nix. 
 
 The presented approach does not solve the underlying issue of mutability but makes git-hooks more trackable and easily appliable.
+
+:::{.note header="Flake"}
+An up-to-date version of the presented approach can be [found on GitHub](https://github.com/ysndr/nix-git-hooks).
+
+Please file issues or PRs if you like the project and want to contribute.
+:::
 
 # The big picture
 
@@ -131,7 +137,7 @@ hookInstaller =  installGitHooks { pre-commit = [rustFormatHook]; }
 
 This will run all commands under `\${rustFormatHook}/bin/*` for `pre-commit` events.
 
-The event types can be arbitrary but have to comply with [actual git hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) to be run.
+The event types can be arbitrary but have to comply with [actual git hooks](https://git-scm.com/docs/githooks) to be run.
 
 Finally, add the installer (and optionally the uninstall-command) to your dev shell as input programs. You can choose to automatically run the installer at entrance to the shell as a `shellHook` or manually by the user.
 
@@ -156,6 +162,7 @@ Nonetheless, this might be of interest for someone and if so thanks for reading.
 
 # Appendix
 
+Copy the respective functions here to include them into your project or checkout the [repository on GitHub](https://github.com/ysndr/nix-git-hooks) avoid copy-pasting and receive upstream bugfixes. 
 ## Installer
 
 ```nix
