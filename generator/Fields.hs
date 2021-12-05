@@ -116,10 +116,10 @@ publishedGroupField :: String           -- name
                     -> Context String   -- Post context
                     -> Context String   -- output context
 publishedGroupField name posts postContext = listField name groupCtx $ do
-    tuples <- traverse extractYear posts
+    tuples <- mapM extractYear posts
     let grouped = groupByYear tuples
-    let merged = fmap merge $ grouped
-    let itemized = fmap makeItem $ merged
+    let merged = merge <$> grouped
+    let itemized = makeItem <$> merged
 
     sequence itemized
 
@@ -128,7 +128,7 @@ publishedGroupField name posts postContext = listField name groupCtx $ do
 
           merge :: [(Integer, [Item String])]  -> (Integer, [Item String])
           merge gs = let conv (year, acc) (_, toAcc) = (year, toAcc ++ acc)
-                      in  foldr conv (head gs) (tail gs)
+                      in  foldl1 conv (reverse gs)
 
 
           groupByYear = groupBy (\(y, _) (y', _) -> y == y')
