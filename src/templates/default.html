@@ -9,8 +9,8 @@
   <meta name="twitter:creator" content="@_ysndr" />
   <meta property="og:title" content="y|sndr - $title$">
   <meta property="og:description" content="$if(subtitle)$$subtitle$$else$A blog about nix, rust, haskell and more$endif$">
-  <meta property="og:image" content="$if(image)$$image$$else$/assets/images/feature-x-small.jpg$endif$">
-  <meta property="og:url" content="https://blog.ysndr.de$url$">
+  <meta property="og:image" content="$if(image)$$with-root(image)$$else$$with-root("/assets/images/feature-x-small.jpg")$ $endif$">
+  <meta property="og:url" content="$with-root(url)$">
   <title>y|sndr - $title$</title>
   <link rel="stylesheet" href="/assets/css/main.css" />
   <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">  <link rel="alternate" type="application/rss+xml"  title="RSS Feed" href="/rss.xml" />

@@ -93,6 +93,7 @@ customBaseContext = headVersionField "git-head-commit" Commit
                  <> constField "item-type" "default"
                  <> concatField "concat"
                  <> constField "root" root
+                 <> absoluteUrlField "with-root" root
                  <> defaultContext
 
 postCtx :: Tags -> Tags -> Context String

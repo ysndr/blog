@@ -9,6 +9,7 @@ module Fields (
 , readTimeField
 , publishedGroupField
 , concatField
+, absoluteUrlField
 , ToCExtra(..)
 , tocField
 -- , plainTocField
@@ -49,6 +50,7 @@ import Data.Either (fromRight)
 
 import Debug.Trace
 import Data.Typeable
+import System.FilePath (isRelative, joinPath, normalise)
 -- Peek Field
 --------------------------------------------------------------------------------
 
@@ -142,6 +144,20 @@ publishedGroupField name posts postContext = listField name groupCtx $ do
 concatField :: String -> Context String
 concatField name = functionField name (\args item -> return $ concat args)
 
+absoluteUrlField :: String -> String -> Context String
+absoluteUrlField name root = functionField name (\args item -> do
+    route <- getRoute $ itemIdentifier item
+    return $ case route of
+      Nothing -> root
+      Just r -> addRoot args r 
+    )
+    where
+        addRoot [] route = route
+        addRoot (url : _) route = if isExternal url then url else root ++ toUrl (normalise combined)
+            where combined = if isRel url then  joinPath ["/", route, url] else url
+
+        isRel x = "./" `isPrefixOf` x || "../" `isPrefixOf` x
+        
 data ToCExtra =  ToCExtra { extraUlClasses :: String }
      deriving (Show)
 instance Default ToCExtra where
