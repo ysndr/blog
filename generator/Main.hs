@@ -143,7 +143,7 @@ main = do
 
     hakyllWith config $ do
 
-        tags <- buildTags postsGlob (fromCapture "tags/*.html")
+        tags <- buildTags postsGlob (fromCapture "tags/*/index.html")
         categories <- buildCategories postsGlob (fromCapture "posts/*.html")
 
         tagsRules tags $ \tag pattern -> do
