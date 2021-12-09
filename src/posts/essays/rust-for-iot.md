@@ -1,20 +1,22 @@
 ---
 title: Rust as a platform for IoT
-subtitle: Part of Course ID2201 at KTH (2021)
+subtitle: Analyzing the readiness of the Rust ecosystem for IoT
 authors:
 - Yannik Sander
-description: This essay aims to present a functional description of the Rust build system that exemplifies outstanding efforts of open source CI/CD
+description: This essay presents a summary of the Rust ecosystem aiming at applications in IoT and an analysis of its current suitability for new projects at the time of writing in mid-2021.
 tags: technical, rust, IoT, kth
 date: 2021-12-11
 
 bibliography: ./xxx/references.bib
-image: /posts/essays/the-rust-build-system/lead.jpg
+image: https://unsplash.com/photos/LqKhnDzSF-8/download?ixid=MnwxMjA3fDB8MXxzZWFyY2h8NHx8aW90fHwwfHx8fDE2MzkwNDcwMzQ&w=1920
+image-credits: |
+    Made by Joshua Sortino on <a hrep=https://unsplash.com/photos/LqKhnDzSF-8>Unsplash</a>
 status: published
 ...
 
 :::{.note header="Background"}
 
-This essay was part of the ID2012 Ubuiquitous Computing Course at KTH Royal Institute of Technology Stockholm.
+This essay was written as part of the ID2012 Ubiquitous Computing Course at KTH Royal Institute of Technology Stockholm.
 
 The task was to produce an analytic overview of a topic in the domain of Ubiquitous Computing or IoT. I chose Rust's application for IoT out of my personal interest in Rust and previous experiences diving into IoT and specifically embedded devices using Rust.
 
@@ -24,7 +26,7 @@ If you want to support my work or reach out feel free under the emails below:
 
 **Yannik Sander** (yannik@kth.se / contact@ysndr.de)
 
-*If you want to use this article, please consult me first. A PDF version is available [here](../rust-for-iot/Sander_Rust-for-IoT_.pdf)*
+*If you want to use this article, please consult me first. A PDF version is available [here](../rust-for-iot/Sander_Rust-for-IoT.pdf)*
 
 :::
 
@@ -308,6 +310,6 @@ Condensing this essay into one sentence
 
 > Rust shows the potential to become the IoT platform of choice in the future, providing speed, ergonomics and safety, but does not show the maturity to be readily used as such without thorough consideration.
 
-\newpage
+... Wow! You made it until here. Thank you a lot for your time and interest. If you have any thoughts about this post after all, please feel free to reach out to me.
 
 # References
