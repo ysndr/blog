@@ -12,6 +12,22 @@ image: /posts/essays/the-rust-build-system/lead.jpg
 status: published
 ...
 
+:::{.note header="Background"}
+
+This essay was part of the ID2012 Ubuiquitous Computing Course at KTH Royal Institute of Technology Stockholm.
+
+The task was to produce an analytic overview of a topic in the domain of Ubiquitous Computing or IoT. I chose Rust's application for IoT out of my personal interest in Rust and previous experiences diving into IoT and specifically embedded devices using Rust.
+
+The essay was finished and handed in by **May 2021** and reviewing the filed today already shows some minor changes. Therefore be warned, the field is evolving quickly and might look better depending on when you will read this.
+
+If you want to support my work or reach out feel free under the emails below:
+
+**Yannik Sander** (yannik@kth.se / contact@ysndr.de)
+
+*If you want to use this article, please consult me first. A PDF version is available [here](../rust-for-iot/Sander_Rust-for-IoT_.pdf)*
+
+:::
+
 
 #  Introduction
 
