@@ -5,7 +5,7 @@ authors:
 - Yannik Sander
 description: This essay presents a summary of the Rust ecosystem aiming at applications in IoT and an analysis of its current suitability for new projects at the time of writing in mid-2021.
 tags: technical, rust, IoT, kth
-date: 2021-12-11
+date: 2021-12-12
 
 bibliography: ./xxx/references.bib
 image: https://unsplash.com/photos/LqKhnDzSF-8/download?ixid=MnwxMjA3fDB8MXxzZWFyY2h8NHx8aW90fHwwfHx8fDE2MzkwNDcwMzQ&w=1920
