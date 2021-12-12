@@ -20,7 +20,7 @@ This essay was written as part of the ID2012 Ubiquitous Computing Course at KTH 
 
 The task was to produce an analytic overview of a topic in the domain of Ubiquitous Computing or IoT. I chose Rust's application for IoT out of my personal interest in Rust and previous experiences diving into IoT and specifically embedded devices using Rust.
 
-The essay was finished and handed in by **May 2021** and reviewing the filed today already shows some minor changes. Therefore be warned, the field is evolving quickly and might look better depending on when you will read this.
+The essay was finished and handed in by **May 2021** and reviewing the field today already shows some minor changes. Therefore be warned, the field is evolving quickly and might look better depending on when you will read this.
 
 If you want to support my work or reach out feel free under the emails below:
 
