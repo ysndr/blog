@@ -416,6 +416,7 @@ nix develop --impure --expr "with import <nixpkgs> {}; pkgs.mkShell { packages =
 ```
 
 Both approaches work to some degree but are clunky (i.e. *not improving UX as promised*) and rely on the supposed-to-be-superseded channels.
+
 ## The second-hardest problem
 
 Picking up the confusion mentioned in the beginning, there is another problem with `nix shell`... naming.
