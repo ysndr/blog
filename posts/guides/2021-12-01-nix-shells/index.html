@@ -1,0 +1,1032 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:creator" content="@_ysndr" />
+  <meta property="og:title" content="y|sndr - One too many shell">
+  <meta property="og:description" content="Clearing up with nix' shells nix shell and nix-shell">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1562530370-8f4fe23d1e8d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1920">
+  <meta property="og:url" content="https://blog.ysndr.de/posts/guides/2021-12-01-nix-shells/index.html">
+  <title>y|sndr - One too many shell</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css" />
+  <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">  <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="../../../rss.xml" />
+  <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="../../../atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../../../assets/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../assets/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../../assets/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../../assets/images/favicon/site.webmanifest">
+</head>
+
+<body class="flex flex-col overflow-x-hidden text-body text-black leading-normal">
+  <header class="bg-muted font-standout leading-snug">
+
+    <div class="flex flex-col sm:flex-row my-8 container justify-items-center justify-end items-center">
+      <div class="flex flex-col text-right text-emphasis">
+          <h1 class="inline-flex flex-col">One too many shell
+          <small>Clearing up with nix' shells nix shell and nix-shell</small>
+          </h1>
+          <span class="text-xs text-muted">
+          
+              Yannik Sander
+              
+          </span>
+      </div>
+      <hr class="hidden sm:block sm:h-24 sm:w-px mx-4 my-4 sm:my-auto min-w-px">
+      <div class="text-sm text-muted sm:w-5/12 md:w-2/5">
+        <ul>
+          <li class="flex">
+            <i class="las la-calendar-day mr-4"></i> December  1, 2021
+          </li>
+          <li class="flex">
+            <i class="las la-stopwatch mr-4"></i> 20 Minutes
+          </li>
+          
+          <li class="flex break-words">
+            <i class="las la-tags mr-4"></i>
+            
+            <span>
+              <a class="text-emphasis" href="../../../tags/nix/">nix</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/guide/">guide</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/flakes/">flakes</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/newnixshellguide/">newnixshellguide</a>
+              </span>
+          </li>
+          
+          <li class="flex">
+            <i class="las la-code-branch mr-4"></i>
+            <a class="uk-link-muted" href="https://github.com/ysndr/blog/commit/0633078">0633078: fix: render heading as such in pandoc (#34)</a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+    <hr class="container" />
+
+</header>
+
+
+  <header class="sticky font-standout inset-0 z-50 min-w-full bg-muted text-base">
+  <nav class="container grid grid-cols-3">
+
+
+
+    <div class="flex flex-col">
+      <a class="content-center my-auto text-muted w-max"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M4 6h20 M4 12h20 M4 18h20"></path>
+      </svg><span class="ml-2 uppercase text-xs">Menu</span></a>
+
+
+      <div uk-dropdown class="container hidden">
+            <div class="inset-x-0 absolute container px-8 grid sm:grid-cols-3 sm:gap-8 shadow-lg bg-white text-sm text-muted fill-current stroke-current pb-6">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Who?</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="https://gist.github.com/ysndr/978662957bb9187fd52b2037466e1e34">CV</a></li>
+                  <li><hr></li>
+                  <li>
+                    <ul horizontal>
+                      <li><a href="mailto:contact@ysndr.de"><i class="las la-envelope-open-text"></i></a></li>
+                      <li class="ml-2"><a href="https://linkedin.com/in/yannik-sander"><i class="lab la-linkedin-in"></i></a>
+                      </li>
+                      <li class="ml-2"><a href="https://github.com/ysndr"><i class="lab la-github"></i></a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+             <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="text-black uppercase">What?</li>
+                  <li><a href="https://github.com/ysndr">Projects</a></li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/sam-knn-regressor">sam-knn-regressor</a></li>
+                  <li><a href="https://github.com/ysndr/nixos-config">NixOS Config</a></li>
+                </ul>
+              </div>
+              <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Blog</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="../../../archive">Archive</a></li>
+                  <li class="flex">
+                    <span>
+                      <svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="rss" stroke="currentColor"><circle cx="3.12" cy="16.8" r="1.85"></circle><path fill="none" stroke-width="1.1" d="M1.5,8.2 C1.78,8.18 2.06,8.16 2.35,8.16 C7.57,8.16 11.81,12.37 11.81,17.57 C11.81,17.89 11.79,18.19 11.76,18.5"></path><path fill="none" stroke-width="1.1" d="M1.5,2.52 C1.78,2.51 2.06,2.5 2.35,2.5 C10.72,2.5 17.5,9.24 17.5,17.57 C17.5,17.89 17.49,18.19 17.47,18.5"></path></svg>
+                    </span>
+                    <ul class="items-center ml-2" horizontal>
+                      <li><a href="../../../rss.xml">RSS</a></li>
+                      <li class="ml-4"><a href="../../../atom.xml">Atom</a></li>
+                    </ul>
+                  </li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/blog/commit/0633078"><span><svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="git-branch"><circle fill="none" stroke-width="1.2" cx="7" cy="3" r="2"></circle><circle fill="none" stroke-width="1.2" cx="14" cy="6" r="2"></circle><circle fill="none" stroke-width="1.2" cx="7" cy="17" r="2"></circle><path fill="none" stroke-width="2" d="M14,8 C14,10.41 12.43,10.87 10.56,11.25 C9.09,11.54 7,12.06 7,15 L7,5"></path></svg></span>   current rev.: 0633078: fix: render heading as such in pandoc (#34)</a></li>
+                </ul>
+              </div>
+            </div>
+      </div>
+
+    </div>
+
+
+    <div class="uk-navbar-nav uk-flex-1 py-4 align-items-center">
+
+      <a href="../../../" class="flex items-center justify-center">
+          <img src="../../../assets/images/logo-small.svg" alt="y|sndr" class="h-8" />
+        </a>
+
+
+    </div>
+
+
+
+    
+    <div class="flex flex-col items-end md:relative">
+        <a class="content-center uppercase my-auto text-muted w-max">
+          <span class="md:hidden">Content</span> <span class="hidden md:block">Table of Contents</span>
+        </a>
+        <div class="y-toc hidden" uk-drop>
+          <div class="container max-w-full sm:max-w-sm  bg-white p-6 w-full absolute text-muted right-0 shadow-xl rounded-b" uk-scrollspy-nav="closest: li; scroll: true; offset: 85; cls: text-emphasis">
+            <ul class><li><a href="#a-new-nix-command"><span>A new Nix command</span><span></span></a></li><li><a href="#what-the-shell"><span>What the shell…<span><sup>1</sup></span></span><span></span></a><ul class><li><a href="#development-shells-nix-shell-derivation"><span>Development shells (<code>nix-shell [DERIVATION]</code>)</span><span></span></a><ul class><li><a href="#a-development-aid"><span>A development aid</span><span></span></a></li><li><a href="#development-environments"><span>Development environments</span><span></span></a></li></ul></li><li><a href="#temporary-programs"><span>Temporary Programs</span><span></span></a></li><li><a href="#run-scripts"><span>Run scripts</span><span></span></a><ul class><li><a href="#nix-shell--c"><span><code>nix shell -c</code></span><span></span></a></li><li><a href="#nix-run"><span><code>nix run</code></span><span></span></a></li></ul></li><li><a href="#shell-interpreter-usrbinenv-nix-shell"><span>Shell interpreter <code>#!/usr/bin/env nix-shell</code></span><span></span></a></li></ul></li><li><a href="#notes-and-resources"><span>Notes and Resources</span><span></span></a><ul class><li><a href="#to-flake-or-not-to-flake"><span>To flake or not to flake</span><span></span></a></li><li><a href="#shell-hooks"><span>A word about <code>shellHook</code>s</span><span></span></a><ul class><li><a href="#workarounds"><span>Workarounds</span><span></span></a></li></ul></li><li><a href="#the-second-hardest-problem"><span>The second-hardest problem</span><span></span></a></li></ul></li><li><a href="#appendix"><span>Appendix</span><span></span></a><ul class><li><a href="#summary-table"><span>Summary table</span><span></span></a></li></ul></li></ul>
+          </div>
+        </div>
+    </div>
+    
+
+  </nav>
+
+</header>
+
+
+  <main class="my-8">
+    <div class="container">
+      <section class="relative">
+    
+
+<div class="h-56 sm:h-xl xl:h-2xl bg-cover w-5/6 mx-auto lg:min-w-full xl:w-auto mb-8 xl:-mx-24 rounded-lg relative shadow-2xl overflow-hidden">
+    <img src="https://images.unsplash.com/photo-1562530370-8f4fe23d1e8d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1920" alt="Article image" class="relative w-full h-full object-cover">
+
+    <div class="w-full absolute bottom-0">
+        <div class="relative">
+            <div class="bg-white rounded-full m-2 sm:m-4 float-right p-1" style="line-height: 0;"><i class="las la-copyright"></i></div>
+            <div uk-drop="pos: top-right" class="w-11/12 max-w-sm hidden absolute m-2 p-2 sm:m-4  sm:p-4 ">
+                <div class="bg-white p-6 rounded">
+                    <h4>Credits</h4>
+                    <span class="block text-sm overflow-auto max-w-full">
+                    
+                    Photo by Joshua J. Cotten on <a hrep="https://unsplash.com/photos/04ZHiZFgTqQ">Unsplash</a>:
+                    
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<article class="lg:w-4/5 lg:mx-auto">
+
+    <p class="text-lead text-emphasis italic sm:w-5/6 mx-auto"><i>Nix 2.4+ introduces replacements for commonly known nix commands. The `nix-shell` replacements cause some confusion which this post aims to solve.</i></p>
+    <p><h1 class="y-header" id="a-new-nix-command">
+<span>A new Nix command</span><a href="#a-new-nix-command" class="anchor las la-anchor" title="a-new-nix-command"></a>
+</h1>
+<p>
+This post follows the <a href="https://discourse.nixos.org/t/nix-2-4-released/15822">release</a> of Nix 2.4, which among many other things introduced an all new (experimental) <code>nix</code> command along with the <a href="../internals/2021-01-01-flake-ification">previously discussed</a> flake feature.
+</p>
+<p>
+The <code>nix</code> command aims to collect most common commands such as <code>nix-build</code>, <code>nix-copy-closure</code>, <code>nix-env</code>, … as subcommands of one common program. Unsurprisingly, this does not spare <code>nix-shell</code>.
+</p>
+<p>
+Yet, unlike some of the other commands which received a more or less one-to-one replacement it is not so easy with <code>nix-shell</code>. This command was actually broken up into multiple commands with different semantics: <code>nix shell</code>, <code>nix develop</code> and <code>nix run</code>. Yet, depending on what you used <code>nix-shell</code> for in the past the new commands may not exactly do what you would expect. Indeed, they happen to cause quite some <a href="https://www.reddit.com/r/NixOS/comments/r15hx4/nix_shell_vs_nix_develop/">confusion</a> already. Most notably, while <code>nix-shell</code> invoked without any other flags previously set up the build environment of a derivation (which could be somewhat abused to define general development environments) that is <em>not</em> what <code>nix shell</code> will do…
+</p>
+<h1 class="y-header" id="what-the-shell">
+<span>What the shell…<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></span><a href="#what-the-shell" class="anchor las la-anchor" title="what-the-shell"></a>
+</h1>
+<p>
+Yes, but from the start…
+</p>
+<p>
+If you are here just for the commands you can read the tl;dr for <a href="#tldr-nix-develop"><code>nix develop</code></a>, <a href="#tldr-nix-shell"><code>nix shell</code></a>, or <a href="#tldr-nix-run"><code>nix run</code></a> directly or jump to the <a href="#notes-and-resources">notes</a> section.
+</p>
+<h2 class="y-header" id="development-shells-nix-shell-derivation">
+<span>Development shells (<code>nix-shell [DERIVATION]</code>)</span><a href="#development-shells-nix-shell-derivation" class="anchor las la-anchor" title="development-shells-nix-shell-derivation"></a>
+</h2>
+<p>
+Development shells using the new <code>nix</code> command are now created with <code>nix develop</code>.
+</p>
+<p>
+That command is a more focused version with additional tools for development. It is meant to be used with flakes but supports standalone derivations using the <code>-f</code> flag. How to use it then and what will it do?
+</p>
+<h3 class="y-header" id="a-development-aid">
+<span>A development aid</span><a href="#a-development-aid" class="anchor las la-anchor" title="a-development-aid"></a>
+</h3>
+<p>
+The intended use of <code>nix develop</code> is to recreate build environments for single packages. That is, you call <code>nix develop nixpkgs#hello</code> and are dropped into a shell that is as close as possible to the nix builder environment.
+</p>
+<p>
+<em>“yes,.. and?”</em>
+</p>
+<p>
+This allows you to build a package step by step, or better phase by phase, meaning that in particular the build instructions used by nix can be reused for development purposes. Thus, we can use nix without needing to repeatedly go through full build processes, including wasteful copying, configuring, etc.
+</p>
+<p>
+To make this process even easier, <code>nix develop</code> now comes with special arguments to run those phases directly.
+</p>
+<div id="tldr-nix-develop" class="uk-alert-primary note box y-fill-horizontal" data-header="tl;dr">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+<p>NOTE</p>
+</div>
+</div>
+<div>
+<p>
+tl;dr
+</p>
+</div>
+</div>
+<p>
+<code>nix develop</code> creates a shell with <em>all <code>buildInputs</code></em> and environment variables of a derivation loaded and <code>shellHook</code>s executed.
+</p>
+<p>
+This allows to <em>run phases</em> individually in the shell using <code>$ unpackPhase</code>, <code>$ configurePhase</code> <code>$ buildPhase</code>, etc.
+</p>
+<p>
+…or directly using <code>nix develop --&lt;PHASE&gt;</code> or <code>nix develop --phase PHASE</code> (for non-standard phases).
+</p>
+<p>
+…or run an arbitrary command in the shell using <code>nix develop --command COMMAND [ARGS…]</code>
+</p>
+<p>
+<strong>Why should you use this?</strong>
+</p>
+<p>
+It is most useful for locally developed packages.
+</p>
+<p>
+Use it to set up the environment using e.g. the <code>configurePhase</code> and perform the subsequent development using <code>build</code> and <code>check</code> phases. If your workflow includes things that are not part of a phase use <code>nix develop --command</code>
+</p>
+</div>
+<p>
+In essence, this is exactly what <code>nix-shell</code> was intended for!
+</p>
+<div class="uk-alert-warning warning box y-fill-horizontal" data-header>
+<div class="header">
+<div>
+<span class="las la-exclamation-circle"></span>
+<div class="badge">
+<p>WARN</p>
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p>
+A slight annoyance with phases arises when the targeted derivation overrides standard phases, i.e. <code>{unpack,configure,build,install}Phase</code>s. As the default implementation in nix’s <code>stdenv</code> is done as functions, an internal use of <code>runHook</code> will give precedence to those functions over the overridden phases stored as environment variables.
+</p>
+<p>
+<strong>Solution</strong>
+</p>
+<p>
+Enter a shell using <code>nix develop</code> and run the overridden phases using <code>eval $buildPhase</code> or <code>--command eval ‘$buildPhase’</code>.
+</p>
+</div>
+<p>
+Practically, <code>nix-shell</code> was also used for another purpose; reproducible development environments.
+</p>
+<h3 class="y-header" id="development-environments">
+<span>Development environments</span><a href="#development-environments" class="anchor las la-anchor" title="development-environments"></a>
+</h3>
+<p>
+Particularly useful combined with tools like <a href="https://direnv.net/"><code>direnv</code></a>, one can leverage the fact that the resulting shell of <del><code>nix-shell</code></del> <code>nix develop</code> includes all declared <code>buildInputs</code> and environment variables to put together an environment with all sorts of dependencies and development tools available. Importantly, nix will also ensure all <code>setupHook</code>s are run when the shell is opened allowing for some impure setup to happen.
+</p>
+<div class="uk-alert-success help box y-fill-horizontal">
+<p>
+A helpful tool to achieve this is <code>mkShell</code>. This function provides an easy interface to collect packages for an environment.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb1" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pkgs.mkShell</span> = {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># a list of packages to add to the shell environment</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">packages</span> <span class="pp">?</span> [ ]</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">,</span> <span class="co"># propagate all the inputs from the given derivations</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputsFrom</span> <span class="pp">?</span> [ ]</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">,</span> buildInputs <span class="pp">?</span> [ ]</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">,</span> nativeBuildInputs <span class="pp">?</span> [ ]</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">,</span> propagatedBuildInputs <span class="pp">?</span> [ ]</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">,</span> propagatedNativeBuildInputs <span class="pp">?</span> [ ]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">,</span> ...</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="er">}</span><span class="ex">:</span> ...</span></code></pre>
+</div>
+</div>
+<p>
+<em>All extra attributes unknown to <code>mkDerivation</code> are applied as env variables.</em>
+</p>
+<p>
+You can provide a <code>shellHook</code> to run commands whenever you enter the shell
+</p>
+</div>
+<p>
+Being closely connected to flakes, <code>nix develop</code> supports loading a flake’s development shell directly if a <code>devShell</code> output is defined.
+</p>
+<div class="uk-alert-success help box y-fill-horizontal" data-header="Example" data-caption="(Adapted from my previous [post](../internals/2021-01-01-flake-ification.md)). ">
+<div class="header">
+<div>
+<span class="las la-life-ring"></span>
+<div class="badge">
+<p>HELP</p>
+</div>
+</div>
+<div>
+<p>
+Example
+</p>
+</div>
+</div>
+<div class="y-fill-horizontal">
+<div id="cb2" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">description</span> = <span class="st">&quot;Flake utils demo&quot;</span><span class="kw">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.nixpkgs.url</span> = <span class="st">&quot;github:nixos/nixpkgs&quot;</span><span class="kw">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.flake-utils.url</span> = <span class="st">&quot;github:numtide/flake-utils&quot;</span><span class="kw">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">outputs</span> = { self, nixpkgs, flake-utils }:</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">let</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="er">in</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>      <span class="ex">flake-utils.lib.eachDefaultSystem</span> <span class="er">(</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="ex">system:</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>          <span class="bu">let</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>            <span class="ex">pkgs</span><span class="st">' = import nixpkgs { inherit system; };</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="st">          in</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="st">            rec {</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="st">              packages = { myPackage = ... }; # packages defined here</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="st">              devShell  = pkgs'</span><span class="ex">.mkShell</span> = {</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>                <span class="co"># a list of packages to add to the shell environment</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>                <span class="ex">packages</span> <span class="pp">?</span> [ jq ]</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                <span class="ex">,</span> <span class="co"># propagate all the inputs from the given derivations</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>                  <span class="co"># this adds all the tools that can build myPackage to the environment</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>                <span class="ex">inputsFrom</span> <span class="pp">?</span> [ pacakges.myPackage ]</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>              <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>            <span class="er">}</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>      <span class="kw">);</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre>
+</div>
+</div>
+<div class="caption">
+<p>
+(Adapted from my previous <a href="../internals/2021-01-01-flake-ification.md">post</a>).
+</p>
+</div>
+</div>
+<h2 class="y-header" id="temporary-programs">
+<span>Temporary Programs</span><a href="#temporary-programs" class="anchor las la-anchor" title="temporary-programs"></a>
+</h2>
+<p>
+The fact that nix is built on the idea of the nix store from which user environments are created by cherry-picking the desired packages may raise the question, whether we may be able to amend our current environment imperatively<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. And in fact, we can. It is possible to add software to a user’s profile by imperatively by the means of <del><code>nix-env -iA</code></del> or nowadays <code>nix profile install</code>.
+</p>
+<div class="uk-alert-warning warning box y-fill-horizontal" data-header>
+<div class="header">
+<div>
+<span class="las la-exclamation-circle"></span>
+<div class="badge">
+<p>WARN</p>
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p>
+Beware that <code>nix profile</code> is incompatible with <code>nix-env</code> and therefore (today) also with <code>home-manager</code>.
+</p>
+</div>
+<p>
+Yet, we also know that installing software this way is <em>not the Nix way</em> of doing things.
+</p>
+<p>
+For the times when we <em>do</em> want to have some program at our disposal, either to try it out, use a different version or just needing it only temporarily, there should be a way to get this without going through the effort of adding it to your <code>configuration.nix</code>, <code>home.nix</code>, project <code>default.nix</code>, etc. and rebuilding your environment. In these cases, traditional distributions reach back to installing software or relying on containerization (i.e. docker). In Nix, while you could install the piece of software, the aforementioned usage of the nix store allows making software available temporarily without installing it.
+</p>
+<p>
+This is what <code>nix-shell -p &lt;package+&gt;</code> is used for. <code>nix-shell</code> will retrieve the desired packages and open a shell with these packages mixed in.
+</p>
+<div class="uk-alert-success help box y-fill-horizontal" data-header="Example">
+<div class="header">
+<div>
+<span class="las la-life-ring"></span>
+<div class="badge">
+<p>HELP</p>
+</div>
+</div>
+<div>
+<p>
+Example
+</p>
+</div>
+</div>
+<p>
+Given you need to quickly convert some <code>asciidoc</code> to HTML usually the response of your terminal will be
+</p>
+<pre><code>$ asciidoc -b html5 manual.adoc
+zsh: command not found: asciidoc</code></pre>
+<p>
+While you could go and add asciidoc to your configuration you might need it just once. In that case we can make use of <code>nix-shell</code>:
+</p>
+<pre><code>$ nix-shell -p asciidoc
+[nix-shell] $ asciidoc -b html5 manual.adoc</code></pre>
+<p>
+This should now just work. Likewise, this works with almost anything available to install through <code>nixpkgs</code>.
+</p>
+</div>
+<div class="info box y-fill-horizontal" data-header="Under the hood">
+<div class="header">
+<div>
+<span class="las la-info"></span>
+<div class="badge">
+<p>INFO</p>
+</div>
+</div>
+<div>
+<p>
+Under the hood
+</p>
+</div>
+</div>
+<p>
+Internally, what happens when <code>nix-shell -p asciidoc</code> is called is that nix constructs a derivation with the programs as <code>buildInputs</code> and popularizes them through the same mechanism described above.
+</p>
+<p>
+In this case the derivation shell’ed into is:
+</p>
+<pre><code>with import &lt;nixpkgs&gt; { }; (pkgs.runCommandCC or pkgs.runCommand) &quot;shell&quot; { buildInputs = [ (asciidoc) ]; } &quot;&quot;</code></pre>
+<p>
+Note that instead of derivations you can also add expressions as the <code>-p</code> argument as these are just plugged in, i.e.:
+</p>
+<pre><code>$ nix-shell -p &quot;import ./some.nix {}&quot; </code></pre>
+</div>
+<p>
+But this is not about <code>nix-shell</code>…
+</p>
+<p>
+Nix 2.4 allows the same thing using <code>nix shell</code> now focussing on flakes.
+</p>
+<p>
+With <code>nix shell</code> any output of a flake can be added to the environment by running
+</p>
+<pre><code>$ nix shell nixpkgs#asciidoc</code></pre>
+<p>
+<em>Here, nix strictly expects a <a href="../internals/2021-01-01-flake-ification/#flake-reference-conventions">flake URL</a>.</em>
+</p>
+<p>
+Like <code>nix-shell</code> this command supports multiple arguments.
+</p>
+<div id="tldr-nix-shell" class="uk-alert-primary note box y-fill-horizontal" data-header="tl;dr">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+<p>NOTE</p>
+</div>
+</div>
+<div>
+<p>
+tl;dr
+</p>
+</div>
+</div>
+<p>
+<code>nix shell</code> creates a shell from the <em>specified inputs</em>.
+</p>
+<p>
+This is useful to install temporary software
+</p>
+<p>
+…from a <a href="../../internals/2021-01-01-flake-ification/#flake-reference-conventions">flake specifier</a>.
+</p>
+<p>
+…from a <code>*.nix</code> file/arbitrary expression using <code>--impure --expr EXPR</code> flags
+</p>
+<p>
+<strong>Why should you use this?</strong>
+</p>
+<p>
+The strong point about Nix is its declarative way to manage installations. Software that is used constantly can and should be packaged by the respective tool, be it a system configuration, home configuration.
+</p>
+<p>
+For project development tools one can use development shells as discussed above.
+</p>
+<p>
+Yet, sometimes a program or library is needed temporarily only, or once in a different version etc. In these cases programs can be loaded into the shell using <code>nix shell</code>. Derivations from this kind command are eventually garbage collected and removed from the nix store, so they do not use up dist space unnecessarily.
+</p>
+</div>
+<div class="uk-alert-warning warning box y-fill-horizontal" data-header>
+<div class="header">
+<div>
+<span class="las la-exclamation-circle"></span>
+<div class="badge">
+<p>WARN</p>
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p>
+Notably, not mentioned here is the use of <code>nix shell</code> to load <code>FANCYLANGUAGE</code> with <code>FANCYLANGUAGEPACKAGES</code>. Sadly, this hits the limits of the new command. See the section about <code>shellHook</code>s <a href="#shell-hooks">below</a>.
+</p>
+</div>
+<h2 class="y-header" id="run-scripts">
+<span>Run scripts</span><a href="#run-scripts" class="anchor las la-anchor" title="run-scripts"></a>
+</h2>
+<p>
+Apart from dropping into development shells, <code>nix-shell</code> can also be used to run commands and programs from derivation not currently installed to the user’s profile. This is it can build a shell as before and run a command inside transparently.
+</p>
+<p>
+We discussed the use of <code>nix-shell --command COMMAND ARGS</code> above, where we would run a command from within the build environment of a derivation. Similarly, we may want to just run a program provided by a derivation. For this <code>nix-shell</code> provided the <code>--run</code> argument
+</p>
+<div class="info box y-fill-horizontal" data-header="&quot;`--command`&quot; vs &quot;`run`&quot;">
+<div class="header">
+<div>
+<span class="las la-info"></span>
+<div class="badge">
+<p>INFO</p>
+</div>
+</div>
+<div>
+<p>
+“<code>–command</code>” vs “<code>run</code>”
+</p>
+</div>
+</div>
+<p>
+As a development aid, <code>--command</code> is interactive, meaning among other things, that <em>if a command fails or is interrupted by the user, the user is dropped into the shell with the build environment loaded</em>.
+</p>
+<p>
+This behavior translates into an invocation using the <code>-p PROGRAM</code> argument as well as seen in the following box.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb8" class="sourceCode">
+<pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> asciidoc </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">zsh:</span> command not found: asciidoc</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> nix-shell <span class="at">-p</span> asciidoc <span class="at">--command</span> asciidoc</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Man</span> page:     asciidoc <span class="at">--help</span> manpage</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Syntax:</span>       asciidoc <span class="at">--help</span> syntax</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> asciidoc <span class="co"># still available as were in the build shell with asciidoc present</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="ex">Man</span> page:     asciidoc <span class="at">--help</span> manpage</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="ex">Syntax:</span>       asciidoc <span class="at">--help</span> syntax</span></code></pre>
+</div>
+</div>
+<p>
+<code>--run</code> runs non-interactive and closes the shell after the command returns
+</p>
+<div class="y-fill-horizontal">
+<div id="cb9" class="sourceCode">
+<pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> asciidoc </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">zsh:</span> command not found: asciidoc</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> nix-shell <span class="at">-p</span> asciidoc <span class="at">--run</span> asciidoc</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Man</span> page:     asciidoc <span class="at">--help</span> manpage</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Syntax:</span>       asciidoc <span class="at">--help</span> syntax</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> asciidoc <span class="co"># not available anymore</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="ex">zsh:</span> command not found: asciidoc</span></code></pre>
+</div>
+</div>
+</div>
+<h3 class="y-header" id="nix-shell--c">
+<span><code>nix shell -c</code></span><a href="#nix-shell--c" class="anchor las la-anchor" title="nix-shell--c"></a>
+</h3>
+<p>
+As the functions of <code>nix-shell DERIVATION</code> and <code>nix-shell -p DERIVATION</code> were separated, the new tools come with new clearer semantics.
+</p>
+<p>
+The generic <code>nix-shell --run</code> function is now <code>nix shell -c</code>. Given an installable, nix allows to run any command in an environment where the installable is present. Note that this command is run in a non-interactive shell. The shell is dropped as the command ends.
+</p>
+<div class="info box y-fill-horizontal">
+<p>
+The above example using the new command would look like this:
+</p>
+<pre><code>$ nix shell nixpkgs#asciidoc -c asciidoc</code></pre>
+</div>
+<h3 class="y-header" id="nix-run">
+<span><code>nix run</code></span><a href="#nix-run" class="anchor las la-anchor" title="nix-run"></a>
+</h3>
+<p>
+Yet, <code>nix shell -c</code> will still require to type the name of the executed program. As for most programs this command is the same as the derivation name e.g. <code>nix shell nixpkgs#asciidoc -c asciidoc</code> another command was introduced named <code>nix run</code>. With <code>nix run</code> the previous command can be run as <code>nix run nixpkgs#asciidoc</code>.
+</p>
+<p>
+Naturally, the functionality of <code>nix run</code> goes further and as is the case for many other new commands mainly concerns flakes. Next to <code>packages</code>, <code>nixosModules</code> and others, flakes can now also define <code>apps</code>. Written as records with two fields -<code>type</code> (currently, necessarily <code>app</code>) and <code>program</code> (an executable path) - these apps can be run directly using <code>nix run</code>.
+</p>
+<p>
+This app definition
+</p>
+<div class="y-fill-horizontal">
+<div id="cb11" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">outputs</span> = {self}: {</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">...</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">apps.x86_64-linux.watch</span> = {</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">type</span> = <span class="st">&quot;app&quot;</span><span class="kw">;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">program</span> = <span class="st">&quot;</span><span class="va">${generator</span><span class="er">-watch</span><span class="va">}</span><span class="st">&quot;</span><span class="kw">;</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code></pre>
+</div>
+</div>
+<p>
+… could be used to watch and build this blogs source directly using <code>nix run .#watch</code>, given <code>generator-watch</code> is a script in the nix store. Note that <em><code>program</code> only accepts paths</em> in the store and <em>no default arguments</em>.
+</p>
+<p>
+If an attribute to <code>nix run</code> is not found as an app, nix will look up a <code>program</code> using this key instead and execute <code>programs.${&lt;program&gt;}/bin/&lt;program&gt;</code> instead.
+</p>
+<div id="tldr-nix-run" class="uk-alert-primary note box y-fill-horizontal" data-header="tl;dr">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+<p>NOTE</p>
+</div>
+</div>
+<div>
+<p>
+tl;dr
+</p>
+</div>
+</div>
+<p>
+The new <code>nix</code> command comes with a new way to run programs not installed in your system for an even greater “run and forget” experience.
+</p>
+<p>
+With <code>nix shell DERIVATION+ -c COMMAND</code>
+</p>
+<p>
+… run any command in an environment with all specified <code>DERIVATION</code>s present (again consider the <a href="#shell-hooks">section about <code>shellHook</code>s</a>)
+</p>
+<p>
+With <code>nix run INSTALLABLE</code> you can
+</p>
+<p>
+… run scripts defined in a flake under the <code>apps</code> output
+</p>
+<p>
+… run the executables of any derivation as long as it is located in <code>bin/INSTALLABLE</code> of the derivation with the attribute name <code>INSTALLABLE</code>
+</p>
+</div>
+<h2 class="y-header" id="shell-interpreter-usrbinenv-nix-shell">
+<span>Shell interpreter <code>#!/usr/bin/env nix-shell</code></span><a href="#shell-interpreter-usrbinenv-nix-shell" class="anchor las la-anchor" title="shell-interpreter-usrbinenv-nix-shell"></a>
+</h2>
+<p>
+Lastly, a useful feature of <code>nix-shell</code> is its usage as a shell interpreter. What that means is that <code>nix-shell</code> can be used to dynamically fetch dependencies for a script file and execute the file in that context. Shell interpreters are defined using a special syntax at the start of script files.
+</p>
+<div class="info box y-fill-horizontal" data-header="Shebang Interpreter Line">
+<div class="header">
+<div>
+<span class="las la-info"></span>
+<div class="badge">
+<p>INFO</p>
+</div>
+</div>
+<div>
+<p>
+Shebang Interpreter Line
+</p>
+</div>
+</div>
+<p>
+Bash, Zsh and other shells interpret a first line starting with <code>#!</code> as an interpreter instruction. This way, instead of running a file using e.g. bash or python explicitly, we can write <code>#!/usr/bin/env python</code> to instruct the shell to use python to execute the file.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb12" class="sourceCode" data-caption="file.py">
+<pre class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env python</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># file.py</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;hello&quot;</span>)</span></code></pre>
+</div>
+</div>
+<p>
+Here <code>$ python file.py</code> would be equivalent to <code>./file.py</code>, given the user has permission to execute the file.
+</p>
+</div>
+<p>
+The <code>nix-shell</code> command can be used to use nix to provide the actual interpreter using
+</p>
+<div class="y-fill-horizontal">
+<div id="cb13" class="sourceCode">
+<pre class="sourceCode .bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#! /usr/bin/env nix-shell</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#! nix-shell -i real-interpreter -p packages</span></span></code></pre>
+</div>
+</div>
+<p>
+Therefore, the above example would therefore continue to work even without python installed, if defined as
+</p>
+<div class="y-fill-horizontal">
+<div id="cb14" class="sourceCode" data-caption="file.py">
+<pre class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#! /usr/bin/env nix-shell</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#! nix-shell -i python -p python3</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;hello&quot;</span>)</span></code></pre>
+</div>
+</div>
+<div class="uk-alert-warning warning box y-fill-horizontal">
+<p>
+As it stands this function does not <a href="https://github.com/NixOS/nix/pull/5189">yet</a> have a replacement.
+</p>
+</div>
+<h1 class="y-header" id="notes-and-resources">
+<span>Notes and Resources</span><a href="#notes-and-resources" class="anchor las la-anchor" title="notes-and-resources"></a>
+</h1>
+<h2 class="y-header" id="to-flake-or-not-to-flake">
+<span>To flake or not to flake</span><a href="#to-flake-or-not-to-flake" class="anchor las la-anchor" title="to-flake-or-not-to-flake"></a>
+</h2>
+<p>
+Most of the new nix commands are designed in a flake first way. Most notably <code>nix {shell,develop,run}</code> expect <a href="../internals/2021-01-01-flake-ification/#flake-reference-conventions">flake URLs</a> as argument. Traditional <code>*.nix</code> files can be used with the <code>--expr</code> argument all commands support. As flake mode imposes greater purity strictness, imports have to happen with the <code>--impure</code> flag given:
+</p>
+<div class="y-fill-horizontal">
+<div id="cb15" class="sourceCode">
+<pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> nix shell <span class="at">--impure</span> <span class="at">--expr</span> <span class="st">&quot;import my.nix {}&quot;</span></span></code></pre>
+</div>
+</div>
+<h2 class="y-header" id="shell-hooks">
+<span>A word about <code>shellHook</code>s</span><a href="#shell-hooks" class="anchor las la-anchor" title="shell-hooks"></a>
+</h2>
+<p>
+While shell hooks were previously introduced as a means to run certain commands to set up a development shell with <code>nix develop</code> and <code>nix-shell</code>, they find use in other places. Concretely, neither <code>nix run</code> nor <code>nix shell</code> are running these hooks. This is even though their <code>nix-shell</code> equivalent does so.
+</p>
+<p>
+What that means is that <code>nix shell</code> cannot be used to load e.g. a Python environment with packages directly as python modules use the <code>shellHook</code> to set up the <code>PYTHONPATH</code>. The same goes for Perl and other ecosystems with similar principles. This means
+</p>
+<pre><code>nix shell nixpkgs#{python,python3Packages.numpy}</code></pre>
+<p>
+and
+</p>
+<pre><code>nix-shell -p python python3Packages.numpy</code></pre>
+<p>
+Do not evaluate to the same thing.
+</p>
+<p>
+Instead, one needs to work around with custom expressions or <code>mkShell</code>s passed to nix develop.
+</p>
+<h3 class="y-header" id="workarounds">
+<span>Workarounds</span><a href="#workarounds" class="anchor las la-anchor" title="workarounds"></a>
+</h3>
+<p>
+For Python in particular we can use <code>python3.withPackages</code> to build an ad-hoc derivation with the paths set up correctly:
+</p>
+<pre><code>nix shell --impure --expr &quot;with import &lt;nixpkgs&gt; {}; python.withPackages (pkgs: with pkgs; [ prettytable ])&quot; </code></pre>
+<p>
+This might work as well with other language ecosystems
+</p>
+<p>
+Alternatively, we can (ab)use <code>nix develop</code> by passing it a <code>devShell</code>:
+</p>
+<pre><code>nix develop --impure --expr &quot;with import &lt;nixpkgs&gt; {}; pkgs.mkShell { packages = [python3 python3Packages.numpy ];}&quot; </code></pre>
+<p>
+Both approaches work to some degree but are clunky (i.e. <em>not improving UX as promised</em>) and rely on the supposed-to-be-superseded channels.
+</p>
+<h2 class="y-header" id="the-second-hardest-problem">
+<span>The second-hardest problem</span><a href="#the-second-hardest-problem" class="anchor las la-anchor" title="the-second-hardest-problem"></a>
+</h2>
+<p>
+Picking up the confusion mentioned in the beginning, there is another problem with <code>nix shell</code>… naming. Being so closely named to its <em>semantically different</em> predecessor, it is impossible to query google for meaningful, targeted results. This is a pain for newcomers and more experienced nix’ers alike. And indeed, there is a heated <a href="https://github.com/NixOS/nix/issues/4715">discussion</a> on renaming the shell command. Yet, until that is resolved, I hope this guide helps to understand the differences a bit better.
+</p>
+<p>
+<em>newnixshellguide</em>
+</p>
+<h1 class="y-header" id="appendix">
+<span>Appendix</span><a href="#appendix" class="anchor las la-anchor" title="appendix"></a>
+</h1>
+<h2 class="y-header" id="summary-table">
+<span>Summary table</span><a href="#summary-table" class="anchor las la-anchor" title="summary-table"></a>
+</h2>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>
+/
+</th>
+<th>
+<code>nix-shell</code>
+</th>
+<th>
+<code>nix develop</code>
+</th>
+<th>
+<code>nix shell</code>
+</th>
+<th>
+<code>nix run</code>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>
+<strong>runs <code>shellHook</code>s</strong>
+</td>
+<td>
+yes
+</td>
+<td>
+yes
+</td>
+<td>
+no
+</td>
+<td>
+no
+</td>
+</tr>
+<tr class="even">
+<td>
+<strong>use as interpreter</strong>
+</td>
+<td>
+yes
+</td>
+<td>
+no
+</td>
+<td>
+no
+</td>
+<td>
+no
+</td>
+</tr>
+<tr class="odd">
+<td>
+<strong>supports flakes</strong>
+</td>
+<td>
+no
+</td>
+<td>
+yes
+</td>
+<td>
+yes
+</td>
+<td>
+only
+</td>
+</tr>
+<tr class="even">
+<td>
+<strong>evaluate nix file</strong>
+</td>
+<td>
+yes
+</td>
+<td>
+with <code>--impure</code>, <code>-f</code> or <code>--expr</code>
+</td>
+<td>
+with <code>--impure</code>, <code>-f</code> or <code>--expr</code>
+</td>
+<td>
+with <code>--impure</code>, <code>-f</code> or <code>--expr</code>
+</td>
+</tr>
+<tr class="odd">
+<td>
+<strong>modifies environment</strong>
+</td>
+<td>
+<code>PATH</code>, attributes mk<code>mkDerivation</code> and changes by <code>shellHooks</code>
+</td>
+<td>
+<code>PATH</code>, attributes mk<code>mkDerivation</code> and changes by <code>shellHooks</code>
+</td>
+<td>
+<code>PATH</code>
+</td>
+<td>
+<em>nothing</em>
+</td>
+</tr>
+</tbody>
+</table>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote">
+<p>
+Seemingly, no-one has given any thought about google’ability of the new commands… google <strong>“newnixshellguide”</strong> to find this post in the meantime<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a>
+</p>
+</li>
+<li id="fn2" role="doc-endnote">
+<p>
+Functional purists, please bear with me here<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a>
+</p>
+</li>
+</ol>
+</section></p>
+
+</article>
+
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+<!--[if lt IE 9]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+<![endif]-->
+
+    </div>
+  </main>
+
+
+  <footer class="font-standout text-sm py-8 px-4 text-mutedDark bg-footer dark">
+      <div class="container grid sm:grid-cols-3 gap-8">
+        <div>
+
+            <h3 class="text-emphasizedDark">Contact</h3>
+            <ul class="ml-1 list-none">
+            <li><a href="mailto:contact@ysndr.de" class="text-emphasizedDark no-underline"><i class="las la-envelope-open-text"></i> contact@ysndr.de</a></li>
+            <li><a href="https://linkedin.com/in/yannik-sander" class="text-emphasizedDark no-underline"><i class="lab la-linkedin"></i></svg> yannik-sander</a></li>
+            <li>
+            <a href="https://github.com/ysndr" class="text-emphasizedDark no-underline"><i class="las la-code-branch"></i> ysndr</a></li>
+          </ul>
+
+
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">Legal</h3>
+          <ul class="ml-1 list-none">
+            <li class="inline-flex justify-items-start items-start mb-0">
+              <span class="las la-check-circle block mr-2"></span> No analytics are used here your data is safe :)
+            </li>
+            <li class="inline-flex items-start">
+              <span class="las la-check-circle block mr-2"></span> The content of this blog is licensed under CC0 terms if not otherwise noted</span>
+            </li>
+          </ul>
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">About this blog</h3>
+          <ul class="ml-1 list-none">
+            <li>
+              Built with <i class="las la-code"></i> and <i class="lar la-heart"></i> using <a class="text-emphasizedDark no-underline" href="https://jaspervdj.be/hakyll/">Hakyll</a>
+            </li>
+            <li class="text-muted"><i class="las la-code-branch"></i> last updated: <a class="text-emphasizedDark no-underline" href="https://github.com/ysndr/blog">0633078: fix: render heading as such in pandoc (#34) (2022-01-02 17:53:02 +0200)</a>
+            </li>
+            <li>
+              <a class="no-underline" href="https://builtwithnix.org" rel="nofollow">
+                <img src="https://builtwithnix.org/badge.svg" style="max-width:100%;">
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+  </footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit-icons.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+  <script>
+    window.cookieconsent.initialise({
+    container: document.getElementById("content"),
+    palette:{
+     popup: {background: "#fff"},
+     button: {background: "#aa0000"},
+    },
+    revokable:true,
+    onStatusChange: function(status) {
+     console.log(this.hasConsented() ?
+      'enable cookies' : 'disable cookies');
+    },
+    law: {
+     regionalLaw: false,
+    },
+    location: false,
+   });
+  </script> -->
+</body>
+
+</html>

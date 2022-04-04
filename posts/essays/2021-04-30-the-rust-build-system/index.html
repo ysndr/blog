@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:creator" content="@_ysndr" />
+  <meta property="og:title" content="y|sndr - The Rust Build System">
+  <meta property="og:description" content="A tale in two repositories">
+  <meta property="og:image" content="https://blog.ysndr.de/posts/essays/the-rust-build-system/lead.jpg">
+  <meta property="og:url" content="https://blog.ysndr.de/posts/essays/2021-04-30-the-rust-build-system/index.html">
+  <title>y|sndr - The Rust Build System</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css" />
+  <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">  <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="../../../rss.xml" />
+  <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="../../../atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../../../assets/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../assets/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../../assets/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../../assets/images/favicon/site.webmanifest">
+</head>
+
+<body class="flex flex-col overflow-x-hidden text-body text-black leading-normal">
+  <header class="bg-muted font-standout leading-snug">
+
+    <div class="flex flex-col sm:flex-row my-8 container justify-items-center justify-end items-center">
+      <div class="flex flex-col text-right text-emphasis">
+          <h1 class="inline-flex flex-col">The Rust Build System
+          <small>A tale in two repositories</small>
+          </h1>
+          <span class="text-xs text-muted">
+          
+              Yannik Sander
+              ⦿
+              
+              Aron Hansen Berggren
+              
+          </span>
+      </div>
+      <hr class="hidden sm:block sm:h-24 sm:w-px mx-4 my-4 sm:my-auto min-w-px">
+      <div class="text-sm text-muted sm:w-5/12 md:w-2/5">
+        <ul>
+          <li class="flex">
+            <i class="las la-calendar-day mr-4"></i> April 30, 2021
+          </li>
+          <li class="flex">
+            <i class="las la-stopwatch mr-4"></i> 13 Minutes
+          </li>
+          
+          <li class="flex break-words">
+            <i class="las la-tags mr-4"></i>
+            
+            <span>
+              <a class="text-emphasis" href="../../../tags/technical/">technical</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/rust/">rust</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/devops/">devops</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/kth/">kth</a>
+              </span>
+          </li>
+          
+          <li class="flex">
+            <i class="las la-code-branch mr-4"></i>
+            <a class="uk-link-muted" href="https://github.com/ysndr/blog/commit/1a715ef">1a715ef: Update the-rust-build-system.md</a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+    <hr class="container" />
+
+</header>
+
+
+  <header class="sticky font-standout inset-0 z-50 min-w-full bg-muted text-base">
+  <nav class="container grid grid-cols-3">
+
+
+
+    <div class="flex flex-col">
+      <a class="content-center my-auto text-muted w-max"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M4 6h20 M4 12h20 M4 18h20"></path>
+      </svg><span class="ml-2 uppercase text-xs">Menu</span></a>
+
+
+      <div uk-dropdown class="container hidden">
+            <div class="inset-x-0 absolute container px-8 grid sm:grid-cols-3 sm:gap-8 shadow-lg bg-white text-sm text-muted fill-current stroke-current pb-6">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Who?</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="https://gist.github.com/ysndr/978662957bb9187fd52b2037466e1e34">CV</a></li>
+                  <li><hr></li>
+                  <li>
+                    <ul horizontal>
+                      <li><a href="mailto:contact@ysndr.de"><i class="las la-envelope-open-text"></i></a></li>
+                      <li class="ml-2"><a href="https://linkedin.com/in/yannik-sander"><i class="lab la-linkedin-in"></i></a>
+                      </li>
+                      <li class="ml-2"><a href="https://github.com/ysndr"><i class="lab la-github"></i></a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+             <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="text-black uppercase">What?</li>
+                  <li><a href="https://github.com/ysndr">Projects</a></li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/sam-knn-regressor">sam-knn-regressor</a></li>
+                  <li><a href="https://github.com/ysndr/nixos-config">NixOS Config</a></li>
+                </ul>
+              </div>
+              <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Blog</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="../../../archive">Archive</a></li>
+                  <li class="flex">
+                    <span>
+                      <svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="rss" stroke="currentColor"><circle cx="3.12" cy="16.8" r="1.85"></circle><path fill="none" stroke-width="1.1" d="M1.5,8.2 C1.78,8.18 2.06,8.16 2.35,8.16 C7.57,8.16 11.81,12.37 11.81,17.57 C11.81,17.89 11.79,18.19 11.76,18.5"></path><path fill="none" stroke-width="1.1" d="M1.5,2.52 C1.78,2.51 2.06,2.5 2.35,2.5 C10.72,2.5 17.5,9.24 17.5,17.57 C17.5,17.89 17.49,18.19 17.47,18.5"></path></svg>
+                    </span>
+                    <ul class="items-center ml-2" horizontal>
+                      <li><a href="../../../rss.xml">RSS</a></li>
+                      <li class="ml-4"><a href="../../../atom.xml">Atom</a></li>
+                    </ul>
+                  </li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/blog/commit/0633078"><span><svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="git-branch"><circle fill="none" stroke-width="1.2" cx="7" cy="3" r="2"></circle><circle fill="none" stroke-width="1.2" cx="14" cy="6" r="2"></circle><circle fill="none" stroke-width="1.2" cx="7" cy="17" r="2"></circle><path fill="none" stroke-width="2" d="M14,8 C14,10.41 12.43,10.87 10.56,11.25 C9.09,11.54 7,12.06 7,15 L7,5"></path></svg></span>   current rev.: 0633078: fix: render heading as such in pandoc (#34)</a></li>
+                </ul>
+              </div>
+            </div>
+      </div>
+
+    </div>
+
+
+    <div class="uk-navbar-nav uk-flex-1 py-4 align-items-center">
+
+      <a href="../../../" class="flex items-center justify-center">
+          <img src="../../../assets/images/logo-small.svg" alt="y|sndr" class="h-8" />
+        </a>
+
+
+    </div>
+
+
+
+    
+    <div class="flex flex-col items-end md:relative">
+        <a class="content-center uppercase my-auto text-muted w-max">
+          <span class="md:hidden">Content</span> <span class="hidden md:block">Table of Contents</span>
+        </a>
+        <div class="y-toc hidden" uk-drop>
+          <div class="container max-w-full sm:max-w-sm  bg-white p-6 w-full absolute text-muted right-0 shadow-xl rounded-b" uk-scrollspy-nav="closest: li; scroll: true; offset: 85; cls: text-emphasis">
+            <ul class><li><a href="#introduction"><span>Introduction</span><span></span></a><ul class><li><a href="#what-is-rust"><span>What is Rust</span><span></span></a></li><li><a href="#what-is-a-ci"><span>What is a “CI”</span><span></span></a></li></ul></li><li><a href="#the-rabbit-hole-rust-build-ci"><span>The <del>Rabbit Hole</del> Rust Build CI</span><span></span></a><ul class><li><a href="#sec:triagebot"><span>Triagebot</span><span></span></a></li><li><a href="#developing-with-bors"><span>Developing with bors</span><span></span></a><ul class><li><a href="#the-pull-request"><span>The Pull Request</span><span></span></a></li><li><a href="#sec:playground"><span>A bot’s playground</span><span></span></a><ul class><li><a href="#sec:auto"><span>The <code>auto</code> Action</span><span></span></a></li><li><a href="#the-try-action"><span>The <code>try</code> Action</span><span></span></a></li></ul></li><li><a href="#rollups"><span>Rollups</span><span></span></a></li></ul></li><li><a href="#the-green-master"><span>The Green Master</span><span></span></a></li><li><a href="#action-or-lack-there-off"><span>Action! Or lack there off</span><span></span></a></li></ul></li><li><a href="#wrap-up"><span>Wrap Up</span><span></span></a></li></ul>
+          </div>
+        </div>
+    </div>
+    
+
+  </nav>
+
+</header>
+
+
+  <main class="my-8">
+    <div class="container">
+      <section class="relative">
+    
+
+<div class="h-56 sm:h-xl xl:h-2xl bg-cover w-5/6 mx-auto lg:min-w-full xl:w-auto mb-8 xl:-mx-24 rounded-lg relative shadow-2xl overflow-hidden">
+    <img src="../../../posts/essays/the-rust-build-system/lead.jpg" alt="Article image" class="relative w-full h-full object-cover">
+
+    <div class="w-full absolute bottom-0">
+        <div class="relative">
+            <div class="bg-white rounded-full m-2 sm:m-4 float-right p-1" style="line-height: 0;"><i class="las la-copyright"></i></div>
+            <div uk-drop="pos: top-right" class="w-11/12 max-w-sm hidden absolute m-2 p-2 sm:m-4  sm:p-4 ">
+                <div class="bg-white p-6 rounded">
+                    <h4>Credits</h4>
+                    <span class="block text-sm overflow-auto max-w-full">
+                    
+                    <i>Origin unknown</i>
+                    
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<article class="lg:w-4/5 lg:mx-auto">
+
+    <p class="text-lead text-emphasis italic sm:w-5/6 mx-auto"><i>This essay aims to present a functional description of the Rust build system that exemplifies outstanding efforts of open source CI/CD</i></p>
+    <p><div class="uk-alert-primary note box y-fill-horizontal" data-header="Background and Acknowledgement">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+<p>NOTE</p>
+</div>
+</div>
+<div>
+<p>
+Background and Acknowledgement
+</p>
+</div>
+</div>
+<p>
+This essay was part of the DD2482 DevOps Course at KTH <a href="https://github.com/kth/devops-course">(open on github)</a>.
+</p>
+<p>
+The aim was to present a topic of our interest in 2000 ± 5% words. We chose the rust build system out of interest in the language and to learn about the difficulties and implications of managing a reasonably big open source project such as the Rust Programming language.
+</p>
+<p>
+While researching about and writing this essay, the general lack of definite and up-to-date information about the topic drove our motivation to assemble this snapshot which is supposed to cover all important steps given the word restrictions.
+</p>
+<p>
+This essay is the product of a pair project by:
+</p>
+<ul>
+<li>
+<strong>Aron Hansen Berggren</strong> (aronber@kth.se)
+</li>
+<li>
+and <strong>Yannik Sander</strong> (yannik@kth.se / contact@ysndr.de)
+</li>
+</ul>
+<p>
+<em>If you want to use this article, please consult either of us. A PDF version is available <a href="../the-rust-build-system/Sander-Berggren_The-Rust-Build-System.pdf">here</a></em>
+</p>
+</div>
+<h1 class="y-header" id="introduction">
+<span>Introduction</span><a href="#introduction" class="anchor las la-anchor" title="introduction"></a>
+</h1>
+<p>
+There is a lot of talk about how DevOps supposedly solves all your problems when developing software, from the features planned to how they are used in production and everything between. Even open-source projects are expected to follow DevOps principles these days. The Rust programming language is no exception.<br /> But how does DevOps Scale for projects as massive as rust, an advanced programming language which compiles to every mainstream platform with tooling, documentation and hundreds of contributors? This is what will be explored and explained in the upcoming sections.
+</p>
+<p>
+We start by explaining what we are looking at, before diving into the tools that ensure this project’s integrity.
+</p>
+<h2 class="y-header" id="what-is-rust">
+<span>What is Rust</span><a href="#what-is-rust" class="anchor las la-anchor" title="what-is-rust"></a>
+</h2>
+<p>
+According to the official Rust language website<span class="citation" data-cites="RustProgrammingLanguage"><span class="citation" data-cites="RustProgrammingLanguage">[1]</span></span>, Rust is a low-level programming language that focuses on performance, reliability and productivity. It extends these in the following ways:
+</p>
+<ul>
+<li>
+<p>
+Performance:<br /> Memory efficient without any garbage collector or run-time.
+</p>
+</li>
+<li>
+<p>
+Reliability:<br /> Extensive type system and ownership models to guarantee memory and thread safety at compile time.
+</p>
+</li>
+<li>
+<p>
+Productivity:<br /> The tooling for working with rust such as documentation, build tools and compiler errors are feature-complete and reliable.
+</p>
+</li>
+</ul>
+<p>
+These points together with a strong type-system and its expansive ecosystem are pointed out as the reasons for Rust being voted as the most loved programming language 4 years in a row in the yearly surveys by Stack Overflow<span class="citation" data-cites="gouldingWhatRustWhy2020"><span class="citation" data-cites="gouldingWhatRustWhy2020">[2]</span></span>.
+</p>
+<h2 class="y-header" id="what-is-a-ci">
+<span>What is a “CI”</span><a href="#what-is-a-ci" class="anchor las la-anchor" title="what-is-a-ci"></a>
+</h2>
+<p>
+A CI, or Continuous Integration, takes some input and performs a set of steps to output some product at the end. This often includes code reviews, automated tests, code compilation, packaging of compiled code and further validation of the packages before publishing.
+</p>
+<figure>
+<img src="../the-rust-build-system/1619420761_screenshot.png" id="fig:rust_ci" class="align-center" alt="Figure 1: CI pipelines are run by different events, depicted are the standard tests for Rust PR’s." />
+<figcaption aria-hidden="true">
+Figure 1: CI pipelines are run by different events, depicted are the standard tests for Rust PR’s.
+</figcaption>
+</figure>
+<p>
+Throughout this process, one of the most important aspects is to monitor these results and act on that feedback.<span class="citation" data-cites="ImportanceDevOpsPipeline2020 katzEssentialStepsBuilding"><span class="citation" data-cites="ImportanceDevOpsPipeline2020 katzEssentialStepsBuilding">[3], [4]</span></span>
+</p>
+<h1 class="y-header" id="the-rabbit-hole-rust-build-ci">
+<span>The <del>Rabbit Hole</del> Rust Build CI</span><a href="#the-rabbit-hole-rust-build-ci" class="anchor las la-anchor" title="the-rabbit-hole-rust-build-ci"></a>
+</h1>
+<p>
+This section presents the specifics of the Rust project’s build process. We strive to present a comprehensive picture of the most important pieces, as the overall process would not get a fair representation in this limited scope. We will focus on how Rust facilitates the <strong>bors</strong> bot and its development pattern while also introducing the social interactions bot <strong>triagebot</strong>.
+</p>
+<h2 class="y-header" id="sec:triagebot">
+<span>Triagebot</span><a href="#sec:triagebot" class="anchor las la-anchor" title="sec:triagebot"></a>
+</h2>
+<p>
+The Triagebot can be summarised as the people and issues managing bot of the Rust development process. Its documentation<span class="citation" data-cites="TriagebotRustForge"><span class="citation" data-cites="TriagebotRustForge">[5]</span></span> explains how it achieves this:<br /> It is the instantiator of tags on issues by being invoked by its GitHub name, “<span class="citation" data-cites="rustbot"><strong>rustbot?</strong></span>” It also makes it easy to ping teams within the Rust organisation, for example, the documentation maintainers by tracking more than just people and issues. This makes it easier for the teams to assist without those in need of help knowing whom directly to contact, as well as for the teams to find issues that need their attention.
+</p>
+<h2 class="y-header" id="developing-with-bors">
+<span>Developing with bors</span><a href="#developing-with-bors" class="anchor las la-anchor" title="developing-with-bors"></a>
+</h2>
+<p>
+Inspecting the <code>rust-lang/rust</code><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> repository two things become apparent:
+</p>
+<p>
+First, none of the main branches shows any trace of being a <em>development branch</em>. On the contrary, their naming (<code>stable, beta, master</code>) rather suggests a connection with the release. Secondly, supporting the first insight, the commit history appears very automated as well. Many commits are structured as follows:
+</p>
+<blockquote>
+<p>
+<code>Auto merge of #84353 - estebank:as-ref-mir, r=davidtwco</code>
+</p>
+</blockquote>
+<p>
+Under closer inspection these commits become apparent as <strong>merge-commits</strong>, merging a set of changes into the master branch. All of these commits are merged by bors and refer to PR.
+</p>
+<p>
+We see: bors automates the merging of PR. Indeed <em>none</em> of the commits made directly onto the master branch are by any other committer than bors.
+</p>
+<p>
+Yet, where do these commits come from and more importantly are they even verified?
+</p>
+<h3 class="y-header" id="the-pull-request">
+<span>The Pull Request</span><a href="#the-pull-request" class="anchor las la-anchor" title="the-pull-request"></a>
+</h3>
+<p>
+When opening a Pull Request (PR) on the rust repository, if you did not ask for any specific reviewer, the <strong>rust-highfive</strong> bot assigns a rust team member to it. This affects the assignee on GitHub as well as leaving a comment picked up by triagebot.
+</p>
+<p>
+A GitHub Action <code>pr</code> will test the code on three major platforms (Windows and two Linux systems with different toolchains).
+</p>
+<p>
+If if the action succeeds and a maintainer reviewed your code they might comment in one of the following ways:
+</p>
+<ul>
+<li>
+<p>
+<code>r+</code> In bors terms this is equivalent to pressing the green “Merge” button and comes with the same responsibility
+</p>
+</li>
+<li>
+<p>
+Mark the PR as rollup target. Note; We will cover rollups in depth after going through bors’ workflow below.
+</p>
+</li>
+<li>
+<p>
+Instruct the author to do changes
+</p>
+</li>
+<li>
+<p>
+<code>r? <span class="citation" data-cites="username"><strong>username?</strong></span></code> Ask for another review
+</p>
+</li>
+</ul>
+<p>
+In case of the first action (<code>r+</code>) we see bors commenting with something like:
+</p>
+<blockquote>
+<p>
+⌛ Testing commit f43ee8e with merge e888a57…
+</p>
+</blockquote>
+<p>
+This, given the tests run successfully and the change is approved, will cause bors to merge the PR.
+</p>
+<h3 class="y-header" id="sec:playground">
+<span>A bot’s playground</span><a href="#sec:playground" class="anchor las la-anchor" title="sec:playground"></a>
+</h3>
+<p>
+The whole CI of the rust project is managed in a fork of the main repository. That fork lives in <code>rust-lang-ci/rust</code><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. It ensures that the main repository, especially its master branch, always builds without failure. Interactions with this repository are indirect and managed by bors. The two main branches that are of interest are <code>auto</code> and <code>try</code> both of which trigger GitHub Actions workflows with the same name as defined in the repository.<span class="citation" data-cites="RustlangRustCI"><span class="citation" data-cites="RustlangRustCI">[6]</span></span>
+</p>
+<p>
+When a maintainer approves a change (i.e. by commenting with <code>r+</code>) bors takes the changes and force-pushes them to the <code>auto</code> branch. Changes on this branch subsequently trigger the GitHub Actions system.
+</p>
+<h4 class="y-header" id="sec:auto">
+<span>The <code>auto</code> Action</span><a href="#sec:auto" class="anchor las la-anchor" title="sec:auto"></a>
+</h4>
+<p>
+The <code>auto</code> action is the heart of rust’s CI build process. It builds and tests the rust compiler on all 57 supported platforms<span class="citation" data-cites="RustCIMoving"><span class="citation" data-cites="RustCIMoving">[7]</span></span>. Most of the action sets up the CI environment including connecting to a compiler cache for intermediate built dependencies <strong><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>sccache</strong> and initializing the repository by pulling all related submodules.
+</p>
+<p>
+Once this is done the actual build will be executed. On available platforms this is run natively. All other platforms are cross-compiled using a custom docker image.
+</p>
+<p>
+Finally, assuming the build succeeded the produced artefacts are pushed to an S3 object storage<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>.
+</p>
+<p>
+Unsurprisingly, as the build and tests need to succeed for such a large number of targets, a full CI run on <code>auto</code> takes <em>two-and-a-half to three hours</em><span class="citation" data-cites="RustlangciRust"><span class="citation" data-cites="RustlangciRust">[8]</span></span>. The whole CI runs on custom machines owned by the rust projects<span class="citation" data-cites="CustomGitHubActions"><span class="citation" data-cites="CustomGitHubActions">[9]</span></span>. This means they are always available for bors, but only in a limited capacity. The extension of this is that it is not possible to run more than eight <code>auto</code> builds per day and thus at most eight PRs are merged every day!
+</p>
+<p>
+The very curious reader might ask themselves now how this system is supposed to facilitate a CI workflow incorporating <em>regular</em> automated testing. In part, this is where the second action comes into play.
+</p>
+<h4 class="y-header" id="the-try-action">
+<span>The <code>try</code> Action</span><a href="#the-try-action" class="anchor las la-anchor" title="the-try-action"></a>
+</h4>
+<p>
+The <code>try</code> action, like <code>auto</code> is triggered by pushes made by bors targeting the <code>try</code> branch.
+</p>
+<p>
+This action is structurally equivalent to the one described before. The major difference shows when looking at the build targets. Instead of 57 targets it only runs for <em>x86_64 Linux</em>, for it is the most widely available target. It allows a maintainer to get an idea of whether the change introduced by a PR will build as in contrast to the <code>pr</code> action this one build the complete rust toolchain including all tests.
+</p>
+<p>
+With <code>try</code> and <code>auto</code> in mind one might wonder:
+</p>
+<blockquote>
+<p>
+<em>“Will all changes trigger a full build and test on 50+ platforms? Is that not pretty wasteful for simple changes such as correcting missspellings?”</em>
+</p>
+</blockquote>
+<p>
+It is and that brings us back to the PR process from before.
+</p>
+<h3 class="y-header" id="rollups">
+<span>Rollups</span><a href="#rollups" class="anchor las la-anchor" title="rollups"></a>
+</h3>
+<p>
+In Section <a href="#sec:auto" data-reference-type="ref" data-reference="sec:auto">2.2.2.1</a> a maximum number of 8 PR’s per day limit was exposed. However, documentation changes and other small fixes that do not impose any notable risk to the pipeline can be bundled. These bundled PR’s are known as a <em>rollup</em><span class="citation" data-cites="RollupProcedureRust"><span class="citation" data-cites="RollupProcedureRust">[10]</span></span>.
+</p>
+<p>
+A rollup is initiated by a maintainer through bors’ web interface <a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>. It shows mergeability and the associated risk for open PRs and lets the maintainer select a group of PRs that will be queued for bors to push them onto the CI’s <code>auto</code> branch. This causes them to be tested collectively thus saving resources.
+</p>
+<h2 class="y-header" id="the-green-master">
+<span>The Green Master</span><a href="#the-green-master" class="anchor las la-anchor" title="the-green-master"></a>
+</h2>
+<div class="epigraph box y-fill-horizontal">
+<p>
+“<strong>The Not Rocket Science Rule Of Software Engineering</strong>:<br /> automatically maintain a repository of code that always passes all the tests”
+</p>
+<p>
+— <span class="upright">Graydon Hoare</span>, founder of Rust
+</p>
+</div>
+<p>
+As stated previously, successfully running/testing on causes bors to commit these changes back to master. As the auto branch is always the latest master this ensures that the main repository is always <em>green</em>.<br /> Yet, not everything on the rust repository is the rust compiler! There are some custom tools that might fail to build but do not influence the compiler. These breakages should not fail the tests. Therefore when the CI merges changes into master it runs its final action <code>master</code> which collects information about which tools succeeded to build and publishes them to the toolstate repository<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>.
+</p>
+<h2 class="y-header" id="action-or-lack-there-off">
+<span>Action! Or lack there off</span><a href="#action-or-lack-there-off" class="anchor las la-anchor" title="action-or-lack-there-off"></a>
+</h2>
+<p>
+The Rust CI is running on the GitHub Actions platform<span class="citation" data-cites="RustCIMoving"><span class="citation" data-cites="RustCIMoving">[7]</span></span>, but what is it? One engineer, Jonas Hecht describes GitHub Actions in a blog post<span class="citation" data-cites="StopRewritingPipelines2021"><span class="citation" data-cites="StopRewritingPipelines2021">[11]</span></span> as the next generation CI/CD. He goes further to explain why: CI/CD has been available as file configurations for a good while now, but GitHub Actions takes it one step further with the easily accessible pre-built actions available to everyone on GitHub. He describes them as the missing Lego™ blocks for building a complete CI/CD pipeline, with close to single click interactions with code analysis and deployment tools as examples.<br /> Yet, analysing the actions file<span class="citation" data-cites="RustlangRusta"><span class="citation" data-cites="RustlangRusta">[12]</span></span> we see that there are not any GitHub Actions ran by the Rust CI. The Rust project does not need more features for their build pipeline as they have built custom tooling for the necessary parts instead, sacrificing DevOps velocity offered by this available platform to push for higher build-pipe throughput, reliability and security.
+</p>
+<h1 class="y-header" id="wrap-up">
+<span>Wrap Up</span><a href="#wrap-up" class="anchor las la-anchor" title="wrap-up"></a>
+</h1>
+<p>
+Having escaped the wonderland of rust, what did we learn?
+</p>
+<p>
+The most unique feature of the rust project might be that most of its CI, although running through GitHub PRs, is mostly independent. First of all, it’s run in its own repository, whose master is a bot. Secondly, all the interactions with the CI happen through commands sent to a bot either in form of comments or its web interface. This extends into this bot bors performing all the heavy lifting merging PRs. And finally, although running on GitHub’s infrastructure, the actual actions are entirely implemented as part of the project.
+</p>
+<p>
+These features constitute a unique integration of custom tooling and GitHub and make rust one of the most extraordinary open-source projects.
+</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote">
+<p>
+<a href="https://github.com/rust-lang/rust" class="uri">https://github.com/rust-lang/rust</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a>
+</p>
+</li>
+<li id="fn2" role="doc-endnote">
+<p>
+<a href="https://github.com/rust-lang-ci/rust" class="uri">https://github.com/rust-lang-ci/rust</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a>
+</p>
+</li>
+<li id="fn3" role="doc-endnote">
+<p>
+<a href="https://github.com/mozilla/sccache" class="uri">https://github.com/mozilla/sccache</a><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a>
+</p>
+</li>
+<li id="fn4" role="doc-endnote">
+<p>
+<a href="https://aws.amazon.com/s3/" class="uri">https://aws.amazon.com/s3/</a><a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a>
+</p>
+</li>
+<li id="fn5" role="doc-endnote">
+<p>
+<a href="https://bors.rust-lang.org/queue/rust" class="uri">https://bors.rust-lang.org/queue/rust</a><a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a>
+</p>
+</li>
+<li id="fn6" role="doc-endnote">
+<p>
+Toolstate of the latest build available under: <a href="https://rust-lang-nursery.github.io/rust-toolstate/" class="uri">https://rust-lang-nursery.github.io/rust-toolstate/</a><a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a>
+</p>
+</li>
+</ol>
+</section>
+<div class="box y-fill-horizontal info">
+<div class="header">
+<div>
+<span class="las la-book"></span>
+<div class="badge">
+References
+</div>
+</div>
+</div>
+<div id="refs" class="references csl-bib-body" role="doc-bibliography">
+<div id="ref-RustProgrammingLanguage" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[1] </div><div class="csl-right-inline"><span>“Rust <span>Programming Language</span>.”</span> Accessed: Apr. 14, 2021. [Online]. Available: <a href="https://www.rust-lang.org/">https://www.rust-lang.org/</a></div>
+</div>
+<div id="ref-gouldingWhatRustWhy2020" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[2] </div><div class="csl-right-inline">J. Goulding, <span>“What is <span>Rust</span> and why is it so popular?”</span> <em>Stack Overflow Blog</em>. <a href="https://stackoverflow.blog/2020/01/20/what-is-rust-and-why-is-it-so-popular/">https://stackoverflow.blog/2020/01/20/what-is-rust-and-why-is-it-so-popular/</a>, Jan. 2020.</div>
+</div>
+<div id="ref-ImportanceDevOpsPipeline2020" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[3] </div><div class="csl-right-inline"><span>“The <span>Importance</span> of the <span>DevOps Pipeline</span> + <span>How</span> to <span>Build</span>,”</span> <em>phoenixNAP Blog</em>. <a href="https://phoenixnap.com/blog/devops-pipeline">https://phoenixnap.com/blog/devops-pipeline</a>, Jul. 2020.</div>
+</div>
+<div id="ref-katzEssentialStepsBuilding" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[4] </div><div class="csl-right-inline">E. Katz, <span>“The essential steps to building your own <span>DevOps</span> pipeline.”</span> <a href="https://blog.exigence.io/build-devops-pipeline">https://blog.exigence.io/build-devops-pipeline</a>.</div>
+</div>
+<div id="ref-TriagebotRustForge" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[5] </div><div class="csl-right-inline"><span>“Triagebot - <span>Rust Forge</span>.”</span> Accessed: Apr. 19, 2021. [Online]. Available: <a href="https://forge.rust-lang.org/platforms/zulip/triagebot.html">https://forge.rust-lang.org/platforms/zulip/triagebot.html</a></div>
+</div>
+<div id="ref-RustlangRustCI" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[6] </div><div class="csl-right-inline"><span>“Rust-lang/rust <span>CI</span> - <span>Rust Forge</span>.”</span> Accessed: Apr. 14, 2021. [Online]. Available: <a href="https://forge.rust-lang.org/infra/docs/rustc-ci.html#which-branches-we-test">https://forge.rust-lang.org/infra/docs/rustc-ci.html#which-branches-we-test</a></div>
+</div>
+<div id="ref-RustCIMoving" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[7] </div><div class="csl-right-inline"><span>“Rust’s <span>CI</span> is moving to <span>GitHub Actions</span> | <span>Inside Rust Blog</span>.”</span> Accessed: Apr. 20, 2021. [Online]. Available: <a href="https://blog.rust-lang.org/inside-rust/2020/07/23/rust-ci-is-moving-to-github-actions.html">https://blog.rust-lang.org/inside-rust/2020/07/23/rust-ci-is-moving-to-github-actions.html</a></div>
+</div>
+<div id="ref-RustlangciRust" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[8] </div><div class="csl-right-inline"><span>“Rust-lang-ci/rust,”</span> <em>GitHub</em>. Accessed: Apr. 26, 2021. [Online]. Available: <a href="https://github.com/rust-lang-ci/rust">https://github.com/rust-lang-ci/rust</a></div>
+</div>
+<div id="ref-CustomGitHubActions" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[9] </div><div class="csl-right-inline"><span>“Custom <span>GitHub Actions</span> runners - <span>Rust Forge</span>.”</span> Accessed: Apr. 23, 2021. [Online]. Available: <a href="https://forge.rust-lang.org/infra/docs/gha-self-hosted.html">https://forge.rust-lang.org/infra/docs/gha-self-hosted.html</a></div>
+</div>
+<div id="ref-RollupProcedureRust" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[10] </div><div class="csl-right-inline"><span>“Rollup <span>Procedure</span> - <span>Rust Forge</span>.”</span> Accessed: Apr. 23, 2021. [Online]. Available: <a href="https://forge.rust-lang.org/release/rollups.html">https://forge.rust-lang.org/release/rollups.html</a></div>
+</div>
+<div id="ref-StopRewritingPipelines2021" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[11] </div><div class="csl-right-inline"><span>“Stop re-writing pipelines! <span>Why GitHub Actions</span> drive the future of <span>CI</span>/<span>CD</span>,”</span> <em>codecentric AG Blog</em>. <a href="https://blog.codecentric.de/en/2021/03/github-actions-nextgen-cicd/">https://blog.codecentric.de/en/2021/03/github-actions-nextgen-cicd/</a>, Mar. 2021.</div>
+</div>
+<div id="ref-RustlangRusta" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[12] </div><div class="csl-right-inline"><span>“Rust-lang/rust,”</span> <em>GitHub</em>. Accessed: Apr. 21, 2021. [Online]. Available: <a href="https://github.com/rust-lang/rust">https://github.com/rust-lang/rust</a></div>
+</div>
+</div>
+</div></p>
+
+</article>
+
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+<!--[if lt IE 9]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+<![endif]-->
+
+    </div>
+  </main>
+
+
+  <footer class="font-standout text-sm py-8 px-4 text-mutedDark bg-footer dark">
+      <div class="container grid sm:grid-cols-3 gap-8">
+        <div>
+
+            <h3 class="text-emphasizedDark">Contact</h3>
+            <ul class="ml-1 list-none">
+            <li><a href="mailto:contact@ysndr.de" class="text-emphasizedDark no-underline"><i class="las la-envelope-open-text"></i> contact@ysndr.de</a></li>
+            <li><a href="https://linkedin.com/in/yannik-sander" class="text-emphasizedDark no-underline"><i class="lab la-linkedin"></i></svg> yannik-sander</a></li>
+            <li>
+            <a href="https://github.com/ysndr" class="text-emphasizedDark no-underline"><i class="las la-code-branch"></i> ysndr</a></li>
+          </ul>
+
+
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">Legal</h3>
+          <ul class="ml-1 list-none">
+            <li class="inline-flex justify-items-start items-start mb-0">
+              <span class="las la-check-circle block mr-2"></span> No analytics are used here your data is safe :)
+            </li>
+            <li class="inline-flex items-start">
+              <span class="las la-check-circle block mr-2"></span> The content of this blog is licensed under CC0 terms if not otherwise noted</span>
+            </li>
+          </ul>
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">About this blog</h3>
+          <ul class="ml-1 list-none">
+            <li>
+              Built with <i class="las la-code"></i> and <i class="lar la-heart"></i> using <a class="text-emphasizedDark no-underline" href="https://jaspervdj.be/hakyll/">Hakyll</a>
+            </li>
+            <li class="text-muted"><i class="las la-code-branch"></i> last updated: <a class="text-emphasizedDark no-underline" href="https://github.com/ysndr/blog">0633078: fix: render heading as such in pandoc (#34) (2022-01-02 17:53:02 +0200)</a>
+            </li>
+            <li>
+              <a class="no-underline" href="https://builtwithnix.org" rel="nofollow">
+                <img src="https://builtwithnix.org/badge.svg" style="max-width:100%;">
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+  </footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit-icons.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+  <script>
+    window.cookieconsent.initialise({
+    container: document.getElementById("content"),
+    palette:{
+     popup: {background: "#fff"},
+     button: {background: "#aa0000"},
+    },
+    revokable:true,
+    onStatusChange: function(status) {
+     console.log(this.hasConsented() ?
+      'enable cookies' : 'disable cookies');
+    },
+    law: {
+     regionalLaw: false,
+    },
+    location: false,
+   });
+  </script> -->
+</body>
+
+</html>

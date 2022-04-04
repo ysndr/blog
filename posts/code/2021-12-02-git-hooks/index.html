@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:creator" content="@_ysndr" />
+  <meta property="og:title" content="y|sndr - Hooking up with Git">
+  <meta property="og:description" content="Managing git hooks with nix">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1621298516851-047f72b40bd7?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1920">
+  <meta property="og:url" content="https://blog.ysndr.de/posts/code/2021-12-02-git-hooks/index.html">
+  <title>y|sndr - Hooking up with Git</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css" />
+  <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">  <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="../../../rss.xml" />
+  <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="../../../atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../../../assets/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../assets/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../../assets/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../../assets/images/favicon/site.webmanifest">
+</head>
+
+<body class="flex flex-col overflow-x-hidden text-body text-black leading-normal">
+  <header class="bg-muted font-standout leading-snug">
+
+    <div class="flex flex-col sm:flex-row my-8 container justify-items-center justify-end items-center">
+      <div class="flex flex-col text-right text-emphasis">
+          <h1 class="inline-flex flex-col">Hooking up with Git
+          <small>Managing git hooks with nix</small>
+          </h1>
+          <span class="text-xs text-muted">
+          
+              Yannik Sander
+              
+          </span>
+      </div>
+      <hr class="hidden sm:block sm:h-24 sm:w-px mx-4 my-4 sm:my-auto min-w-px">
+      <div class="text-sm text-muted sm:w-5/12 md:w-2/5">
+        <ul>
+          <li class="flex">
+            <i class="las la-calendar-day mr-4"></i> December  2, 2021
+          </li>
+          <li class="flex">
+            <i class="las la-stopwatch mr-4"></i> 10 Minutes
+          </li>
+          
+          <li class="flex break-words">
+            <i class="las la-tags mr-4"></i>
+            
+            <span>
+              <a class="text-emphasis" href="../../../tags/nix/">nix</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/git/">git</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/code/">code</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/github/">github</a>
+              </span>
+          </li>
+          
+          <li class="flex">
+            <i class="las la-code-branch mr-4"></i>
+            <a class="uk-link-muted" href="https://github.com/ysndr/blog/commit/a351826">a351826: Add reference to repo and update doc link</a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+    <hr class="container" />
+
+</header>
+
+
+  <header class="sticky font-standout inset-0 z-50 min-w-full bg-muted text-base">
+  <nav class="container grid grid-cols-3">
+
+
+
+    <div class="flex flex-col">
+      <a class="content-center my-auto text-muted w-max"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M4 6h20 M4 12h20 M4 18h20"></path>
+      </svg><span class="ml-2 uppercase text-xs">Menu</span></a>
+
+
+      <div uk-dropdown class="container hidden">
+            <div class="inset-x-0 absolute container px-8 grid sm:grid-cols-3 sm:gap-8 shadow-lg bg-white text-sm text-muted fill-current stroke-current pb-6">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Who?</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="https://gist.github.com/ysndr/978662957bb9187fd52b2037466e1e34">CV</a></li>
+                  <li><hr></li>
+                  <li>
+                    <ul horizontal>
+                      <li><a href="mailto:contact@ysndr.de"><i class="las la-envelope-open-text"></i></a></li>
+                      <li class="ml-2"><a href="https://linkedin.com/in/yannik-sander"><i class="lab la-linkedin-in"></i></a>
+                      </li>
+                      <li class="ml-2"><a href="https://github.com/ysndr"><i class="lab la-github"></i></a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+             <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="text-black uppercase">What?</li>
+                  <li><a href="https://github.com/ysndr">Projects</a></li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/sam-knn-regressor">sam-knn-regressor</a></li>
+                  <li><a href="https://github.com/ysndr/nixos-config">NixOS Config</a></li>
+                </ul>
+              </div>
+              <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Blog</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="../../../archive">Archive</a></li>
+                  <li class="flex">
+                    <span>
+                      <svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="rss" stroke="currentColor"><circle cx="3.12" cy="16.8" r="1.85"></circle><path fill="none" stroke-width="1.1" d="M1.5,8.2 C1.78,8.18 2.06,8.16 2.35,8.16 C7.57,8.16 11.81,12.37 11.81,17.57 C11.81,17.89 11.79,18.19 11.76,18.5"></path><path fill="none" stroke-width="1.1" d="M1.5,2.52 C1.78,2.51 2.06,2.5 2.35,2.5 C10.72,2.5 17.5,9.24 17.5,17.57 C17.5,17.89 17.49,18.19 17.47,18.5"></path></svg>
+                    </span>
+                    <ul class="items-center ml-2" horizontal>
+                      <li><a href="../../../rss.xml">RSS</a></li>
+                      <li class="ml-4"><a href="../../../atom.xml">Atom</a></li>
+                    </ul>
+                  </li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/blog/commit/0633078"><span><svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="git-branch"><circle fill="none" stroke-width="1.2" cx="7" cy="3" r="2"></circle><circle fill="none" stroke-width="1.2" cx="14" cy="6" r="2"></circle><circle fill="none" stroke-width="1.2" cx="7" cy="17" r="2"></circle><path fill="none" stroke-width="2" d="M14,8 C14,10.41 12.43,10.87 10.56,11.25 C9.09,11.54 7,12.06 7,15 L7,5"></path></svg></span>   current rev.: 0633078: fix: render heading as such in pandoc (#34)</a></li>
+                </ul>
+              </div>
+            </div>
+      </div>
+
+    </div>
+
+
+    <div class="uk-navbar-nav uk-flex-1 py-4 align-items-center">
+
+      <a href="../../../" class="flex items-center justify-center">
+          <img src="../../../assets/images/logo-small.svg" alt="y|sndr" class="h-8" />
+        </a>
+
+
+    </div>
+
+
+
+    
+    <div class="flex flex-col items-end md:relative">
+        <a class="content-center uppercase my-auto text-muted w-max">
+          <span class="md:hidden">Content</span> <span class="hidden md:block">Table of Contents</span>
+        </a>
+        <div class="y-toc hidden" uk-drop>
+          <div class="container max-w-full sm:max-w-sm  bg-white p-6 w-full absolute text-muted right-0 shadow-xl rounded-b" uk-scrollspy-nav="closest: li; scroll: true; offset: 85; cls: text-emphasis">
+            <ul class><li><a href="#git-hooks"><span>Git hooks</span><span></span></a></li><li><a href="#the-big-picture"><span>The big picture</span><span></span></a></li><li><a href="#explanation"><span>Explanation</span><span></span></a></li><li><a href="#clarification"><span>Clarification</span><span></span></a></li><li><a href="#appendix"><span>Appendix</span><span></span></a><ul class><li><a href="#uninstaller"><span>Uninstaller</span><span></span></a></li></ul></li></ul>
+          </div>
+        </div>
+    </div>
+    
+
+  </nav>
+
+</header>
+
+
+  <main class="my-8">
+    <div class="container">
+      <section class="relative">
+    
+
+<div class="h-56 sm:h-xl xl:h-2xl bg-cover w-5/6 mx-auto lg:min-w-full xl:w-auto mb-8 xl:-mx-24 rounded-lg relative shadow-2xl overflow-hidden">
+    <img src="https://images.unsplash.com/photo-1621298516851-047f72b40bd7?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1920" alt="Article image" class="relative w-full h-full object-cover">
+
+    <div class="w-full absolute bottom-0">
+        <div class="relative">
+            <div class="bg-white rounded-full m-2 sm:m-4 float-right p-1" style="line-height: 0;"><i class="las la-copyright"></i></div>
+            <div uk-drop="pos: top-right" class="w-11/12 max-w-sm hidden absolute m-2 p-2 sm:m-4  sm:p-4 ">
+                <div class="bg-white p-6 rounded">
+                    <h4>Credits</h4>
+                    <span class="block text-sm overflow-auto max-w-full">
+                    
+                    Made by Jamie Matociños on <a hrep="https://unsplash.com/photos/rW00Wu_CeYA">Unsplash</a>:
+                    
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<article class="lg:w-4/5 lg:mx-auto">
+
+    <p class="text-lead text-emphasis italic sm:w-5/6 mx-auto"><i>Git hooks can be useful, tracking and managing them with Nix makes removes the barrier of using them.</i></p>
+    <p><h1 class="y-header" id="git-hooks">
+<span>Git hooks</span><a href="#git-hooks" class="anchor las la-anchor" title="git-hooks"></a>
+</h1>
+<p>
+Git hooks are very useful in theory e.g. to enforce style guidelines of code being pushed or doing arbitrary cleanup/analysis in response to various git events. Yet, if you are using nix, the way git hooks are set up and managed goes against the ideas of Nix.
+</p>
+<p>
+The presented approach does not solve the underlying issue of mutability but makes git-hooks more trackable and easily appliable.
+</p>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header="Flake">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+<p>NOTE</p>
+</div>
+</div>
+<div>
+<p>
+Flake
+</p>
+</div>
+</div>
+<p>
+An up-to-date version of the presented approach can be <a href="https://github.com/ysndr/nix-git-hooks">found on GitHub</a>.
+</p>
+<p>
+Please file issues or PRs if you like the project and want to contribute.
+</p>
+</div>
+<h1 class="y-header" id="the-big-picture">
+<span>The big picture</span><a href="#the-big-picture" class="anchor las la-anchor" title="the-big-picture"></a>
+</h1>
+<p>
+Let me present a full-fledged example first, the functions are individually posted down in the <a href="#appendix">appendix</a>.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb1" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">let</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">installGitHooks</span> = hookTypes:</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">let</span> <span class="va">mkHook</span> <span class="op">=</span> <span class="va">type</span><span class="op">:</span> <span class="va">hooks</span><span class="op">:</span> {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        <span class="ex">hook</span> = pkgs.writeShellScript type</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">''</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> hook <span class="kw">in</span> <span class="va">${pkgs</span><span class="er">.symlinkJoin { name = &quot;${type</span><span class="va">}</span>-git-hooks<span class="st">&quot;; paths = hooks; }}/bin/*; do</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="st">            </span><span class="va">$hook</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="st">            RESULT=</span><span class="va">$?</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="st">            if [ </span><span class="va">$RESULT</span><span class="st"> != 0 ]; then</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="st">                echo &quot;</span><span class="va">$hook</span> returned non-zero: <span class="va">$RESULT</span>, abort operation<span class="st">&quot;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="st">            exit </span><span class="va">$RESULT</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="st">            fi</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="st">            done</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="st">            echo &quot;</span><span class="va">$INSTALLED_GIT_HOOKS</span> <span class="va">$type</span><span class="st">&quot;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="st">            exit 0</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="st">        '';</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="st">        inherit type;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="st">        };</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="st">        installHookScript = { type, hook }: ''</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="st">            if [[ -e .git/hooks/</span><span class="va">${type}</span><span class="st"> ]]; then</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="st">                echo &quot;</span>Warn: <span class="va">${type}</span> hook already present, skipping<span class="st">&quot;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="st">            else</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="st">                ln -s </span><span class="va">${hook}</span><span class="st"> </span><span class="va">$PWD</span><span class="st">/.git/hooks/</span><span class="va">${type}</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="st">                INSTALLED_GIT_HOOKS+=(</span><span class="va">${type}</span><span class="st">)</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="st">            fi</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="st">        '';</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="st">        in</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="st">        pkgs.writeShellScriptBin &quot;</span>install-git-hooks<span class="st">&quot; </span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="st">        ''</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="st">            if [[ ! -d .git ]] || [[ ! -f flake.nix ]]; then</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="st">                echo &quot;</span>Invocate <span class="dt">\`</span>nix develop<span class="dt">\`</span> from the project root directory.<span class="st">&quot;</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="st">                exit 1</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="st">            fi</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="st">            if [[ -e .git/hooks/nix-installed-hooks ]]; then</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="st">                echo &quot;</span>Hooks already installed, reinstalling<span class="st">&quot;</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="st">                </span><span class="va">${uninstallGitHooks}</span><span class="st">/bin/</span><span class="va">${uninstallGitHooks</span><span class="er">.name</span><span class="va">}</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="st">            fi</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="st">            mkdir -p ./.git/hooks</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="st">            </span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="st">            </span><span class="va">${pkgs</span><span class="er">.lib.concatStringsSep &quot;\n&quot; (pkgs.lib.mapAttrsToList (type: hooks: installHookScript (mkHook type hooks)) hookTypes )</span><span class="va">}</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="st">            echo &quot;</span>Installed git hooks: <span class="va">$INSTALLED_GIT_HOOKS</span><span class="st">&quot;</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="st">            printf &quot;</span>%s<span class="dt">\n</span><span class="st">&quot; &quot;''</span><span class="va">${INSTALLED_GIT_HOOKS</span><span class="op">[@]</span><span class="va">}</span><span class="st">&quot; &gt; .git/hooks/nix-installed-hooks</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="st">        '';</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="st">    uninstallGitHooks = pkgs.writeShellScriptBin &quot;</span>uninstall-git-hooks<span class="st">&quot; </span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="st">        ''</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="st">            if [[ ! -e &quot;</span><span class="va">$PWD</span>/.git/hooks/nix-installed-hooks<span class="st">&quot; ]]; then</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="st">            echo &quot;</span>Error: could find list of installed hooks.<span class="st">&quot;</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="st">            exit 1</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="st">            fi</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="st">            while read -r hook</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="st">            do</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="st">            echo &quot;</span>Uninstalling <span class="va">$hook</span><span class="st">&quot;</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="st">            rm &quot;</span><span class="va">$PWD</span>/.git/hooks/<span class="va">$hook</span><span class="st">&quot;</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="st">            done &lt; &quot;</span><span class="va">$PWD</span>/.git/hooks/nix-installed-hooks<span class="st">&quot;</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="st">            rm &quot;</span><span class="va">$PWD</span>/.git/hooks/nix-installed-hooks<span class="st">&quot;</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="st">        '';</span></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="st">    </span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="st">    rustFormatHook = pkgs.writeShellScriptBin &quot;</span>check-rust-format-hook<span class="st">&quot;</span></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a><span class="st">        ''</span></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="st">            </span><span class="va">${pkgs</span><span class="er">.rustfmt</span><span class="va">}</span><span class="st">/bin/rustfmt --check</span></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a><span class="st">            RESULT=</span><span class="va">$?</span></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="st">            [ </span><span class="va">$RESULT</span><span class="st"> != 0 ] &amp;&amp; echo &quot;</span>Please run <span class="dt">\`</span>cargo fmt<span class="dt">\`</span> before<span class="st">&quot;</span></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a><span class="st">            exit </span><span class="va">$RESULT</span></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a><span class="st">        '';</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a><span class="st">    hookInstaller =  installGitHooks { pre-commit = [rustFormatHook]; } </span></span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a><span class="st">in </span></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a><span class="st">    pkgs.mkShell {</span></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a><span class="st">        packages = [ (installGitHooks { pre-commit = [rustFormatHook];) } uninstallGitHooks ];</span></span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a><span class="st">        inputsFrom = [ ];</span></span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a><span class="st">        shellHook = ''</span></span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a><span class="st">            echo &quot;</span>=== Development shell ===<span class="st">&quot;</span></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="st">            echo &quot;</span>Info: Git hooks can be installed using <span class="dt">\`</span>install-git-hooks<span class="dt">\`</span><span class="st">&quot;</span></span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a><span class="st">            # or run </span><span class="kw">`</span><span class="ex">install-git-hooks</span><span class="kw">`</span><span class="st"> automatically</span></span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a><span class="st">        '';</span></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a><span class="st">    };</span></span></code></pre>
+</div>
+</div>
+<h1 class="y-header" id="explanation">
+<span>Explanation</span><a href="#explanation" class="anchor las la-anchor" title="explanation"></a>
+</h1>
+<p>
+The above code defines functions to build installation and uninstallation commands for git hooks.
+</p>
+<p>
+To run a hook, create a derivation with the hook (or hooks) for one event located in the <code>bin/</code> folder, i.e. using. <code>writeShellScriptBin</code> :
+</p>
+<div class="y-fill-horizontal">
+<div id="cb2" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">rustFormatHook</span> = pkgs.writeShellScriptBin <span class="st">&quot;check-rust-format-hook&quot;</span> <span class="st">''</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="va">${pkgs</span><span class="er">.rustfmt</span><span class="va">}</span><span class="ex">/bin/rustfmt</span> <span class="at">--check</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="st">''</span><span class="kw">;</span></span></code></pre>
+</div>
+</div>
+<p>
+Then create a <code>hookInstaller</code> by adding the derivation to a list of hooks for a specific event type:
+</p>
+<div class="y-fill-horizontal">
+<div id="cb3" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">hookInstaller</span> =  installGitHooks { pre-commit = [rustFormatHook]<span class="kw">;</span> <span class="er">}</span> </span></code></pre>
+</div>
+</div>
+<p>
+This will run all commands under <code>${rustFormatHook}/bin/*</code> for <code>pre-commit</code> events.
+</p>
+<p>
+The event types can be arbitrary but have to comply with <a href="https://git-scm.com/docs/githooks">actual git hooks</a> to be run.
+</p>
+<p>
+Finally, add the installer (and optionally the uninstall-command) to your dev shell as input programs. You can choose to automatically run the installer at entrance to the shell as a <code>shellHook</code> or manually by the user.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb4" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pkgs.mkShell</span> {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">packages</span> = [ hookInstaller uninstallGitHooks ]<span class="kw">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">inputsFrom</span> = [ ]<span class="kw">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">shellHook</span> = <span class="st">''</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">echo</span> <span class="st">&quot;=== Development shell ===&quot;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">echo</span> <span class="st">&quot;Info: Git hooks can be installed using </span><span class="dt">\`</span><span class="st">install-git-hooks</span><span class="dt">\`</span><span class="st">&quot;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># or run `install-git-hooks` automatically</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">''</span><span class="kw">;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="er">}</span><span class="kw">;</span></span></code></pre>
+</div>
+</div>
+<h1 class="y-header" id="clarification">
+<span>Clarification</span><a href="#clarification" class="anchor las la-anchor" title="clarification"></a>
+</h1>
+<p>
+I am aware that there is <a href="https://github.com/cachix/pre-commit-hooks.nix">much more advanced tools</a> available with more advanced configuration systems etc. Yet, this approach is nix-native and sufficiently flexible for simple hook setups. It does still require you to write all hooks yourself but this way they can be tracked with nix and in theory make use of programs not even populated to the final environment.
+</p>
+<p>
+Nonetheless, this might be of interest for someone and if so thanks for reading.
+</p>
+<h1 class="y-header" id="appendix">
+<span>Appendix</span><a href="#appendix" class="anchor las la-anchor" title="appendix"></a>
+</h1>
+<p>
+Copy the respective functions here to include them into your project or checkout the <a href="https://github.com/ysndr/nix-git-hooks">repository on GitHub</a> avoid copy-pasting and receive upstream bugfixes. ## Installer
+</p>
+<div class="y-fill-horizontal">
+<div id="cb5" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">installGitHooks</span> = hookTypes:</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">let</span> <span class="va">mkHook</span> <span class="op">=</span> <span class="va">type</span><span class="op">:</span> <span class="va">hooks</span><span class="op">:</span> {</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">hook</span> = pkgs.writeShellScript type</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">''</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> hook <span class="kw">in</span> <span class="va">${pkgs</span><span class="er">.symlinkJoin { name = &quot;${type</span><span class="va">}</span>-git-hooks<span class="st">&quot;; paths = hooks; }}/bin/*; do</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="st">        </span><span class="va">$hook</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="st">        RESULT=</span><span class="va">$?</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="st">        if [ </span><span class="va">$RESULT</span><span class="st"> != 0 ]; then</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="st">            echo &quot;</span><span class="va">$hook</span> returned non-zero: <span class="va">$RESULT</span>, abort operation<span class="st">&quot;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="st">        exit </span><span class="va">$RESULT</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="st">        fi</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="st">        done</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="st">        echo &quot;</span><span class="va">$INSTALLED_GIT_HOOKS</span> <span class="va">$type</span><span class="st">&quot;</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="st">        exit 0</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="st">    '';</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="st">    inherit type;</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="st">    };</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="st">    installHookScript = { type, hook }: ''</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="st">        if [[ -e .git/hooks/</span><span class="va">${type}</span><span class="st"> ]]; then</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="st">            echo &quot;</span>Warn: <span class="va">${type}</span> hook already present, skipping<span class="st">&quot;</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="st">        else</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="st">            ln -s </span><span class="va">${hook}</span><span class="st"> </span><span class="va">$PWD</span><span class="st">/.git/hooks/</span><span class="va">${type}</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="st">            INSTALLED_GIT_HOOKS+=(</span><span class="va">${type}</span><span class="st">)</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="st">        fi</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="st">    '';</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="st">    in</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="st">    pkgs.writeShellScriptBin &quot;</span>install-git-hooks<span class="st">&quot; </span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="st">    ''</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="st">        if [[ ! -d .git ]] || [[ ! -f flake.nix ]]; then</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="st">            echo &quot;</span>Invocate <span class="dt">\`</span>nix develop<span class="dt">\`</span> from the project root directory.<span class="st">&quot;</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="st">            exit 1</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="st">        fi</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="st">        if [[ -e .git/hooks/nix-installed-hooks ]]; then</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="st">            echo &quot;</span>Hooks already installed, reinstalling<span class="st">&quot;</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="st">            </span><span class="va">${uninstallGitHooks}</span><span class="st">/bin/</span><span class="va">${uninstallGitHooks</span><span class="er">.name</span><span class="va">}</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="st">        fi</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="st">        mkdir -p ./.git/hooks</span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="st">        </span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="st">        </span><span class="va">${pkgs</span><span class="er">.lib.concatStringsSep &quot;\n&quot; (pkgs.lib.mapAttrsToList (type: hooks: installHookScript (mkHook type hooks)) hookTypes )</span><span class="va">}</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="st">        echo &quot;</span>Installed git hooks: <span class="va">$INSTALLED_GIT_HOOKS</span><span class="st">&quot;</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a><span class="st">        printf &quot;</span>%s<span class="dt">\n</span><span class="st">&quot; &quot;''</span><span class="va">${INSTALLED_GIT_HOOKS</span><span class="op">[@]</span><span class="va">}</span><span class="st">&quot; &gt; .git/hooks/nix-installed-hooks</span></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="st">    '';</span></span></code></pre>
+</div>
+</div>
+<h2 class="y-header" id="uninstaller">
+<span>Uninstaller</span><a href="#uninstaller" class="anchor las la-anchor" title="uninstaller"></a>
+</h2>
+<div class="y-fill-horizontal">
+<div id="cb6" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uninstallGitHooks</span> = pkgs.writeShellScriptBin <span class="st">&quot;uninstall-git-hooks&quot;</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">''</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">[[</span> <span class="ot">!</span> <span class="ot">-e</span> <span class="st">&quot;</span><span class="va">$PWD</span><span class="st">/.git/hooks/nix-installed-hooks&quot;</span> <span class="kw">]];</span> <span class="cf">then</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">echo</span> <span class="st">&quot;Error: could find list of installed hooks.&quot;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">exit</span> 1</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">fi</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span> <span class="bu">read</span> <span class="at">-r</span> <span class="va">hook</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">do</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="bu">echo</span> <span class="st">&quot;Uninstalling </span><span class="va">$hook</span><span class="st">&quot;</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">rm</span> <span class="st">&quot;</span><span class="va">$PWD</span><span class="st">/.git/hooks/</span><span class="va">$hook</span><span class="st">&quot;</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">done</span> <span class="op">&lt;</span> <span class="st">&quot;</span><span class="va">$PWD</span><span class="st">/.git/hooks/nix-installed-hooks&quot;</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">rm</span> <span class="st">&quot;</span><span class="va">$PWD</span><span class="st">/.git/hooks/nix-installed-hooks&quot;</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">''</span><span class="kw">;</span></span></code></pre>
+</div>
+</div></p>
+
+</article>
+
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+<!--[if lt IE 9]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+<![endif]-->
+
+    </div>
+  </main>
+
+
+  <footer class="font-standout text-sm py-8 px-4 text-mutedDark bg-footer dark">
+      <div class="container grid sm:grid-cols-3 gap-8">
+        <div>
+
+            <h3 class="text-emphasizedDark">Contact</h3>
+            <ul class="ml-1 list-none">
+            <li><a href="mailto:contact@ysndr.de" class="text-emphasizedDark no-underline"><i class="las la-envelope-open-text"></i> contact@ysndr.de</a></li>
+            <li><a href="https://linkedin.com/in/yannik-sander" class="text-emphasizedDark no-underline"><i class="lab la-linkedin"></i></svg> yannik-sander</a></li>
+            <li>
+            <a href="https://github.com/ysndr" class="text-emphasizedDark no-underline"><i class="las la-code-branch"></i> ysndr</a></li>
+          </ul>
+
+
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">Legal</h3>
+          <ul class="ml-1 list-none">
+            <li class="inline-flex justify-items-start items-start mb-0">
+              <span class="las la-check-circle block mr-2"></span> No analytics are used here your data is safe :)
+            </li>
+            <li class="inline-flex items-start">
+              <span class="las la-check-circle block mr-2"></span> The content of this blog is licensed under CC0 terms if not otherwise noted</span>
+            </li>
+          </ul>
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">About this blog</h3>
+          <ul class="ml-1 list-none">
+            <li>
+              Built with <i class="las la-code"></i> and <i class="lar la-heart"></i> using <a class="text-emphasizedDark no-underline" href="https://jaspervdj.be/hakyll/">Hakyll</a>
+            </li>
+            <li class="text-muted"><i class="las la-code-branch"></i> last updated: <a class="text-emphasizedDark no-underline" href="https://github.com/ysndr/blog">0633078: fix: render heading as such in pandoc (#34) (2022-01-02 17:53:02 +0200)</a>
+            </li>
+            <li>
+              <a class="no-underline" href="https://builtwithnix.org" rel="nofollow">
+                <img src="https://builtwithnix.org/badge.svg" style="max-width:100%;">
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+  </footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit-icons.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+  <script>
+    window.cookieconsent.initialise({
+    container: document.getElementById("content"),
+    palette:{
+     popup: {background: "#fff"},
+     button: {background: "#aa0000"},
+    },
+    revokable:true,
+    onStatusChange: function(status) {
+     console.log(this.hasConsented() ?
+      'enable cookies' : 'disable cookies');
+    },
+    law: {
+     regionalLaw: false,
+    },
+    location: false,
+   });
+  </script> -->
+</body>
+
+</html>

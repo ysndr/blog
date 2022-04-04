@@ -1,0 +1,1019 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:creator" content="@_ysndr" />
+  <meta property="og:title" content="y|sndr - Building with Nix Flakes for, eh .. reasons!">
+  <meta property="og:description" content="Migrating to Nix Flakes, why, how and what are Flakes in the first place">
+  <meta property="og:image" content="https://unsplash.com/photos/R1OSU00xo78/download?force=true&w=1920">
+  <meta property="og:url" content="https://blog.ysndr.de/posts/internals/2021-01-01-flake-ification/index.html">
+  <title>y|sndr - Building with Nix Flakes for, eh .. reasons!</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css" />
+  <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">  <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="../../../rss.xml" />
+  <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="../../../atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../../../assets/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../assets/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../../assets/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../../assets/images/favicon/site.webmanifest">
+</head>
+
+<body class="flex flex-col overflow-x-hidden text-body text-black leading-normal">
+  <header class="bg-muted font-standout leading-snug">
+
+    <div class="flex flex-col sm:flex-row my-8 container justify-items-center justify-end items-center">
+      <div class="flex flex-col text-right text-emphasis">
+          <h1 class="inline-flex flex-col">Building with Nix Flakes for, eh .. reasons!
+          <small>Migrating to Nix Flakes, why, how and what are Flakes in the first place</small>
+          </h1>
+          <span class="text-xs text-muted">
+          
+          </span>
+      </div>
+      <hr class="hidden sm:block sm:h-24 sm:w-px mx-4 my-4 sm:my-auto min-w-px">
+      <div class="text-sm text-muted sm:w-5/12 md:w-2/5">
+        <ul>
+          <li class="flex">
+            <i class="las la-calendar-day mr-4"></i> January  1, 2021
+          </li>
+          <li class="flex">
+            <i class="las la-stopwatch mr-4"></i> 26 Minutes
+          </li>
+          
+          <li class="flex break-words">
+            <i class="las la-tags mr-4"></i>
+            
+            <span>
+              <a class="text-emphasis" href="../../../tags/internal/">internal</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/technical/">technical</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/nix/">nix</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/haskell/">haskell</a>
+              </span>
+          </li>
+          
+          <li class="flex">
+            <i class="las la-code-branch mr-4"></i>
+            <a class="uk-link-muted" href="https://github.com/ysndr/blog/commit/ead89be">ead89be: Fix `--` dashes rendered as em-dash</a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+    <hr class="container" />
+
+</header>
+
+
+  <header class="sticky font-standout inset-0 z-50 min-w-full bg-muted text-base">
+  <nav class="container grid grid-cols-3">
+
+
+
+    <div class="flex flex-col">
+      <a class="content-center my-auto text-muted w-max"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M4 6h20 M4 12h20 M4 18h20"></path>
+      </svg><span class="ml-2 uppercase text-xs">Menu</span></a>
+
+
+      <div uk-dropdown class="container hidden">
+            <div class="inset-x-0 absolute container px-8 grid sm:grid-cols-3 sm:gap-8 shadow-lg bg-white text-sm text-muted fill-current stroke-current pb-6">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Who?</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="https://gist.github.com/ysndr/978662957bb9187fd52b2037466e1e34">CV</a></li>
+                  <li><hr></li>
+                  <li>
+                    <ul horizontal>
+                      <li><a href="mailto:contact@ysndr.de"><i class="las la-envelope-open-text"></i></a></li>
+                      <li class="ml-2"><a href="https://linkedin.com/in/yannik-sander"><i class="lab la-linkedin-in"></i></a>
+                      </li>
+                      <li class="ml-2"><a href="https://github.com/ysndr"><i class="lab la-github"></i></a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+             <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="text-black uppercase">What?</li>
+                  <li><a href="https://github.com/ysndr">Projects</a></li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/sam-knn-regressor">sam-knn-regressor</a></li>
+                  <li><a href="https://github.com/ysndr/nixos-config">NixOS Config</a></li>
+                </ul>
+              </div>
+              <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Blog</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="../../../archive">Archive</a></li>
+                  <li class="flex">
+                    <span>
+                      <svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="rss" stroke="currentColor"><circle cx="3.12" cy="16.8" r="1.85"></circle><path fill="none" stroke-width="1.1" d="M1.5,8.2 C1.78,8.18 2.06,8.16 2.35,8.16 C7.57,8.16 11.81,12.37 11.81,17.57 C11.81,17.89 11.79,18.19 11.76,18.5"></path><path fill="none" stroke-width="1.1" d="M1.5,2.52 C1.78,2.51 2.06,2.5 2.35,2.5 C10.72,2.5 17.5,9.24 17.5,17.57 C17.5,17.89 17.49,18.19 17.47,18.5"></path></svg>
+                    </span>
+                    <ul class="items-center ml-2" horizontal>
+                      <li><a href="../../../rss.xml">RSS</a></li>
+                      <li class="ml-4"><a href="../../../atom.xml">Atom</a></li>
+                    </ul>
+                  </li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/blog/commit/0633078"><span><svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="git-branch"><circle fill="none" stroke-width="1.2" cx="7" cy="3" r="2"></circle><circle fill="none" stroke-width="1.2" cx="14" cy="6" r="2"></circle><circle fill="none" stroke-width="1.2" cx="7" cy="17" r="2"></circle><path fill="none" stroke-width="2" d="M14,8 C14,10.41 12.43,10.87 10.56,11.25 C9.09,11.54 7,12.06 7,15 L7,5"></path></svg></span>   current rev.: 0633078: fix: render heading as such in pandoc (#34)</a></li>
+                </ul>
+              </div>
+            </div>
+      </div>
+
+    </div>
+
+
+    <div class="uk-navbar-nav uk-flex-1 py-4 align-items-center">
+
+      <a href="../../../" class="flex items-center justify-center">
+          <img src="../../../assets/images/logo-small.svg" alt="y|sndr" class="h-8" />
+        </a>
+
+
+    </div>
+
+
+
+    
+    <div class="flex flex-col items-end md:relative">
+        <a class="content-center uppercase my-auto text-muted w-max">
+          <span class="md:hidden">Content</span> <span class="hidden md:block">Table of Contents</span>
+        </a>
+        <div class="y-toc hidden" uk-drop>
+          <div class="container max-w-full sm:max-w-sm  bg-white p-6 w-full absolute text-muted right-0 shadow-xl rounded-b" uk-scrollspy-nav="closest: li; scroll: true; offset: 85; cls: text-emphasis">
+            <ul class><li><a href="#walking-through-snow-eh-nix-flakes-for-oss"><span>Walking through Snow, eh Nix Flakes for OSS</span><span></span></a></li><li><a href="#flake-noun-fleɪk"><span>Flake (<strong>noun</strong>, /fleɪk/)</span><span></span></a><ul class><li><a href="#why"><span>Why?</span><span></span></a></li></ul></li><li><a href="#creating-a-flake-for-this-blog"><span>Creating a flake for this blog</span><span></span></a><ul class><li><a href="#pure-imports"><span>Pure imports</span><span></span></a></li><li><a href="#pure-outputs"><span>Pure outputs</span><span></span></a><ul class><li><a href="#output-attributes"><span>Output attributes</span><span></span></a></li><li><a href="#composing-flakes"><span>Composing flakes</span><span></span></a></li></ul></li></ul></li><li><a href="#retrospective"><span>Retrospective</span><span></span></a></li><li><a href="#references"><span>References</span><span></span></a><ul class><li><a href="#flake-reference-conventions"><span>Flake reference conventions</span><span></span></a></li><li><a href="#output-attributes-1"><span>Output attributes</span><span></span></a></li></ul></li></ul>
+          </div>
+        </div>
+    </div>
+    
+
+  </nav>
+
+</header>
+
+
+  <main class="my-8">
+    <div class="container">
+      <section class="relative">
+    
+
+<div class="h-56 sm:h-xl xl:h-2xl bg-cover w-5/6 mx-auto lg:min-w-full xl:w-auto mb-8 xl:-mx-24 rounded-lg relative shadow-2xl overflow-hidden">
+    <img src="https://unsplash.com/photos/R1OSU00xo78/download?force=true&w=1920" alt="Article image" class="relative w-full h-full object-cover">
+
+    <div class="w-full absolute bottom-0">
+        <div class="relative">
+            <div class="bg-white rounded-full m-2 sm:m-4 float-right p-1" style="line-height: 0;"><i class="las la-copyright"></i></div>
+            <div uk-drop="pos: top-right" class="w-11/12 max-w-sm hidden absolute m-2 p-2 sm:m-4  sm:p-4 ">
+                <div class="bg-white p-6 rounded">
+                    <h4>Credits</h4>
+                    <span class="block text-sm overflow-auto max-w-full">
+                    
+                    <span>Photo by <a href="https://unsplash.com/@joshstyle">JOSHUA COLEMAN</a> on <a href="https://unsplash.com/">Unsplash</a></span>
+                    
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<article class="lg:w-4/5 lg:mx-auto">
+
+    <p class="text-lead text-emphasis italic sm:w-5/6 mx-auto"><i>Nix Flakes are the long awaited addition coming with the next major release of Nix. What are Flakes, what do they offer, how can you use them now and should you consider migrating?</i></p>
+    <p><h1 class="y-header" id="walking-through-snow-eh-nix-flakes-for-oss">
+<span>Walking through Snow, eh Nix Flakes for OSS</span><a href="#walking-through-snow-eh-nix-flakes-for-oss" class="anchor las la-anchor" title="walking-through-snow-eh-nix-flakes-for-oss"></a>
+</h1>
+<div class="uk-alert-primary note box y-fill-horizontal">
+<p>
+This article is an update to my series on how this blog is built using <a href="../../../tags/haskell.html">Haskell</a> and <a href="../../../tags/nix.html">Nix</a>.
+</p>
+<ul>
+<li>
+Building a reproducible blog with Nix (<a href="../../../posts/internals/2020-04-10-built-with-nix">link</a>)
+</li>
+<li>
+How this page is generated (<a href="../../../posts/internal/2019-12-31-built-with-hakyll-part-1.html">Part 01</a>, <a href="../../../posts/internal/2020-03-22-built-with-hakyll-part-2.html">Part 02</a>)
+</li>
+</ul>
+</div>
+<p>
+I am happy to get back posting on this blog again after a while of silence. I had been kept busy lately with finishing my Bachelor’s and moving to Stockholm to start my Master’s at the Royal Institute of Technology. In the meantime I also started working for <a href="https://www.ngi.eu/ngi-projects/ngi-zero/">NGI-ZERO</a>, an initiative supporting open source projects led by the European Commission. As part of my work for them I package supported projects for the Nix ecosystem. The goal of this effort is to provide a reproducible and easy way to install and use this software. Due to the fact that those projects come in various shapes and sizes, need to be reviewed and should not clutter <code>nixpkgs</code> unnecessarily, <a href="https://github.com/ngi-nix">nig-nix</a> from builds on top of the latest feature to be added to Nix, <strong>Flakes</strong>.
+</p>
+<p>
+Although still not available in stable Nix, Flakes can already be used using wrappers and the unstable nix package. Inspired by my work and eager to try them for some private project i migrated my blog’s tooling to use Flakes while also keeping up with the latest additions to the Haskell/Hakyll world.
+</p>
+<p>
+Was it worth it? We will see but first, what am I even talking about?
+</p>
+<h1 class="y-header" id="flake-noun-fleɪk">
+<span>Flake (<strong>noun</strong>, /fleɪk/)</span><a href="#flake-noun-fleɪk" class="anchor las la-anchor" title="flake-noun-fleɪk"></a>
+</h1>
+<blockquote>
+<p>
+a person you cannot trust to remember things or to do what they promise, or someone who behaves in a strange way
+</p>
+<p>
+Cambridge Dictionary<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>
+</p>
+</blockquote>
+<p>
+Well, this was not too helpful and does not sound too promising either. So which other definition do we find there?
+</p>
+<blockquote>
+<p>
+a small, thin piece of something, especially if it has come from a surface covered with a layer of something
+</p>
+</blockquote>
+<p>
+This will definitely sound relatable in a moment.
+</p>
+<h2 class="y-header" id="why">
+<span>Why?</span><a href="#why" class="anchor las la-anchor" title="why"></a>
+</h2>
+<p>
+Nix derivations are not completely sand boxed! Well the build is, meaning during the phases no network access, or access to to the hosts file system is possible. What is not so hermetic is the nix expression itself. Have you ever seen this line?
+</p>
+<div class="y-fill-horizontal">
+<div id="cb1" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">{pkgs</span> <span class="pp">?</span> import <span class="op">&lt;</span>nixpkgs<span class="op">&gt;</span> {}}:</span></code></pre>
+</div>
+</div>
+<p>
+Yes you have, certainly! One of the reasons why a derivation might fail on your system is due to this. The problem is that it relies on the <code>nixpkgs</code> channel currently active on <em>your system</em>, which is a major impurity, because people tend to not have the same version active or might even set it to different releases (<code>release-xx.xx</code>, <code>unstable</code>, …).<br /> The common way around this is to pin the <code>nixpkgs</code> used by the developer. This is only a convention though. There is no definite way how to do this. You can see an example in my <a href="../../../posts/internals/2020-04-10-built-with-nix#default.nix">previous aticle</a> about how I use nix on this blog. The main idea is to state the current version of <code>nixpkgs</code> in a file, fetch the tarball of that version and build against that. This is fine but requires us to update the version manually, and is not consistent among projects.<br /> Alternatively, the tool that emerged from this is <a href="https://github.com/nmattia/niv"><code>niv</code></a>. Niv provides an easy interface to add external sources and import them from the projects Nix file. Niv in the background writes a lockfile and streamlines updating.
+</p>
+<p>
+So there might be a way to pin packages and with some discipline we can get around this impurity. How about this then?
+</p>
+<div class="y-fill-horizontal">
+<div id="cb2" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span> <span class="ex">develop</span> <span class="pp">?</span> true }:</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="ex">develop</span> then ...</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>           <span class="cf">else</span> <span class="ex">...</span></span></code></pre>
+</div>
+</div>
+<p>
+So easily your derivation becomes dependent on some command line argument. In this case it’s a simple flag (<em>how do you know?</em>). In other cases it could expect a string even, like setting the ghc version used. This poses multiple problems. First you create an impurity, you depend on some command line flag to be given. More importantly, these inputs are not discoverable without inspecting the nix file, for string inputs, it might even be hard to figure out which values it takes, in which format, etc for this you need to dig through the definition. Also, even with defaults set, importing the project from another place expects the importer to know which arguments they can/must give and require them to inspect the definition again.
+</p>
+<p>
+Another issue you might come across:
+</p>
+<div class="y-fill-horizontal">
+<div id="cb3" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">{...}:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">let</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="er">in</span> <span class="kw">{</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inherit</span> shell app some-other-app<span class="kw">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre>
+</div>
+</div>
+<p>
+How do you know what to import, what does it do? There are simply no inherent semantics and also no conventions.
+</p>
+<p>
+Additionally to this Eelco also <a href="https://www.tweag.io/blog/2020-05-25-flakes/">lists</a> some more issues with this. Firstly, due to missing strong conventions and semantics composing packages is difficult, or not nice of an experience for the user. It also means that discovering packages can not be automated easily.
+</p>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header="Summary of problems">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+<p>NOTE</p>
+</div>
+</div>
+<div>
+<p>
+Summary of problems
+</p>
+</div>
+</div>
+<p>
+Lets summarize the shortcomings we just discussed:
+</p>
+<ol type="1">
+<li>
+impure imports
+</li>
+<li>
+no ultimate way to pin <code>nixpkgs</code>
+</li>
+<li>
+no common (import) interface
+</li>
+<li>
+impure arguments
+</li>
+<li>
+no common (output) interface
+</li>
+<li>
+poor discoverability
+</li>
+<li>
+poor composability
+</li>
+</ol>
+</div>
+<h1 class="y-header" id="creating-a-flake-for-this-blog">
+<span>Creating a flake for this blog</span><a href="#creating-a-flake-for-this-blog" class="anchor las la-anchor" title="creating-a-flake-for-this-blog"></a>
+</h1>
+<p>
+To understand how flakes aim to solve those problems, lets - once again - have a look on the new definition of this blog.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb4" class="sourceCode" data-caption="./flake.nix">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">description</span> = <span class="st">&quot;Flake utils demo&quot;</span><span class="kw">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.nixpkgs.url</span> = <span class="st">&quot;github:nixos/nixpkgs&quot;</span><span class="kw">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.nur.url</span> = <span class="st">&quot;github:nix-community/NUR&quot;</span><span class="kw">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.flake-utils.url</span> = <span class="st">&quot;github:numtide/flake-utils&quot;</span><span class="kw">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.uikit-src</span> = {</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">url</span> = <span class="st">&quot;https://github.com/uikit/uikit/archive/v3.5.8.tar.gz&quot;</span><span class="kw">;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="ex">flake</span> = false<span class="kw">;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">};</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="ex">outputs</span> = { self, nixpkgs, nur, flake-utils, uikit-src }:</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">let</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="er">in</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>      <span class="ex">flake-utils.lib.eachDefaultSystem</span> <span class="er">(</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="ex">system:</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>          <span class="bu">let</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>            <span class="ex">pkgs</span> = import nixpkgs { inherit system<span class="kw">;</span> <span class="ex">overlays</span> = [ nur.overlay ]<span class="kw">;</span> <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>            <span class="ex">blog</span> = pkgs.callPackage ./blog.nix {</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>              <span class="ex">inherit</span> pkgs<span class="kw">;</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>              <span class="ex">nur</span> = pkgs.nur<span class="kw">;</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>              <span class="ex">thirdparty</span> = [</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>                <span class="kw">{</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>                  <span class="ex">name</span> = <span class="st">&quot;uikit&quot;</span><span class="kw">;</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                  <span class="ex">path</span> = <span class="st">&quot;</span><span class="va">${uikit</span><span class="er">-src</span><span class="va">}</span><span class="st">/src&quot;</span><span class="kw">;</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>                <span class="kw">}</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>              <span class="ex">]</span><span class="kw">;</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>            <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>          <span class="er">in</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>            <span class="ex">rec</span> {</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>              <span class="ex">packages</span> = { inherit <span class="er">(</span><span class="ex">blog</span><span class="kw">)</span> <span class="ex">generator</span> generator-with-thirdparty ci shell<span class="kw">;</span> <span class="ex">htop</span> = pkgs.htop<span class="kw">;</span> <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>              <span class="ex">defaultPackage</span> = blog.generator-with-thirdparty<span class="kw">;</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>              <span class="ex">apps.compile</span> =</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>                <span class="ex">flake-utils.lib.mkApp</span> { drv = blog.ci.compile<span class="kw">;</span> <span class="ex">exePath</span> = <span class="st">&quot;&quot;</span><span class="kw">;</span> <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>              <span class="ex">defaultApp</span> = apps.compile<span class="kw">;</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>              <span class="ex">devShell</span> = blog.shell<span class="kw">;</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>            <span class="er">}</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>      <span class="kw">);</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code></pre>
+</div>
+</div>
+<p>
+So that’s a lot! And notice, its even simplified through the use of <a href="https://github.com/numtide/flake-utils"><code>flake-utils</code></a>. But it does come with some structure, which we will inspect more closely now.
+</p>
+<p>
+<em>So what do we see here?</em>
+</p>
+<h2 class="y-header" id="pure-imports">
+<span>Pure imports</span><a href="#pure-imports" class="anchor las la-anchor" title="pure-imports"></a>
+</h2>
+<p>
+In flake mode nix expects the flake files to only contain the top level attributes <code>description::string</code>, <code>inputs::set</code> , <code>outputs::{inputs..}-&gt;set</code>. Notice, flakes are not a function at the top level anymore.<br /> What does that imply? First, there are no arguments to be given by command line (via <code>–arg</code>/<code>–argstr</code>). This means no <code>nixpkgs</code> attribute to be passed from a higher level. Instead, your dependencies are expected to be included in <code>inputs</code> you give. <code>inputs</code> is a set where each attribute is the identifier of one input.
+</p>
+<p>
+The corresponding part in the above <code>flake.nix</code> is
+</p>
+<div class="y-fill-horizontal">
+<div id="cb5" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>  <span class="ex">description</span> = <span class="st">&quot;Flake utils demo&quot;</span><span class="kw">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.nixpkgs.url</span> = <span class="st">&quot;github:nixos/nixpkgs&quot;</span><span class="kw">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.nur.url</span> = <span class="st">&quot;github:nix-community/NUR&quot;</span><span class="kw">;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.flake-utils.url</span> = <span class="st">&quot;github:numtide/flake-utils&quot;</span><span class="kw">;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.uikit-src</span> = {</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">url</span> = <span class="st">&quot;https://github.com/uikit/uikit/archive/v3.5.8.tar.gz&quot;</span><span class="kw">;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="ex">flake</span> = false<span class="kw">;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="er">}</span><span class="kw">;</span></span></code></pre>
+</div>
+</div>
+<p>
+Each of these input follows this structure:
+</p>
+<div class="y-fill-horizontal">
+<div id="cb6" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">inputs.</span><span class="op">&lt;</span>inputname<span class="op">&gt;</span> = {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">url</span> = git+<span class="op">&lt;</span>url-to-git-repo<span class="op">&gt;</span>[<span class="pp">?</span>ref=<span class="pp">****</span>[<span class="kw">&amp;</span><span class="va">rev</span><span class="op">=</span><span class="pp">****</span>]]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>      <span class="kw">|</span> <span class="kw">(</span><span class="ex">github</span><span class="kw">|</span><span class="ex">gitlab</span><span class="kw">)</span><span class="bu">:</span><span class="op">&lt;</span>user<span class="op">&gt;</span>/<span class="op">&lt;</span>repo<span class="op">&gt;</span>[/<span class="op">&lt;</span>ref<span class="op">&gt;</span> <span class="kw">|</span> <span class="ex">?ref=****[</span><span class="kw">&amp;</span><span class="va">rev</span><span class="op">=</span><span class="pp">****</span>]]<span class="kw">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>      <span class="kw">|</span> <span class="op">&lt;</span>known-flake<span class="op">&gt;</span>[/<span class="op">&lt;</span>ref<span class="op">&gt;</span> <span class="kw">|</span> <span class="ex">?ref=****[</span><span class="kw">&amp;</span><span class="va">rev</span><span class="op">=</span><span class="pp">****</span>]]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>      <span class="kw">|</span> <span class="ex">/absolute/path</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">flake</span> = true <span class="kw">|</span> <span class="fu">false</span><span class="kw">;</span> <span class="co"># default = true</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code></pre>
+</div>
+</div>
+<dl>
+<dt>
+Input url
+</dt>
+<dd>
+use <code>git+&lt;url&gt;</code> to checkout a git repository at <code>&lt;url&gt;</code>
+</dd>
+<dd>
+use <code>/local/absolute/path</code> to load a local source
+</dd>
+<dd>
+use <code>gitlab:&lt;user&gt;/&lt;repo&gt;</code>/<code>github:&lt;user&gt;/&lt;repo&gt;</code> to shortcut gitlab or github repositories
+</dd>
+<dd>
+use <code>&lt;known-flake&gt;</code> to shortcut to a globally defined alias
+</dd>
+<dt>
+<code>known-flake</code>
+</dt>
+<dd>
+nix will manage a registry of named flakes that can be included as is and are a shortcut to another repo
+</dd>
+<dd>
+<p>
+by default following global registry items are defined in <a href="https://github.com/NixOS/flake-registry">this repo</a> and available in every nix installation:
+</p>
+<div class="y-fill-horizontal">
+<div id="cb7" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">global</span> flake:blender-bin github:edolstra/nix-warez</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">global</span> flake:dwarffs github:edolstra/dwarffs</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">global</span> flake:hydra github:NixOS/hydra</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">global</span> flake:nimble github:nix-community/flake-nimble</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">global</span> flake:nix github:NixOS/nix</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">global</span> flake:nixops github:NixOS/nixops</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">global</span> flake:nixos-hardware github:NixOS/nixos-hardware</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ex">global</span> flake:nixos-homepage github:NixOS/nixos-homepage/flake</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="ex">global</span> flake:nur github:nix-community/NUR</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="ex">global</span> flake:nixpkgs/release-19.09 github:edolstra/nixpkgs/release-19.09</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="ex">global</span> flake:nixpkgs github:NixOS/nixpkgs</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="ex">global</span> flake:templates github:NixOS/templates</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="ex">global</span> flake:patchelf github:NixOS/patchelf</span></code></pre>
+</div>
+</div>
+</dd>
+<dd>
+read more about registry on the <a href="https://nixos.wiki/wiki/Nix_command/registry">wiki</a>
+</dd>
+<dt>
+Specifying a commit or branch
+</dt>
+<dd>
+by default, the main branch of the repository pointed to will be used as to provide the dependency flake.
+</dd>
+<dd>
+Nix will also update dependencies to the latest commit on <code>nix flake update</code> calls
+</dd>
+<dd>
+to pin repositories to a certain commit or override the default branch append a <code>?ref=commit-ref</code> or <code>?&lt;branch&gt;</code> respectively
+</dd>
+<dt>
+Non flake inputs
+</dt>
+<dd>
+nix will try to interpret inputs as flakes, to suppress that, set <code class="sourceCode bash"><span class="op">&lt;</span>inputname<span class="op">&gt;</span>.flake <span class="ex">=</span> false</code>
+</dd>
+<dt>
+Overriding dependency inputs
+</dt>
+<dd>
+traditionally, if one wanted a dependency to use a certain nixpkgs version (i.e. to make use of binary caches) one would specify a certain <code>nixpkgs</code> argument while <code>import</code>’ing. Flakes allow the same thing by setting <code>inputs.&lt;inputname&gt;.inputs.&lt;inputname&gt;.follows = &lt;local inputsname&gt;</code>
+</dd>
+</dl>
+<div class="notice box y-fill-horizontal">
+<p>
+If using a <code>&lt;known-flake&gt;</code> nix will not use your respective channel even if one with the same name such as <code>nixpkgs</code> exists.
+</p>
+</div>
+<p>
+See also the <a href="#reference">reference below</a> for more information and examples.
+</p>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header="Issues solved here:">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+<p>NOTE</p>
+</div>
+</div>
+<div>
+<p>
+Issues solved here:
+</p>
+</div>
+</div>
+<ol type="1">
+<li>
+impure imports
+</li>
+<li>
+no ultimate way to pin <code>nixpkgs</code>
+</li>
+<li>
+no common (import) interface
+</li>
+</ol>
+<p>
+First, a formal definition even a simple one as this alleviates us from the danger of importing dependencies impurely. All imports are formally defined and locked to a specific revision in the projects <code>flake.lock</code> file. By being able to also add a specific <code>ref</code> tag to inputs, this interface allows for intuitive pinning of dependencies. Finally, the way imports are specified and overridden is the same for all flakes, providing a familiar and unified interface.
+</p>
+</div>
+<p>
+So far so good, but we have only discussed about 10 lines of the flake s far…
+</p>
+<h2 class="y-header" id="pure-outputs">
+<span>Pure outputs</span><a href="#pure-outputs" class="anchor las la-anchor" title="pure-outputs"></a>
+</h2>
+<p>
+As mentioned above, nix flakes do not serve as top level function anymore. That does not mean there is no function involved. For flakes the output is the result of a function as well.
+</p>
+<pre><code>outputs = { self, nixpkgs, nur, flake-utils, uikit-src }:
+  ...</code></pre>
+<p>
+This third and last attribute takes as arguments all the inputs defined earlier. But unlike classical nix approaches, only a certain set of attributes are allowed and expected as the result of this function.<br /> <em>An extensive list of output attributes is provided <a href="#output-attributes">below</a></em>.
+</p>
+<p>
+Generally the format for these is:
+</p>
+<pre><code>&lt;kind&gt;.&lt;arch&gt;.&lt;output&gt; = ...;</code></pre>
+<p>
+or concretely
+</p>
+<pre><code>packages.&quot;x86_64-darwin&quot;.generator = blog.generator;</code></pre>
+<p>
+Notice how the architecture and OS of the target platform is explicitly encoded, allowing for specializations or exclusive packaging for specific platforms. This also means that the used <code>nixpkgs</code> needs to be instantiated for all desired platforms. In practice one will want to use a shortcut for that and while this is used for all our <a href="https://github.com/ngi-nix">projects packaged for NGI</a> so far, for my blog this shortcut is provided by <a href="https://github.com/numtide/flake-utils"><code>flake-utils</code></a>.
+</p>
+<p>
+Using these, defining the outputs for this blog just becomes:
+</p>
+<div class="y-fill-horizontal">
+<div id="cb11" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>  <span class="bu">let</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="er">in</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>      <span class="ex">flake-utils.lib.eachDefaultSystem</span> <span class="er">(</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        <span class="ex">system:</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>          <span class="bu">let</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>            <span class="ex">pkgs</span><span class="st">' = import nixpkgs { inherit system; overlays = [ nur.overlay ]; };</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="st">            blog = pkgs'</span><span class="ex">.callPackage</span> ./blog.nix {</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>              <span class="ex">pkgs</span> = pkgs<span class="st">';</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="st">              nur = pkgs'</span>.nur<span class="kw">;</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>              <span class="ex">thirdparty</span> = [</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>                <span class="kw">{</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>                  <span class="ex">name</span> = <span class="st">&quot;uikit&quot;</span><span class="kw">;</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>                  <span class="ex">path</span> = <span class="st">&quot;</span><span class="va">${uikit</span><span class="er">-src</span><span class="va">}</span><span class="st">/src&quot;</span><span class="kw">;</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>                <span class="kw">}</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>              <span class="ex">]</span><span class="kw">;</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>            <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>          <span class="er">in</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>            <span class="ex">rec</span> {</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>              <span class="ex">packages</span> = {</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>                <span class="ex">inherit</span> <span class="er">(</span><span class="ex">blog</span><span class="kw">)</span> <span class="ex">generator</span> generator-with-thirdparty ci shell<span class="kw">;</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>              <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>              <span class="ex">defaultPackage</span> = blog.generator-with-thirdparty<span class="kw">;</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>              <span class="ex">apps.compile</span> =</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>                <span class="ex">flake-utils.lib.mkApp</span> { drv = blog.ci.compile<span class="kw">;</span> <span class="ex">exePath</span> = <span class="st">&quot;&quot;</span><span class="kw">;</span> <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>              <span class="ex">defaultApp</span> = apps.compile<span class="kw">;</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>              <span class="ex">devShell</span> = blog.shell<span class="kw">;</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>            <span class="er">}</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>      <span class="kw">);</span></span></code></pre>
+</div>
+</div>
+<p>
+To take this apart again, we face three different sections here.
+</p>
+<ol type="1">
+<li>
+<code>flake-utils.lib.eachDefaultSystem</code>, like its name suggests will provide the attribute set in its scope for all default systems (basically linux and darwin on x86_64 hardware). Hence, we don’t need to worry about these tags.
+</li>
+<li>
+The actual output still needs to conform to flakes’ expected attributes. In this case we set <code>packages</code>, <code>defaultPackage</code>, <code>apps</code>, <code>defaultApp</code> and <code>devShell</code>. There are even more most importantly <code>overlay</code> which are referenced <a href="#output-attributes">below</a>
+</li>
+<li>
+third one is the middle part and shows an important aspect of nix flakes. Because there is no access to impure variables (<code>--arg</code>, environment variables, the current system, etc.), <code>nixpkgs</code> must be imported explicitly for each system. Additionally, this gives the opportunity to apply any possible overlay. In the case of this blog everything is defined in an external <code>blog.nix</code> file and imported from there.
+</li>
+</ol>
+<h3 class="y-header" id="output-attributes">
+<span>Output attributes</span><a href="#output-attributes" class="anchor las la-anchor" title="output-attributes"></a>
+</h3>
+<div class="uk-alert-warning warning box y-fill-horizontal">
+<p>
+This section highlights some commands that are not yet available on stable nix. In fact, you will need to run either <code>nixUnstable</code> or <code>nixFlakes</code> from a recent <code>nixpkgs</code> set, at best <code>unstable</code>. Also you need to add <code>experimental-features = nix-command flakes</code> to your <code>nix.conf</code> file.
+</p>
+<p>
+With that set trying out the commands can be done in a shell using
+</p>
+<pre><code>$ nix-shell -p nixUnstable</code></pre>
+</div>
+<p>
+Coming back to the outputs. <code>packages</code> is the actual output that is used with <code>nix shell</code> and <code>nix build</code> commands in particular (yes there are/will be <a href="https://nixos.org/manual/nix/unstable/command-ref/experimental-commands.html">a lot more</a>).
+</p>
+<p>
+To open a shell with specific packages available (alike <code>nix-shell -p</code>) run:
+</p>
+<pre><code>$ nix shell ./#generator-with-thirdparty
+
+or from an external repo:
+
+$ nix shell &quot;gitlab:pi-lar/neuropil#generator-with-thirdparty&quot;</code></pre>
+<div class="info box y-fill-horizontal">
+<p>
+Replace <code>shell</code> with <code>build</code> to build it to a <code>./result</code> output link.
+</p>
+<p>
+Shell does actually accept multiple derivation arguments so
+</p>
+<pre><code>$ nix shell nixpkgs#{htop,nodePackages.act,tealdeer}</code></pre>
+<p>
+is possible to use.
+</p>
+<p>
+<em>Notice</em> that some inputs might need to be quoted due to substitution rules in your shell.
+</p>
+</div>
+<p>
+<code>apps</code> is used together with <code>nix run</code>, similarly to <code>npm run</code>. You can define binaries that can then be run directly without explicitly building them first. This allowed me to change the somewhat cryptic <code>$(nix-build -A packages.x86_64-linux.ci.compile --no-out-link)</code> to <code>nix run ./#compile</code> in the CI script. Actually given that <code>defaultApp</code> point to the same <code>compile</code> attribute, the argument <code>./#compile</code> could be elided paying with decreased clarity.
+</p>
+<p>
+<code>devShell</code> is another special one used in combination with <code>nix develop</code> which opens a <em><code>bash</code></em> shell with the given derivation prepared.
+</p>
+<p>
+Of course, project shells using for example <code>mkShell</code> do also still work (and are used here as well). Either by using <code>nix develop</code> with such a derivation or <code>nix shell</code> in combination with <code>buildEnv</code>.
+</p>
+<div class="uk-alert-warning warning box y-fill-horizontal">
+<p>
+<code>nix develop</code> <strong>always</strong> opens a <em><code>bash</code></em> shell. If you use <code>zsh</code> some work-arounds or relying on legacy <code>nix-shell</code> is needed for <code>zsh</code> enabled shells.
+</p>
+<p>
+Using flakes, one alternative is to use a <code>buildEnv</code> derivation which is loaded using <code>nix</code><strong><code>shell</code></strong>.
+</p>
+</div>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header="Issues solved here">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+<p>NOTE</p>
+</div>
+</div>
+<div>
+<p>
+Issues solved here
+</p>
+</div>
+</div>
+<ol type="1">
+<li>
+impure arguments
+</li>
+<li>
+no common (output) interface
+</li>
+<li>
+poor discoverability
+</li>
+</ol>
+<p>
+Here we see how a defined output interface helps to understand to organize the specific outputs and give the user semantic cues what the outputs are used for. It also allows nix to be more ergonomic as seen in the case of <code>nix run</code>. Although, being a matter of the tooling as well, having a well defined <code>flake.nix</code> file available to inspect, discovering attributes over several repositories becomes much more feasible. Finally due to the missing impurity, guaranties that some derivation will actually produce the same outputs are getting even stronger.
+</p>
+</div>
+<h3 class="y-header" id="composing-flakes">
+<span>Composing flakes</span><a href="#composing-flakes" class="anchor las la-anchor" title="composing-flakes"></a>
+</h3>
+<p>
+In the last two sections I presented solutions for six of the seven problems that were identified in the beginning. That leaves us with:
+</p>
+<ol start="7" type="1">
+<li>
+poor composability
+</li>
+</ol>
+<p>
+Actually we’re almost there.. Remember how I mentioned the possibility to inject overlays when importing <code>nixpkgs</code>? Composing multiple sources of packages is easy if one can just drop them in there.<br /> Moreover, there are conventional output arguments <code>overlay</code> and <code>overlays</code> that make discovering the fakes; overlay(s) a bit easier.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb15" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">description</span> = <span class="st">&quot;Flake utils demo&quot;</span><span class="kw">;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.flake-utils.url</span> = <span class="st">&quot;github:numtide/flake-utils&quot;</span><span class="kw">;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># assuming that this flake exports an overlay attribute</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">inputs.someflake.url</span> = <span class="st">&quot;foo.com/bar&quot;</span><span class="kw">;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">outputs</span> = { self, nixpkgs, flake-utils, someflake }:</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="ex">flake-utils.lib.eachDefaultSystem</span> <span class="er">(</span><span class="ex">system:</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>      <span class="bu">let</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        <span class="ex">artifacts</span> = final: prev: {</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>          <span class="ex">my_hello</span> = prev.hello<span class="kw">;</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>        <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>        <span class="ex">pkgs</span> = import nixpkgs {</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>          <span class="ex">overlays</span> = [ someflake.overlay artifacts ]<span class="kw">;</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>        <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>      <span class="er">in</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>      <span class="co"># and here is the core of the consumer flake</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>      <span class="kw">{</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>        <span class="ex">defaultPackage</span> = pkgs.my_hello<span class="kw">;</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>        <span class="ex">overlay</span> = artifacts<span class="kw">;</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>      <span class="kw">}</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">);</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre>
+</div>
+</div>
+<p>
+Adapted from <a href="https://discourse.nixos.org/t/how-to-determine-intended-use-of-nix-flakes-outputs/8633/2">this answer on the forum</a> this example shows how <code>someflake</code>’s overlay can be imported, and how to define your own overlay in the same manner. Here it is used rather uselessly, but one can imagine to define outputs in a separate file as overlay, that can then be plugged for use and export in the flake.
+</p>
+<div class="info box y-fill-horizontal">
+<p>
+As a kind of <em>new</em> convention now enforced by <code>nix check</code> is to call your overlay arguments <code>final: prev:</code> for greater clarity than the classical <code>self: super:</code> combination.
+</p>
+</div>
+<h1 class="y-header" id="retrospective">
+<span>Retrospective</span><a href="#retrospective" class="anchor las la-anchor" title="retrospective"></a>
+</h1>
+<p>
+So I changed the nix setup of this blog to flakes… Was it worth it?
+</p>
+<p>
+Of course it depends. For the project that is this blog the benefits of committing to flakes are rather unconvincing. No one uses this as a dependency or wants to discover it as such. I am the only one developing this, so I might have my own conventions to import things, pin my dependencies and define my interface. Also, maybe I do want to use CLI arguments to nix.
+</p>
+<p>
+Personally though it did convince me (obviously). I am a great supporter of the Nix philosophy and the Flakes do make a great addition to the ecosystem. I first got into contact with them when starting to work on the NGI0 project at which time Eelco had just written the first public post about flakes and the documentation was sparse to say the least… But as a new thing it still caught my interest. Looking for projects outside NGI this blog seemed like a great candidate to apply this new technology to as it posed literally no risk whatsoever if it didn’t work out. It gave me a chance to make myself comfortable with the technology and dig deeper to write this article.
+</p>
+<p>
+Now I really like how this turned out, especially the <code>nix run</code> part comes in handy here and the native caching might come in handy for quicker <code>direnv</code> shells.
+</p>
+<p>
+One downturn is still that <code>nix develop</code> is not able to open zsh shells so the usual <code>mkShell</code> technique does not work with flakes and one needs to fall back to <code>nix-shell</code> or <code>buildEnv</code> alternatives. Also there are still flags and a special nix binary required to make use of the flake related nix features.
+</p>
+<h1 class="y-header" id="references">
+<span>References</span><a href="#references" class="anchor las la-anchor" title="references"></a>
+</h1>
+<h2 class="y-header" id="flake-reference-conventions">
+<span>Flake reference conventions</span><a href="#flake-reference-conventions" class="anchor las la-anchor" title="flake-reference-conventions"></a>
+</h2>
+<p>
+Nix commands will eventually reference outputs. There are multiple ways how these can be referenced depending on where they come from:
+</p>
+<p>
+A flake reference is actually structured similar to an URL:
+</p>
+<div class="y-fill-horizontal">
+<div id="cb16" class="sourceCode">
+<pre class="sourceCode txt"><code class="sourceCode default"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>&lt;flake url&gt;[?&lt;git ref/rev&gt;][#&lt;output&gt;]</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    │</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    ├── git+&lt;url&gt;</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    ├── gitlab:&lt;user&gt;/&lt;repo&gt; or github:&lt;user&gt;/&lt;repo&gt;</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    ├── /local/absolute/path</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    ├──./relative/path (only as an argument to `nix` commands)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    └── a known source in the registry such as `nixpkgs`</span></code></pre>
+</div>
+</div>
+<p>
+If git repositories are pointed to directly query parameters can be added to select a specific branch and/or commit.
+</p>
+<p>
+As nix has not yet adapted to some git providers renaming their <code>master</code> branches to <code>main</code> you might occasionally be confronted with an error similar to
+</p>
+<blockquote>
+</blockquote>
+<pre><code>fetching Git repository 'https://gitlab.com/pi-lar/neuropil'fatal: couldn't find remote ref refs/heads/master</code></pre>
+<p>
+To resolve this the actual branch <code>main</code> or any tag might be explicated using the <code>ref</code> argument:
+</p>
+<pre><code>git+https://gitlab.com/pi-lar/neuropil.git?ref=main</code></pre>
+<p>
+If using the abbreviated GitLab/GitHub urls this can be expressed like this:
+</p>
+<pre><code>gitlab:pi-lar/neuropil/main</code></pre>
+<p>
+Similarly, if an exact commit is targeted, this can be pointed to using the <code>rev</code> argument
+</p>
+<pre><code>   gitlab:pi-lar/neuropil?rev=1043b9c1736c2a9b92938f0304ddb55ce4ab68a6
+or gitlab:pi-lar/neuropil/1043b9c1736c2a9b92938f0304ddb55ce4ab68a6</code></pre>
+<p>
+The output is finally selected in the format known from the <code>-A</code> argument of old nix commands such as <code>nix-shell</code>:
+</p>
+<pre><code>   nixpkgs#haskellPackages.pandoc
+or .#generator-with-thirdparty      (used to build this blog's generator)</code></pre>
+<h2 class="y-header" id="output-attributes-1">
+<span>Output attributes</span><a href="#output-attributes-1" class="anchor las la-anchor" title="output-attributes-1"></a>
+</h2>
+<p>
+Following is a quick reference over all flake output attributes.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb22" class="sourceCode">
+<pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Executed by `nix flake check`</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">checks.</span><span class="st">&quot;&lt;system&gt;&quot;</span><span class="ex">.</span><span class="st">&quot;&lt;attr&gt;&quot;</span> = derivation<span class="kw">;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Executed by `nix build .#&lt;name&gt;`</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">packages.</span><span class="st">&quot;&lt;system&gt;&quot;</span><span class="ex">.</span><span class="st">&quot;&lt;attr&gt;&quot;</span> = derivation<span class="kw">;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Executed by `nix build .`</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="ex">defaultPackage.</span><span class="st">&quot;&lt;system&gt;&quot;</span> = derivation<span class="kw">;</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># the derivation that is prepared when running `nix develop`</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># defaults to defaultPackage.&quot;&lt;system&gt;&quot;</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    <span class="ex">devShell.</span><span class="st">&quot;&lt;system&gt;&quot;</span> = derivation<span class="kw">;</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Executed by `nix run .#&lt;name&gt;</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>    <span class="ex">apps.</span><span class="st">&quot;&lt;system&gt;&quot;</span><span class="ex">.</span><span class="st">&quot;&lt;attr&gt;&quot;</span> = {</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>      <span class="bu">type</span> = <span class="st">&quot;app&quot;</span><span class="kw">;</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>      <span class="ex">program</span> = <span class="st">&quot;&lt;store-path&gt;&quot;</span><span class="kw">;</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">};</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    <span class="ex">defaultApp.</span><span class="st">&quot;&lt;system&gt;&quot;</span> = { type = <span class="st">&quot;app&quot;</span><span class="kw">;</span> <span class="ex">program</span> = <span class="st">&quot;...&quot;</span><span class="kw">;</span> <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># </span><span class="al">TODO</span><span class="co">: Only seen used in connection with nixpkgs</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>    <span class="ex">legacyPackages</span> = TODO<span class="kw">;</span></span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># overlay to easily override/packages in the package set of the importer</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    <span class="ex">overlay</span> = final: prev: { }<span class="kw">;</span></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># </span><span class="al">TODO</span><span class="co">: Same idea as overlay but several.</span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>    <span class="ex">overlays.</span><span class="st">&quot;&lt;attr&gt;&quot;</span> = final: prev: { }<span class="kw">;</span></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Additionally to packages also modules for Nixos can be provided (Flakes can be used with `nixos-rebuild`)</span></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>    <span class="ex">nixosModule</span> = Module definition<span class="kw">;</span></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># </span><span class="al">TODO</span><span class="co">: Same idea as nixosModule but several</span></span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>    <span class="ex">nixosModules.</span><span class="st">&quot;&lt;attr&gt;&quot;</span> = Module definition<span class="kw">;</span></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Attrset of nixos configurations by hostname.</span></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>    <span class="ex">nixosConfigurations.</span><span class="st">&quot;&lt;hostname&gt;&quot;</span> = {}<span class="kw">;</span></span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Hydra checks</span></span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>    <span class="ex">hydraJobs.</span><span class="st">&quot;&lt;attr&gt;&quot;</span><span class="ex">.</span><span class="st">&quot;&lt;system&gt;&quot;</span> = derivation<span class="kw">;</span></span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Used by `nix flake init -t &lt;flake&gt;`</span></span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>    <span class="ex">defaultTemplate</span> = {</span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>      <span class="ex">path</span> = <span class="st">&quot;&lt;store-path&gt;&quot;</span><span class="kw">;</span></span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>      <span class="ex">description</span> = <span class="st">&quot;template description goes here?&quot;</span><span class="kw">;</span></span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>    <span class="er">}</span><span class="kw">;</span></span>
+<span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Used by `nix flake init -t &lt;flake&gt;#&lt;attr&gt;`</span></span>
+<span id="cb22-49"><a href="#cb22-49" aria-hidden="true" tabindex="-1"></a>    <span class="ex">templates.</span><span class="st">&quot;&lt;attr&gt;&quot;</span> = { path = <span class="st">&quot;&lt;store-path&gt;&quot;</span><span class="kw">;</span> <span class="ex">description</span> = <span class="st">&quot;&quot;</span><span class="kw">;</span> <span class="er">)</span><span class="kw">;</span></span>
+<span id="cb22-50"><a href="#cb22-50" aria-hidden="true" tabindex="-1"></a>  <span class="er">}</span></span></code></pre>
+</div>
+</div>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header="Further Reading/Resources">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+<p>NOTE</p>
+</div>
+</div>
+<div>
+<p>
+Further Reading/Resources
+</p>
+</div>
+</div>
+<ul>
+<li>
+<a href="https://nixos.wiki/wiki/Flakes">wiki page on flakes</a>
+</li>
+<li>
+<a href="https://zimbatm.com/NixFlakes/">zimbatm’s blog article</a>
+</li>
+<li>
+Eelco’s blog article over at tweag.io
+<ul>
+<li>
+<a href="https://www.tweag.io/blog/2020-05-25-flakes/">Part 1</a>
+</li>
+<li>
+<a href="https://www.tweag.io/blog/2020-06-25-eval-cache/">Part 2</a>
+</li>
+<li>
+<a href="https://www.tweag.io/blog/2020-07-31-nixos-flakes/">Part 3</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="https://nixos.wiki/wiki/Nix_command"><code>nix</code> commands</a>
+</li>
+</ul>
+</div>
+<p>
+As always, thank you for reading this far I hope you enjoyed this article!
+</p>
+<p>
+It helped me a lot to structure my knowledge about nix flakes and I am glad to share this to a wider audience.
+</p>
+<p>
+If you have comments drop me a mail, or comment publicly on the media you where found this. For additions or corrections and critique feel free to use <a href="https://github.com/ysndr/blog/issues/new">GitHub issue tracker</a>.
+</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote">
+<p>
+<a href="https://dictionary.cambridge.org/dictionary/english/flake">Definition of Flake</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a>
+</p>
+</li>
+</ol>
+</section></p>
+
+</article>
+
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+<!--[if lt IE 9]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+<![endif]-->
+
+    </div>
+  </main>
+
+
+  <footer class="font-standout text-sm py-8 px-4 text-mutedDark bg-footer dark">
+      <div class="container grid sm:grid-cols-3 gap-8">
+        <div>
+
+            <h3 class="text-emphasizedDark">Contact</h3>
+            <ul class="ml-1 list-none">
+            <li><a href="mailto:contact@ysndr.de" class="text-emphasizedDark no-underline"><i class="las la-envelope-open-text"></i> contact@ysndr.de</a></li>
+            <li><a href="https://linkedin.com/in/yannik-sander" class="text-emphasizedDark no-underline"><i class="lab la-linkedin"></i></svg> yannik-sander</a></li>
+            <li>
+            <a href="https://github.com/ysndr" class="text-emphasizedDark no-underline"><i class="las la-code-branch"></i> ysndr</a></li>
+          </ul>
+
+
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">Legal</h3>
+          <ul class="ml-1 list-none">
+            <li class="inline-flex justify-items-start items-start mb-0">
+              <span class="las la-check-circle block mr-2"></span> No analytics are used here your data is safe :)
+            </li>
+            <li class="inline-flex items-start">
+              <span class="las la-check-circle block mr-2"></span> The content of this blog is licensed under CC0 terms if not otherwise noted</span>
+            </li>
+          </ul>
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">About this blog</h3>
+          <ul class="ml-1 list-none">
+            <li>
+              Built with <i class="las la-code"></i> and <i class="lar la-heart"></i> using <a class="text-emphasizedDark no-underline" href="https://jaspervdj.be/hakyll/">Hakyll</a>
+            </li>
+            <li class="text-muted"><i class="las la-code-branch"></i> last updated: <a class="text-emphasizedDark no-underline" href="https://github.com/ysndr/blog">0633078: fix: render heading as such in pandoc (#34) (2022-01-02 17:53:02 +0200)</a>
+            </li>
+            <li>
+              <a class="no-underline" href="https://builtwithnix.org" rel="nofollow">
+                <img src="https://builtwithnix.org/badge.svg" style="max-width:100%;">
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+  </footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit-icons.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+  <script>
+    window.cookieconsent.initialise({
+    container: document.getElementById("content"),
+    palette:{
+     popup: {background: "#fff"},
+     button: {background: "#aa0000"},
+    },
+    revokable:true,
+    onStatusChange: function(status) {
+     console.log(this.hasConsented() ?
+      'enable cookies' : 'disable cookies');
+    },
+    law: {
+     regionalLaw: false,
+    },
+    location: false,
+   });
+  </script> -->
+</body>
+
+</html>

@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:creator" content="@_ysndr" />
+  <meta property="og:title" content="y|sndr - How this page is generated - Part 02">
+  <meta property="og:description" content="Useful  Hakyll Contexts">
+  <meta property="og:image" content="https://unsplash.com/photos/IClZBVw5W5A/download?w=1000">
+  <meta property="og:url" content="https://blog.ysndr.de/posts/internals/2020-03-22-built-with-hakyll-part-2/index.html">
+  <title>y|sndr - How this page is generated - Part 02</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css" />
+  <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">  <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="../../../rss.xml" />
+  <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="../../../atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../../../assets/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../assets/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../../assets/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../../assets/images/favicon/site.webmanifest">
+</head>
+
+<body class="flex flex-col overflow-x-hidden text-body text-black leading-normal">
+  <header class="bg-muted font-standout leading-snug">
+
+    <div class="flex flex-col sm:flex-row my-8 container justify-items-center justify-end items-center">
+      <div class="flex flex-col text-right text-emphasis">
+          <h1 class="inline-flex flex-col">How this page is generated - Part 02
+          <small>Useful  Hakyll Contexts</small>
+          </h1>
+          <span class="text-xs text-muted">
+          
+          </span>
+      </div>
+      <hr class="hidden sm:block sm:h-24 sm:w-px mx-4 my-4 sm:my-auto min-w-px">
+      <div class="text-sm text-muted sm:w-5/12 md:w-2/5">
+        <ul>
+          <li class="flex">
+            <i class="las la-calendar-day mr-4"></i> March 22, 2020
+          </li>
+          <li class="flex">
+            <i class="las la-stopwatch mr-4"></i> 14 Minutes
+          </li>
+          
+          <li class="flex break-words">
+            <i class="las la-tags mr-4"></i>
+            
+            <span>
+              <a class="text-emphasis" href="../../../tags/internal/">internal</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/technical/">technical</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/haskell/">haskell</a>
+              </span>
+          </li>
+          
+          <li class="flex">
+            <i class="las la-code-branch mr-4"></i>
+            <a class="uk-link-muted" href="https://github.com/ysndr/blog/commit/671aa16">671aa16: Update existing boxes</a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+    <hr class="container" />
+
+</header>
+
+
+  <header class="sticky font-standout inset-0 z-50 min-w-full bg-muted text-base">
+  <nav class="container grid grid-cols-3">
+
+
+
+    <div class="flex flex-col">
+      <a class="content-center my-auto text-muted w-max"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M4 6h20 M4 12h20 M4 18h20"></path>
+      </svg><span class="ml-2 uppercase text-xs">Menu</span></a>
+
+
+      <div uk-dropdown class="container hidden">
+            <div class="inset-x-0 absolute container px-8 grid sm:grid-cols-3 sm:gap-8 shadow-lg bg-white text-sm text-muted fill-current stroke-current pb-6">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Who?</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="https://gist.github.com/ysndr/978662957bb9187fd52b2037466e1e34">CV</a></li>
+                  <li><hr></li>
+                  <li>
+                    <ul horizontal>
+                      <li><a href="mailto:contact@ysndr.de"><i class="las la-envelope-open-text"></i></a></li>
+                      <li class="ml-2"><a href="https://linkedin.com/in/yannik-sander"><i class="lab la-linkedin-in"></i></a>
+                      </li>
+                      <li class="ml-2"><a href="https://github.com/ysndr"><i class="lab la-github"></i></a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+             <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="text-black uppercase">What?</li>
+                  <li><a href="https://github.com/ysndr">Projects</a></li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/sam-knn-regressor">sam-knn-regressor</a></li>
+                  <li><a href="https://github.com/ysndr/nixos-config">NixOS Config</a></li>
+                </ul>
+              </div>
+              <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Blog</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="../../../archive">Archive</a></li>
+                  <li class="flex">
+                    <span>
+                      <svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="rss" stroke="currentColor"><circle cx="3.12" cy="16.8" r="1.85"></circle><path fill="none" stroke-width="1.1" d="M1.5,8.2 C1.78,8.18 2.06,8.16 2.35,8.16 C7.57,8.16 11.81,12.37 11.81,17.57 C11.81,17.89 11.79,18.19 11.76,18.5"></path><path fill="none" stroke-width="1.1" d="M1.5,2.52 C1.78,2.51 2.06,2.5 2.35,2.5 C10.72,2.5 17.5,9.24 17.5,17.57 C17.5,17.89 17.49,18.19 17.47,18.5"></path></svg>
+                    </span>
+                    <ul class="items-center ml-2" horizontal>
+                      <li><a href="../../../rss.xml">RSS</a></li>
+                      <li class="ml-4"><a href="../../../atom.xml">Atom</a></li>
+                    </ul>
+                  </li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/blog/commit/0633078"><span><svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="git-branch"><circle fill="none" stroke-width="1.2" cx="7" cy="3" r="2"></circle><circle fill="none" stroke-width="1.2" cx="14" cy="6" r="2"></circle><circle fill="none" stroke-width="1.2" cx="7" cy="17" r="2"></circle><path fill="none" stroke-width="2" d="M14,8 C14,10.41 12.43,10.87 10.56,11.25 C9.09,11.54 7,12.06 7,15 L7,5"></path></svg></span>   current rev.: 0633078: fix: render heading as such in pandoc (#34)</a></li>
+                </ul>
+              </div>
+            </div>
+      </div>
+
+    </div>
+
+
+    <div class="uk-navbar-nav uk-flex-1 py-4 align-items-center">
+
+      <a href="../../../" class="flex items-center justify-center">
+          <img src="../../../assets/images/logo-small.svg" alt="y|sndr" class="h-8" />
+        </a>
+
+
+    </div>
+
+
+
+    
+    <div class="flex flex-col items-end md:relative">
+        <a class="content-center uppercase my-auto text-muted w-max">
+          <span class="md:hidden">Content</span> <span class="hidden md:block">Table of Contents</span>
+        </a>
+        <div class="y-toc hidden" uk-drop>
+          <div class="container max-w-full sm:max-w-sm  bg-white p-6 w-full absolute text-muted right-0 shadow-xl rounded-b" uk-scrollspy-nav="closest: li; scroll: true; offset: 85; cls: text-emphasis">
+            <ul class><li><a href="#built-with-hakyll-part-02-custom-fields"><span>Built with Hakyll – Part 02: Custom Fields</span><span></span></a></li><li><a href="#custom-fields"><span>Custom fields</span><span></span></a><ul class><li><a href="#peekfield"><span><code>peekField</code></span><span></span></a></li><li><a href="#git-fields"><span>Git Fields</span><span></span></a></li><li><a href="#readtimefield"><span><code>readTimeField</code></span><span></span></a></li><li><a href="#publishedgroupfield"><span><code>publishedGroupField</code></span><span></span></a></li><li><a href="#concatfield"><span><code>concatField</code></span><span></span></a><ul class><li><a href="#functionfields"><span><code>FunctionFields</code></span><span></span></a></li></ul></li><li><a href="#plaintocfield"><span><code>plainTocField</code></span><span></span></a></li></ul></li><li><a href="#final-words"><span>Final Words</span><span></span></a></li></ul>
+          </div>
+        </div>
+    </div>
+    
+
+  </nav>
+
+</header>
+
+
+  <main class="my-8">
+    <div class="container">
+      <section class="relative">
+    
+
+<div class="h-56 sm:h-xl xl:h-2xl bg-cover w-5/6 mx-auto lg:min-w-full xl:w-auto mb-8 xl:-mx-24 rounded-lg relative shadow-2xl overflow-hidden">
+    <img src="https://unsplash.com/photos/IClZBVw5W5A/download?w=1000" alt="Article image" class="relative w-full h-full object-cover">
+
+    <div class="w-full absolute bottom-0">
+        <div class="relative">
+            <div class="bg-white rounded-full m-2 sm:m-4 float-right p-1" style="line-height: 0;"><i class="las la-copyright"></i></div>
+            <div uk-drop="pos: top-right" class="w-11/12 max-w-sm hidden absolute m-2 p-2 sm:m-4  sm:p-4 ">
+                <div class="bg-white p-6 rounded">
+                    <h4>Credits</h4>
+                    <span class="block text-sm overflow-auto max-w-full">
+                    
+                    <a style="background-color:black;color:white;text-decoration:none;padding:4px 6px;font-family:-apple-system, BlinkMacSystemFont, &quot;San Francisco&quot;, &quot;Helvetica Neue&quot;, Helvetica, Ubuntu, Roboto, Noto, &quot;Segoe UI&quot;, Arial, sans-serif;font-size:12px;font-weight:bold;line-height:1.2;display:inline-block;border-radius:3px" href="https://unsplash.com/@toddquackenbush?utm_medium=referral&amp;utm_campaign=photographer-credit&amp;utm_content=creditBadge" target="_blank" rel="noopener noreferrer" title="Download free do whatever you want high-resolution photos from Todd Quackenbush"><span style="display:inline-block;padding:2px 3px"><svg xmlns="http://www.w3.org/2000/svg" style="height:12px;width:auto;position:relative;vertical-align:middle;top:-2px;fill:white" viewBox="0 0 32 32"><title>unsplash-logo</title><path d="M10 9V0h12v9H10zm12 5h10v18H0V14h10v9h12v-9z"></path></svg></span><span style="display:inline-block;padding:2px 3px">Todd Quackenbush</span></a> on Unsplash
+                    
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<article class="lg:w-4/5 lg:mx-auto">
+
+    <p class="text-lead text-emphasis italic sm:w-5/6 mx-auto"><i>Custom fields are a nice way to create dynamic content, in this article I want to show the collection of fields used on this blog.</i></p>
+    <p><h1 class="y-header" id="built-with-hakyll-part-02-custom-fields">
+<span>Built with Hakyll – Part 02: Custom Fields</span><a href="#built-with-hakyll-part-02-custom-fields" class="anchor las la-anchor" title="built-with-hakyll-part-02-custom-fields"></a>
+</h1>
+<ul>
+<li>
+Part 01: <a href="2019-12-31-built-with-hakyll-part-1.html">Hakyll basics and context</a>
+</li>
+<li>
+Part 02: A collection of Custom Fields <em>this article</em>
+</li>
+</ul>
+<p>
+In the <a href="2019-12-31-built-with-hakyll-part-1.html">previous article</a> I introduced the basic mechanisms of Hakyll. Part of this introduction was that every content lives in Hakyll as an <code>Item</code>. An <code>Item</code> is created by loading some content from a file (or a wildcarded list of files). In most cases these are Markdown files. For example, this is what loading an <code>Item</code> looks like:
+</p>
+<div class="y-fill-horizontal">
+<div id="cb1" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>match <span class="st">&quot;posts/**.md&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    route <span class="op">$</span> setExtension <span class="st">&quot;html&quot;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    compile</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">$</span>   pandocCompiler</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/post.html&quot;</span> postCtx</span></code></pre>
+</div>
+</div>
+<p>
+For each <code>*.md</code> file inside <code>posts/</code> an <code>.html</code> file is generated by compiling the document using pandoc (which turnsthe markup it into html) and including this content in a template, namely the <code>templates/post.html</code> template, by loading the template and applying it with a given <code>Context</code>.
+</p>
+<p>
+What is a Context? Contexts deliver meta information to the templating engine. The information is constructed for each document individually and by default contains (in that order)
+</p>
+<ol>
+<li>
+A <span class="math inline"><em>b</em><em>o</em><em>d</em><em>y</em></span> field: current content of the document (usually after conversion using pandoc)
+</li>
+<li>
+Metadata fields defined in the document’s frontmatter
+</li>
+<li>
+A <span class="math inline"><em>u</em><em>r</em><em>l</em></span> urlField: url of the final document
+</li>
+<li>
+A <span class="math inline"><em>p</em><em>a</em><em>t</em><em>h</em></span> pathField: path of the original file
+</li>
+<li>
+A <span class="math inline"><em>t</em><em>i</em><em>t</em><em>l</em><em>e</em></span> titleField: title defined in frontmatter
+</li>
+</ol>
+<p>
+These variables can in turn be used in the template and will be substituted by Hakyll. You can read more about templates, again, on the official <a href="https://jaspervdj.be/hakyll/tutorials/04-compilers.html">Hakyll Website</a>
+</p>
+<h1 class="y-header" id="custom-fields">
+<span>Custom fields</span><a href="#custom-fields" class="anchor las la-anchor" title="custom-fields"></a>
+</h1>
+<p>
+Generally <code>Context</code>s are the only way to include dynamic content. Anything that is not plain text from the template or the document comes through a context <code>Field</code>. <code>Field</code>s hold data that is individually derived from each <code>Item</code> i.e. document. They are composed to form a full context which is fed into the templating engine. As <code>Field</code>s are implemented as <code>Monoids</code> composing gets very easy:
+</p>
+<div class="y-fill-horizontal">
+<div id="cb2" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">context ::</span> <span class="dt">Context</span> <span class="dt">String</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>context <span class="ot">=</span> <span class="fu">mconcat</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    [ defaultContext</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    , pathField <span class="st">&quot;sourcefile&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- or</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>context <span class="ot">=</span> defaultContext</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>       <span class="op">&lt;&gt;</span> pathField <span class="st">&quot;sourcefile&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>       <span class="op">&lt;&gt;</span> constField <span class="st">&quot;field&quot;</span> <span class="st">&quot;value&quot;</span></span></code></pre>
+</div>
+</div>
+<p>
+Hakyll comes with a range of default fields:
+</p>
+<ul>
+<li>
+<a href="http://hackage.haskell.org/package/hakyll-4.13.2.0/docs/Hakyll-Web-Template-Context.html#v:boolField"><code>boolFields</code></a>
+</li>
+<li>
+<a href="http://hackage.haskell.org/package/hakyll-4.13.2.0/docs/Hakyll-Web-Template-Context.html#v:constField"><code>constField</code></a>
+</li>
+<li>
+<a href="http://hackage.haskell.org/package/hakyll-4.13.2.0/docs/Hakyll-Web-Template-Context.html#v:modificationTimeField">’modificationTimeField</a>
+</li>
+<li>
+and some more that you can find <a href="http://hackage.haskell.org/package/hakyll-4.13.2.0/docs/Hakyll-Web-Template-Context.html">here</a>
+</li>
+</ul>
+<p>
+While setting up the structure of this blog I found the “need” of having some more fields available though. This is how I started to adapt some implementations I found on the internet, and developed my own. Find those in <a href="https://github.com/ysndr/blog/blob/release/generator/Fields.hs"><code>generator/Fields.hs</code></a>.
+</p>
+<p>
+Most fields are created by giving an implementation of <code>(Item a -&gt; Compiler String)</code> to the following field function.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb3" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">field ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> (<span class="dt">Item</span> a <span class="ot">-&gt;</span> <span class="dt">Compiler</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> <span class="dt">Context</span> a</span></code></pre>
+</div>
+</div>
+<div class="uk-alert-primary note box y-fill-horizontal" data-header>
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+<p>NOTE</p>
+</div>
+</div>
+<div>
+
+</div>
+</div>
+<p>
+I am by no means an expert in Haskell at this point. I have learned alot writing the engine behind all this (Which in the end is actually my main motivator). But I am certain some implementations could be done more idiomatically and/or efficiently. Thus, take the ideas that I had critically.
+</p>
+<p>
+I do welcome any coments in form of issues on <a href="https://github.com/ysndr/blog">Github</a>. :)
+</p>
+</div>
+<h2 class="y-header" id="peekfield">
+<span><code>peekField</code></span><a href="#peekfield" class="anchor las la-anchor" title="peekfield"></a>
+</h2>
+<p>
+I showed this field already in the previous article, it is one of the first fields I made to understand the logic behind them. It simply takes the fist <code>length</code> words and makes them availlable to the template engine under <code>key</code>. As templates are applied after pandoc converted the document to html I needed to take the original content from an earlier created <code>snapshot</code> of the document.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb4" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>peekField</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    ::</span> <span class="dt">String</span>           <span class="co">-- ^ Key to use</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="ot">-&gt;</span> <span class="dt">Int</span>              <span class="co">-- ^ length to peak</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">-&gt;</span> <span class="dt">Snapshot</span>         <span class="co">-- ^ Snapshot to load</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span>   <span class="co">-- ^ Resulting context</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>peekField key <span class="fu">length</span> snapshot <span class="ot">=</span> field key <span class="op">$</span> \item <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    body <span class="ot">&lt;-</span> itemBody <span class="op">&lt;$&gt;</span> loadSnapshot (itemIdentifier item) snapshot</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> (peak body)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span> peak <span class="ot">=</span> T.unpack <span class="op">.</span> T.unwords <span class="op">.</span> <span class="fu">take</span> <span class="fu">length</span> <span class="op">.</span> T.words <span class="op">.</span> T.pack</span></code></pre>
+</div>
+</div>
+<p>
+Problem with this is undeniably that it does not that markup into account at all. That way Code blocks are included without any styling and look very bad.
+</p>
+<h2 class="y-header" id="git-fields">
+<span>Git Fields</span><a href="#git-fields" class="anchor las la-anchor" title="git-fields"></a>
+</h2>
+<p>
+I wanted to allow readers of my blog to follow the history of an article. As the sourceof this blog is hosted on GitHub using GitHub’s history view would be an easy way to achieve this, I thought.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb5" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Git related fields</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">--------------------------------------------------------------------------------</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">GitVersionContent</span> <span class="ot">=</span> <span class="dt">Hash</span> <span class="op">|</span> <span class="dt">Commit</span> <span class="op">|</span> <span class="dt">Full</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>     <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Read</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">GitVersionContent</span> <span class="kw">where</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show</span> content <span class="ot">=</span> <span class="kw">case</span> content <span class="kw">of</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Hash</span> <span class="ot">-&gt;</span> <span class="st">&quot;%h&quot;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Commit</span> <span class="ot">-&gt;</span> <span class="st">&quot;%h: %s&quot;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Full</span> <span class="ot">-&gt;</span> <span class="st">&quot;%h: %s (%ai)&quot;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">-- Query information of a given file tracked with git</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="ot">getGitVersion ::</span> <span class="dt">GitVersionContent</span> <span class="co">-- Kind of information</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>              <span class="ot">-&gt;</span> <span class="dt">FilePath</span>          <span class="co">-- File to query information of</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>              <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">String</span>         <span class="co">--</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>getGitVersion content path <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    (status, stdout, _) <span class="ot">&lt;-</span> readProcessWithExitCode <span class="st">&quot;git&quot;</span> [</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;log&quot;</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;-1&quot;</span>,</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;--format=&quot;</span> <span class="op">++</span> (<span class="fu">show</span> content),</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;--&quot;</span>,</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;src/&quot;</span><span class="op">++</span>path] <span class="st">&quot;&quot;</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="op">$</span> <span class="kw">case</span> status  <span class="kw">of</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>        <span class="dt">ExitSuccess</span> <span class="ot">-&gt;</span> trim stdout</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>        _           <span class="ot">-&gt;</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span> trim <span class="ot">=</span> dropWhileEnd <span class="fu">isSpace</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="co">-- Field that contains the latest commit hash that hash touched the current item.</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="ot">versionField ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">GitVersionContent</span> <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>versionField name content <span class="ot">=</span> field name <span class="op">$</span> \item <span class="ot">-&gt;</span> unsafeCompiler <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> path <span class="ot">=</span> toFilePath <span class="op">$</span> itemIdentifier item</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    getGitVersion content  path</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="co">-- Field that contains the commit hash of HEAD.</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="ot">headVersionField ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">GitVersionContent</span> <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>headVersionField name content  <span class="ot">=</span> field name <span class="op">$</span> \_ <span class="ot">-&gt;</span> unsafeCompiler <span class="op">$</span> getGitVersion content  <span class="st">&quot;.&quot;</span></span></code></pre>
+</div>
+</div>
+<p>
+With the current implementation of <code>getGitVersion</code> I am able to get the latest commit that changed any given document. It spawns a <code>git</code> process and reads its output afterwards.
+</p>
+<p>
+I can even choose from predefined formats:
+</p>
+<ul>
+<li>
+<code>Hash</code> gives the Commit’s hash,
+</li>
+<li>
+<code>Commit</code> the Hash+Message
+</li>
+<li>
+<code>Full</code> Hash+Message+Time
+</li>
+</ul>
+<p>
+Although I think for many pages the number of <code>git</code> invocations might lead to significantly longer build times, for the time being it works rather well.
+</p>
+<h2 class="y-header" id="readtimefield">
+<span><code>readTimeField</code></span><a href="#readtimefield" class="anchor las la-anchor" title="readtimefield"></a>
+</h2>
+<p>
+Another really simple but usefull function that naïvely computes the reading time of a document. Essentially it counts the words of the docutment snapshot and devides it by the average reading velocoty of about 200 words/min.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb6" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">readTimeField ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Snapshot</span> <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>readTimeField name snapshot <span class="ot">=</span> field name <span class="op">$</span> \item <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    body <span class="ot">&lt;-</span> itemBody <span class="op">&lt;$&gt;</span> loadSnapshot (itemIdentifier item) snapshot</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="fu">words</span> <span class="ot">=</span> <span class="fu">length</span> (T.words <span class="op">.</span> T.pack <span class="op">$</span> body)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="op">$</span> <span class="fu">show</span> <span class="op">$</span> <span class="fu">div</span> <span class="fu">words</span> <span class="dv">200</span></span></code></pre>
+</div>
+</div>
+<h2 class="y-header" id="publishedgroupfield">
+<span><code>publishedGroupField</code></span><a href="#publishedgroupfield" class="anchor las la-anchor" title="publishedgroupfield"></a>
+</h2>
+<p>
+Adapted from <a href="https://biosphere.cc/software-engineering/hakyll-group-posts-by-year/">biosphere.cc</a>
+</p>
+<p>
+This field is actually a <code>listField</code>. It is used on the archive page to group posts by year. It is also a quite intimidating one at first sight, but it works perfectly, so 🤷🏼‍♂️.
+</p>
+<p>
+It works by first extracting the year out of the date of every post using <code>extractYear</code>. It then groups the resulting tuples by the year item and merges the groups.
+</p>
+<p>
+Have I already mentioned that working with elements contained in a <code>Compiler</code> Monad is incredibly weird? - <em>It is!</em>
+</p>
+<p>
+Anyway, in the end the template can use the list referenced by <code>name</code> that exposes a field <code>year</code> containing the actual year of a list of posts that is accessable as <code>posts</code> and that have a given <code>postContext</code> applied.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb7" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">publishedGroupField ::</span> <span class="dt">String</span>           <span class="co">-- name</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                    <span class="ot">-&gt;</span> [<span class="dt">Item</span> <span class="dt">String</span>]    <span class="co">-- posts</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                    <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span>   <span class="co">-- Post context</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                    <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span>   <span class="co">-- output context</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>publishedGroupField name posts postContext <span class="ot">=</span> listField name groupCtx <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    tuples <span class="ot">&lt;-</span> <span class="fu">traverse</span> extractYear posts</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> grouped <span class="ot">=</span> groupByYear tuples</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> merged <span class="ot">=</span> <span class="fu">fmap</span> merge <span class="op">$</span> grouped</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> itemized <span class="ot">=</span> <span class="fu">fmap</span> makeItem <span class="op">$</span> merged</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sequence</span> itemized</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span> groupCtx <span class="ot">=</span> field <span class="st">&quot;year&quot;</span> (<span class="fu">return</span> <span class="op">.</span> <span class="fu">show</span> <span class="op">.</span> <span class="fu">fst</span> <span class="op">.</span> itemBody)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                  <span class="op">&lt;&gt;</span> listFieldWith <span class="st">&quot;posts&quot;</span> postContext (<span class="fu">return</span> <span class="op">.</span> <span class="fu">snd</span> <span class="op">.</span> itemBody)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="ot">          merge ::</span> [(<span class="dt">Integer</span>, [<span class="dt">Item</span> <span class="dt">String</span>])]  <span class="ot">-&gt;</span> (<span class="dt">Integer</span>, [<span class="dt">Item</span> <span class="dt">String</span>])</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>          merge gs <span class="ot">=</span> <span class="kw">let</span> conv (year, acc) (_, toAcc) <span class="ot">=</span> (year, toAcc <span class="op">++</span> acc)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                      <span class="kw">in</span>  <span class="fu">foldr</span> conv (<span class="fu">head</span> gs) (<span class="fu">tail</span> gs)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>          groupByYear <span class="ot">=</span> groupBy (\(y, _) (y', _) <span class="ot">-&gt;</span> y <span class="op">==</span> y')</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="ot">          extractYear ::</span> <span class="dt">Item</span> a <span class="ot">-&gt;</span> <span class="dt">Compiler</span> (<span class="dt">Integer</span>,  [<span class="dt">Item</span> a])</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>          extractYear item <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>             time <span class="ot">&lt;-</span> getItemUTC defaultTimeLocale (itemIdentifier item)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>             <span class="kw">let</span>    (year, _, _) <span class="ot">=</span> (toGregorian <span class="op">.</span> utctDay) time</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>             <span class="fu">return</span> (year, [item])</span></code></pre>
+</div>
+</div>
+<h2 class="y-header" id="concatfield">
+<span><code>concatField</code></span><a href="#concatfield" class="anchor las la-anchor" title="concatfield"></a>
+</h2>
+<p>
+An actual use of <code>functionFields</code> – yey.
+</p>
+<p>
+It is used to dynamically apply a different header in the base template. There I construct a path to a partial template using another <code>constField</code> (<code>item-type</code>) which, for posts will display a customized header
+</p>
+<div class="y-fill-horizontal">
+<div id="cb8" class="sourceCode">
+<pre class="sourceCode html"><code class="sourceCode html"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>$partial(concat(&quot;templates/includes/&quot;,item-type, &quot;-header.html&quot;))</span></code></pre>
+</div>
+</div>
+<p>
+The implementation is simply:
+</p>
+<div class="y-fill-horizontal">
+<div id="cb9" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">concatField ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>concatField name <span class="ot">=</span> functionField name (\args item <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="op">$</span> <span class="fu">concat</span> args)</span></code></pre>
+</div>
+</div>
+<h3 class="y-header" id="functionfields">
+<span><code>FunctionFields</code></span><a href="#functionfields" class="anchor las la-anchor" title="functionfields"></a>
+</h3>
+<p>
+For the unintroduced, function fields are defined as:
+</p>
+<div class="y-fill-horizontal">
+<div id="cb10" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">functionField ::</span> <span class="dt">String</span>                                  <span class="co">-- name</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>              <span class="ot">-&gt;</span> ([<span class="dt">String</span>] <span class="ot">-&gt;</span> <span class="dt">Item</span> a <span class="ot">-&gt;</span> <span class="dt">Compiler</span> <span class="dt">String</span>) <span class="co">-- actual function</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>              <span class="ot">-&gt;</span> <span class="dt">Context</span> a</span></code></pre>
+</div>
+</div>
+<p>
+When used, like in the above example (<code>concat(“hello,” " “,”world")</code>) the function
+</p>
+<div class="y-fill-horizontal">
+<div id="cb11" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>(\args item <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="op">$</span> <span class="fu">concat</span> args)</span></code></pre>
+</div>
+</div>
+<p>
+is evaluated where args contains exactly the arguments given (<code>args == [“hello,”" “,”world"]</code>). as well as the <code>Item</code> it is used on i.e. the document. You can now do all you want with the document’s body and arguments given. Apparently though calling the functionField with the same field as argument is not possible.
+</p>
+<p>
+For another explanation see also <a href="https://beerendlauwers.be/posts/2015-09-21-hakylls-functionfield.html">Beerend Lauwens’ post</a>
+</p>
+<h2 class="y-header" id="plaintocfield">
+<span><code>plainTocField</code></span><a href="#plaintocfield" class="anchor las la-anchor" title="plaintocfield"></a>
+</h2>
+<p>
+Although I have written another implementation of this one that allows additional classes applied on certain elements I would like to show this anyway. To generate a simple table of contents pandocs builtin toc gereator is leveraged. I load the documents body, give it to panodc to parse it into a <code>Pandoc _ [Block]</code> and use that to write html with the template <code><span class="math inline"><em>t</em><em>a</em><em>b</em><em>l</em><em>e</em> − <em>o</em><em>f</em> − <em>c</em><em>o</em><em>n</em><em>t</em><em>e</em><em>n</em><em>t</em><em>s</em></span></code>. The output of that is only the table of contents and nothing else.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb12" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">plainTocField ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>plainTocField name depth snapshot <span class="ot">=</span> field name <span class="op">$</span> \item <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    body <span class="ot">&lt;-</span> loadSnapshot (itemIdentifier item) snapshot</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> writerOptions <span class="ot">=</span> def</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>            {</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>              writerTableOfContents <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>            , writerTOCDepth <span class="ot">=</span> depth</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>            , writerTemplate <span class="ot">=</span> <span class="dt">Just</span> <span class="st">&quot;$table-of-contents$&quot;</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>        toc <span class="ot">=</span> <span class="kw">case</span> runPure (readHtml defaultHakyllReaderOptions</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>                                     (T.pack <span class="op">$</span> itemBody body))</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>               <span class="op">&gt;&gt;=</span> \pandoc <span class="ot">-&gt;</span> runPure ( writeHtml5String writerOptions pandoc) <span class="kw">of</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>                   <span class="dt">Left</span> err    <span class="ot">-&gt;</span> <span class="fu">fail</span> <span class="op">$</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>                   <span class="dt">Right</span> item' <span class="ot">-&gt;</span> T.unpack item'</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> toc</span></code></pre>
+</div>
+</div>
+<h1 class="y-header" id="final-words">
+<span>Final Words</span><a href="#final-words" class="anchor las la-anchor" title="final-words"></a>
+</h1>
+<p>
+As I have already mentioned above, I am not the expert in Haskell that I’d like to be. But writing this blog’s engine has taught me much and was a great excuse to dive Haskell and understand its ideas.
+</p>
+<p>
+I hope you enjoyed this post anyway. For ideas critic and about this use the <a href="https://github.com/ysndr/blog/issues/new">GitHub issue tracker</a>
+</p></p>
+
+</article>
+
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+<!--[if lt IE 9]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+<![endif]-->
+
+    </div>
+  </main>
+
+
+  <footer class="font-standout text-sm py-8 px-4 text-mutedDark bg-footer dark">
+      <div class="container grid sm:grid-cols-3 gap-8">
+        <div>
+
+            <h3 class="text-emphasizedDark">Contact</h3>
+            <ul class="ml-1 list-none">
+            <li><a href="mailto:contact@ysndr.de" class="text-emphasizedDark no-underline"><i class="las la-envelope-open-text"></i> contact@ysndr.de</a></li>
+            <li><a href="https://linkedin.com/in/yannik-sander" class="text-emphasizedDark no-underline"><i class="lab la-linkedin"></i></svg> yannik-sander</a></li>
+            <li>
+            <a href="https://github.com/ysndr" class="text-emphasizedDark no-underline"><i class="las la-code-branch"></i> ysndr</a></li>
+          </ul>
+
+
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">Legal</h3>
+          <ul class="ml-1 list-none">
+            <li class="inline-flex justify-items-start items-start mb-0">
+              <span class="las la-check-circle block mr-2"></span> No analytics are used here your data is safe :)
+            </li>
+            <li class="inline-flex items-start">
+              <span class="las la-check-circle block mr-2"></span> The content of this blog is licensed under CC0 terms if not otherwise noted</span>
+            </li>
+          </ul>
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">About this blog</h3>
+          <ul class="ml-1 list-none">
+            <li>
+              Built with <i class="las la-code"></i> and <i class="lar la-heart"></i> using <a class="text-emphasizedDark no-underline" href="https://jaspervdj.be/hakyll/">Hakyll</a>
+            </li>
+            <li class="text-muted"><i class="las la-code-branch"></i> last updated: <a class="text-emphasizedDark no-underline" href="https://github.com/ysndr/blog">0633078: fix: render heading as such in pandoc (#34) (2022-01-02 17:53:02 +0200)</a>
+            </li>
+            <li>
+              <a class="no-underline" href="https://builtwithnix.org" rel="nofollow">
+                <img src="https://builtwithnix.org/badge.svg" style="max-width:100%;">
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+  </footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit-icons.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+  <script>
+    window.cookieconsent.initialise({
+    container: document.getElementById("content"),
+    palette:{
+     popup: {background: "#fff"},
+     button: {background: "#aa0000"},
+    },
+    revokable:true,
+    onStatusChange: function(status) {
+     console.log(this.hasConsented() ?
+      'enable cookies' : 'disable cookies');
+    },
+    law: {
+     regionalLaw: false,
+    },
+    location: false,
+   });
+  </script> -->
+</body>
+
+</html>

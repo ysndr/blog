@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:creator" content="@_ysndr" />
+  <meta property="og:title" content="y|sndr - How this page is generated - Part 01">
+  <meta property="og:description" content="Introduction to Hakyll">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1576020363294-ab5dca00b6f8?w=1000">
+  <meta property="og:url" content="https://blog.ysndr.de/posts/internals/2019-12-31-built-with-hakyll-part-1/index.html">
+  <title>y|sndr - How this page is generated - Part 01</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css" />
+  <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">  <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="../../../rss.xml" />
+  <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="../../../atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../../../assets/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../assets/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../../assets/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../../assets/images/favicon/site.webmanifest">
+</head>
+
+<body class="flex flex-col overflow-x-hidden text-body text-black leading-normal">
+  <header class="bg-muted font-standout leading-snug">
+
+    <div class="flex flex-col sm:flex-row my-8 container justify-items-center justify-end items-center">
+      <div class="flex flex-col text-right text-emphasis">
+          <h1 class="inline-flex flex-col">How this page is generated - Part 01
+          <small>Introduction to Hakyll</small>
+          </h1>
+          <span class="text-xs text-muted">
+          
+          </span>
+      </div>
+      <hr class="hidden sm:block sm:h-24 sm:w-px mx-4 my-4 sm:my-auto min-w-px">
+      <div class="text-sm text-muted sm:w-5/12 md:w-2/5">
+        <ul>
+          <li class="flex">
+            <i class="las la-calendar-day mr-4"></i> December 31, 2019
+          </li>
+          <li class="flex">
+            <i class="las la-stopwatch mr-4"></i> 10 Minutes
+          </li>
+          
+          <li class="flex break-words">
+            <i class="las la-tags mr-4"></i>
+            
+            <span>
+              <a class="text-emphasis" href="../../../tags/internal/">internal</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/technical/">technical</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/haskell/">haskell</a>
+              </span>
+          </li>
+          
+          <li class="flex">
+            <i class="las la-code-branch mr-4"></i>
+            <a class="uk-link-muted" href="https://github.com/ysndr/blog/commit/671aa16">671aa16: Update existing boxes</a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+    <hr class="container" />
+
+</header>
+
+
+  <header class="sticky font-standout inset-0 z-50 min-w-full bg-muted text-base">
+  <nav class="container grid grid-cols-3">
+
+
+
+    <div class="flex flex-col">
+      <a class="content-center my-auto text-muted w-max"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M4 6h20 M4 12h20 M4 18h20"></path>
+      </svg><span class="ml-2 uppercase text-xs">Menu</span></a>
+
+
+      <div uk-dropdown class="container hidden">
+            <div class="inset-x-0 absolute container px-8 grid sm:grid-cols-3 sm:gap-8 shadow-lg bg-white text-sm text-muted fill-current stroke-current pb-6">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Who?</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="https://gist.github.com/ysndr/978662957bb9187fd52b2037466e1e34">CV</a></li>
+                  <li><hr></li>
+                  <li>
+                    <ul horizontal>
+                      <li><a href="mailto:contact@ysndr.de"><i class="las la-envelope-open-text"></i></a></li>
+                      <li class="ml-2"><a href="https://linkedin.com/in/yannik-sander"><i class="lab la-linkedin-in"></i></a>
+                      </li>
+                      <li class="ml-2"><a href="https://github.com/ysndr"><i class="lab la-github"></i></a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+             <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="text-black uppercase">What?</li>
+                  <li><a href="https://github.com/ysndr">Projects</a></li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/sam-knn-regressor">sam-knn-regressor</a></li>
+                  <li><a href="https://github.com/ysndr/nixos-config">NixOS Config</a></li>
+                </ul>
+              </div>
+              <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Blog</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="../../../archive">Archive</a></li>
+                  <li class="flex">
+                    <span>
+                      <svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="rss" stroke="currentColor"><circle cx="3.12" cy="16.8" r="1.85"></circle><path fill="none" stroke-width="1.1" d="M1.5,8.2 C1.78,8.18 2.06,8.16 2.35,8.16 C7.57,8.16 11.81,12.37 11.81,17.57 C11.81,17.89 11.79,18.19 11.76,18.5"></path><path fill="none" stroke-width="1.1" d="M1.5,2.52 C1.78,2.51 2.06,2.5 2.35,2.5 C10.72,2.5 17.5,9.24 17.5,17.57 C17.5,17.89 17.49,18.19 17.47,18.5"></path></svg>
+                    </span>
+                    <ul class="items-center ml-2" horizontal>
+                      <li><a href="../../../rss.xml">RSS</a></li>
+                      <li class="ml-4"><a href="../../../atom.xml">Atom</a></li>
+                    </ul>
+                  </li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/blog/commit/0633078"><span><svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="git-branch"><circle fill="none" stroke-width="1.2" cx="7" cy="3" r="2"></circle><circle fill="none" stroke-width="1.2" cx="14" cy="6" r="2"></circle><circle fill="none" stroke-width="1.2" cx="7" cy="17" r="2"></circle><path fill="none" stroke-width="2" d="M14,8 C14,10.41 12.43,10.87 10.56,11.25 C9.09,11.54 7,12.06 7,15 L7,5"></path></svg></span>   current rev.: 0633078: fix: render heading as such in pandoc (#34)</a></li>
+                </ul>
+              </div>
+            </div>
+      </div>
+
+    </div>
+
+
+    <div class="uk-navbar-nav uk-flex-1 py-4 align-items-center">
+
+      <a href="../../../" class="flex items-center justify-center">
+          <img src="../../../assets/images/logo-small.svg" alt="y|sndr" class="h-8" />
+        </a>
+
+
+    </div>
+
+
+
+    
+    <div class="flex flex-col items-end md:relative">
+        <a class="content-center uppercase my-auto text-muted w-max">
+          <span class="md:hidden">Content</span> <span class="hidden md:block">Table of Contents</span>
+        </a>
+        <div class="y-toc hidden" uk-drop>
+          <div class="container max-w-full sm:max-w-sm  bg-white p-6 w-full absolute text-muted right-0 shadow-xl rounded-b" uk-scrollspy-nav="closest: li; scroll: true; offset: 85; cls: text-emphasis">
+            <ul class><li><a href="#hakyll-the-basics"><span>Hakyll: The Basics</span><span></span></a><ul class><li><a href="#setup"><span>Setup</span><span></span></a></li><li><a href="#basic-concepts"><span>Basic Concepts</span><span></span></a><ul class><li><a href="#config"><span>config</span><span></span></a></li><li><a href="#matching-routes"><span>matching routes</span><span></span></a></li><li><a href="#compiling-with-pandoc"><span>Compiling with Pandoc</span><span></span></a></li><li><a href="#creating-routes"><span>Creating Routes</span><span></span></a></li><li><a href="#contexts"><span>Contexts</span><span></span></a><ul class><li><a href="#items"><span>Items</span><span></span></a></li></ul></li></ul></li></ul></li></ul>
+          </div>
+        </div>
+    </div>
+    
+
+  </nav>
+
+</header>
+
+
+  <main class="my-8">
+    <div class="container">
+      <section class="relative">
+    
+
+<div class="h-56 sm:h-xl xl:h-2xl bg-cover w-5/6 mx-auto lg:min-w-full xl:w-auto mb-8 xl:-mx-24 rounded-lg relative shadow-2xl overflow-hidden">
+    <img src="https://images.unsplash.com/photo-1576020363294-ab5dca00b6f8?w=1000" alt="Article image" class="relative w-full h-full object-cover">
+
+    <div class="w-full absolute bottom-0">
+        <div class="relative">
+            <div class="bg-white rounded-full m-2 sm:m-4 float-right p-1" style="line-height: 0;"><i class="las la-copyright"></i></div>
+            <div uk-drop="pos: top-right" class="w-11/12 max-w-sm hidden absolute m-2 p-2 sm:m-4  sm:p-4 ">
+                <div class="bg-white p-6 rounded">
+                    <h4>Credits</h4>
+                    <span class="block text-sm overflow-auto max-w-full">
+                    
+                    Picture taken by <a style="background-color:black;color:white;text-decoration:none;padding:4px 6px;font-family:-apple-system, BlinkMacSystemFont, &quot;San Francisco&quot;, &quot;Helvetica Neue&quot;, Helvetica, Ubuntu, Roboto, Noto, &quot;Segoe UI&quot;, Arial, sans-serif;font-size:12px;font-weight:bold;line-height:1.2;display:inline-block;border-radius:3px" href="https://unsplash.com/@mrsimonfischer?utm_medium=referral&amp;utm_campaign=photographer-credit&amp;utm_content=creditBadge" target="_blank" rel="noopener noreferrer" title="Download free do whatever you want high-resolution photos from Szymon Fischer"><span style="display:inline-block;padding:2px 3px"><svg xmlns="http://www.w3.org/2000/svg" style="height:12px;width:auto;position:relative;vertical-align:middle;top:-2px;fill:white" viewBox="0 0 32 32"><title>unsplash-logo</title><path d="M10 9V0h12v9H10zm12 5h10v18H0V14h10v9h12v-9z"></path></svg></span><span style="display:inline-block;padding:2px 3px">Szymon Fischer</span></a> on Unsplash
+                    
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<article class="lg:w-4/5 lg:mx-auto">
+
+    <p class="text-lead text-emphasis italic sm:w-5/6 mx-auto"><i>This site is build with Hakyll, here I explain how.</i></p>
+    <p><h1 class="y-header" id="hakyll-the-basics">
+<span>Hakyll: The Basics</span><a href="#hakyll-the-basics" class="anchor las la-anchor" title="hakyll-the-basics"></a>
+</h1>
+<p>
+Hakyll is tool to build static webpages and written in Haskell borrowing part of its name from it and the other from the renown static site engine <a href="https://jekyllrb.com/">Jekyll</a>. The fundamental difference is that instead of being a standalone program, Hakyll is implemented as a library offering a rich DSL to define the contents of a website. The DSL can be used to include static assets, compile pages using templates and even generate whole pages by itself i.e. RSS and ATOM feeds. As Hakyll is written in Haskell combining it with the great text conversion tool <a href="https://pandoc.org/">pandoc</a> is a low hanging fruit. The combination of both allows compiling from several different file formats including (an extended version of) Markdown, <a href="http://docutils.sourceforge.net/docs/ref/rst/introduction.html">RST</a> and Emacs <a href="http://orgmode.org/">Org-Mode</a>.
+</p>
+<div class="uk-alert-warning warning box y-fill-horizontal" data-header="Attention">
+<div class="header">
+<div>
+<span class="las la-exclamation-circle"></span>
+<div class="badge">
+<p>WARN</p>
+</div>
+</div>
+<div>
+<p>
+Attention
+</p>
+</div>
+</div>
+<p>
+<em>I won’t go into all the things used in this article, instead there will be individual posts going into more detail about different elements</em>
+</p>
+</div>
+<ul>
+<li>
+Part 01: Hakyll basics and context <em>(this article)</em>
+</li>
+<li>
+Part 02: <a href="../2019-12-31-built-with-hakyll-part-1/2020-03-22-built-with-hakyll-part-2.html">Custom Fields</a>
+</li>
+</ul>
+<h2 class="y-header" id="setup">
+<span>Setup</span><a href="#setup" class="anchor las la-anchor" title="setup"></a>
+</h2>
+<p>
+Setting up Hakyll in general using stack or cabal is already documented extensively. My take on this project involves using <a href="https://nixos.org/nix/">nix</a> as dependency/package manager. How I set up this blog using nix will also be discussed another time.
+</p>
+<h2 class="y-header" id="basic-concepts">
+<span>Basic Concepts</span><a href="#basic-concepts" class="anchor las la-anchor" title="basic-concepts"></a>
+</h2>
+<p>
+In this article I would like to introduce the basic concepts of Hakyll in an applied way.
+</p>
+<p>
+The heart of this page is <a href="https://github.com/ysndr/blog/blob/release/generator/Main.hs"><code>generator/Main.hs</code></a>.
+</p>
+<p>
+At it’s bare minimum a basic Hakyll generator looks like this:
+</p>
+<div class="y-fill-horizontal">
+<div id="cb1" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">config ::</span> <span class="dt">Configuration</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>config <span class="ot">=</span> defaultConfiguration {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- config overrides such as the path to the page content source</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- and compiled item's destination</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- A context extending the default context by a date field</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ot">postCtx ::</span> <span class="dt">Tags</span> <span class="ot">-&gt;</span> <span class="dt">Tags</span> <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>postCtx tags category <span class="ot">=</span> dateField <span class="st">&quot;date&quot;</span> <span class="st">&quot;%B %e, %Y&quot;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                     <span class="op">&lt;&gt;</span> defaultContext</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> hakyllWith config <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    match <span class="st">&quot;posts/**.md&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        route <span class="op">$</span> setExtension <span class="st">&quot;html&quot;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        compile</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            <span class="op">$</span>   pandocCompiler</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>            <span class="co">-- applies the post template</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>            <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/post.html&quot;</span> postCtx</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>            <span class="co">-- embeds the rendered post into the page template</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>            <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/default.html&quot;</span> postCtx</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>            <span class="op">&gt;&gt;=</span> relativizeUrls</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    create [<span class="st">&quot;archive.html&quot;</span>] <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>            route idRoute</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>            compile <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>                posts <span class="ot">&lt;-</span> recentFirst <span class="op">=&lt;&lt;</span> loadAll <span class="st">&quot;posts/**&quot;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>                <span class="kw">let</span> postCtx <span class="ot">=</span> postCtx tags categories</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>                <span class="kw">let</span> archiveCtx <span class="ot">=</span> listField <span class="st">&quot;posts&quot;</span> postCtx (<span class="fu">return</span> posts)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>                            <span class="op">&lt;&gt;</span> constField <span class="st">&quot;title&quot;</span> <span class="st">&quot;Archive&quot;</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>                            <span class="op">&lt;&gt;</span> customBaseContext</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>                makeItem <span class="st">&quot;&quot;</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>                    <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/archive.html&quot;</span> archiveCtx</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>                    <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/default.html&quot;</span> archiveCtx</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>                    <span class="op">&gt;&gt;=</span> relativizeUrls</span></code></pre>
+</div>
+</div>
+<p>
+This will render all markdown files under <code>posts/</code> to html files under our build route and setup an archive site listing all posts.
+</p>
+<p>
+In this snipped we see several things lets go through them individually:
+</p>
+<ol type="1">
+<li>
+config
+</li>
+<li>
+matching routes
+</li>
+<li>
+compiling with pandoc
+</li>
+<li>
+templates
+</li>
+<li>
+contexts
+</li>
+</ol>
+<h3 class="y-header" id="config">
+<span>config</span><a href="#config" class="anchor las la-anchor" title="config"></a>
+</h3>
+<div class="y-fill-horizontal">
+<div id="cb2" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">config ::</span> <span class="dt">Configuration</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>config <span class="ot">=</span> defaultConfiguration { }</span></code></pre>
+</div>
+</div>
+<p>
+This sets up the runtime configuration of hakyll itself. With it we can override among others the folder in which Hakyll searches for its content and where the result should be stored. All available options can be found inside the <a href="https://jaspervdj.be/hakyll/reference/Hakyll-Core-Configuration.html">documentation</a>
+</p>
+<h3 class="y-header" id="matching-routes">
+<span>matching routes</span><a href="#matching-routes" class="anchor las la-anchor" title="matching-routes"></a>
+</h3>
+<div class="y-fill-horizontal">
+<div id="cb3" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>match <span class="st">&quot;posts/**.md&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    route <span class="op">$</span> setExtension <span class="st">&quot;html&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    compile</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">$</span>   pandocCompiler</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- applies the post template</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/post.html&quot;</span> postCtx</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- embeds the rendered post into the page template</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/default.html&quot;</span> postCtx</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;=</span> relativizeUrls</span></code></pre>
+</div>
+</div>
+<p>
+In order to create a page from an existing source we use the match function. It takes a <code>FilePath</code> and a function telling it what to do with the file. <code>route</code> will then map the matched items to the paths created by <code>setExtension</code> which unsurprisingly only changes the resulting files extension to <code>html</code>. There are a few other functions that can be used here (basically all functions that return <code>Routes</code>). Those can be used to do more advanced route editing such as creating fancy paths using <code>index.html</code><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.
+</p>
+<p>
+But what does this function actually do in particular? 1. It searches for all markdown files under the <code>posts/</code> directory. 2. Defines their final route 3. Compiles them to html using pandoc 4. Embedds them into a post template 5. Embedds raw posts into the default page template 6. And finally relativizes urls, which is a fancy function that keeps track of the resources referenced locally and keeps their links up to date.
+</p>
+<h3 class="y-header" id="compiling-with-pandoc">
+<span>Compiling with Pandoc</span><a href="#compiling-with-pandoc" class="anchor las la-anchor" title="compiling-with-pandoc"></a>
+</h3>
+<p>
+In the snippet above the default <code>pandocCompiler</code> function is used to read the content of the file and transform it into HTML using Hakyll’s default options for pandoc. Aside <code>pandocCompiler</code> there are a few more low level functions available that allow deeper customization in the regards of which pandoc templates are used, which extensions activated and so forth. There are also <code>pandocCompilerWithTransform</code> and <code>pandocCompilerWithTransformM</code> that allow editing the intermediate parsed content pandoc uses internally. At this point rich postprocessing can be applied, just alike the usual pandoc filters. The only grain is that existing pandoc filters (i.e. <a href="https://github.com/jgm/pandocfilters">pandocfilters</a> or <a href="https://github.com/sergiocorreia/panflute">panflute</a>) cannot be easily applied with Hakyll.
+</p>
+<h3 class="y-header" id="creating-routes">
+<span>Creating Routes</span><a href="#creating-routes" class="anchor las la-anchor" title="creating-routes"></a>
+</h3>
+<p>
+Additionally to matching existing files and compiling them, one can also generate fully independent files using the <code>create</code> function.
+</p>
+<div class="y-fill-horizontal">
+<div id="cb4" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>create [<span class="st">&quot;archive.html&quot;</span>] <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    route idRoute</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    compile <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        posts <span class="ot">&lt;-</span> recentFirst <span class="op">=&lt;&lt;</span> loadAll <span class="st">&quot;posts/**&quot;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> postCtx <span class="ot">=</span> postCtx tags categories</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> archiveCtx <span class="ot">=</span> listField <span class="st">&quot;posts&quot;</span> postCtx (<span class="fu">return</span> posts)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                    <span class="op">&lt;&gt;</span> constField <span class="st">&quot;title&quot;</span> <span class="st">&quot;Archive&quot;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                    <span class="op">&lt;&gt;</span> customBaseContext</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        makeItem <span class="st">&quot;&quot;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>            <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/archive.html&quot;</span> archiveCtx</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>            <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/default.html&quot;</span> archiveCtx</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>            <span class="op">&gt;&gt;=</span> relativizeUrls</span></code></pre>
+</div>
+</div>
+<p>
+This creates a files <code>archive.html</code> which is built using the compile function that basically wraps an <code>Item a</code> in the <code>Compiler</code> monad. The corresponding item is created using <code>makeItem</code> that itroduces an empty String Item that is enriched first using the archive template and subsequently the default page template.
+</p>
+<p>
+Notice the use of <code>loadAll</code> that makes the set of all posts availlable inside he compile scope. Most importantly though are the both contexts, especially the <code>archiveCtx</code> that makes the posts available to the template engine as a list of <code>postCtx</code>s.
+</p>
+<h3 class="y-header" id="contexts">
+<span>Contexts</span><a href="#contexts" class="anchor las la-anchor" title="contexts"></a>
+</h3>
+<p>
+Contexts contain the meta information that is available to the templating engine when building an <code>Item</code>. Thus allowing the usage of the computed value in the template files. A context holds a number of fields which are contexts as well. Each field’s value is created for every compilation item (this is every item the context will be applied on, usually individual posts).
+</p>
+<p>
+Take for example the following field definition:
+</p>
+<div class="y-fill-horizontal">
+<div id="cb5" class="sourceCode">
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>peekField</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    ::</span> <span class="dt">String</span>           <span class="co">-- ^ Key to use</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="ot">-&gt;</span> <span class="dt">Int</span>              <span class="co">-- ^ length to peak</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">-&gt;</span> <span class="dt">Snapshot</span>         <span class="co">-- ^ Snapshot to load</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="ot">-&gt;</span> <span class="dt">Context</span> <span class="dt">String</span>   <span class="co">-- ^ Resulting context</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>peekField key <span class="fu">length</span> snapshot <span class="ot">=</span> field key <span class="op">$</span> \item <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    body <span class="ot">&lt;-</span> itemBody <span class="op">&lt;$&gt;</span> loadSnapshot (itemIdentifier item) snapshot</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> (peak body)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span> peak <span class="ot">=</span> T.unpack <span class="op">.</span> T.unwords <span class="op">.</span> <span class="fu">take</span> <span class="fu">length</span> <span class="op">.</span> T.words <span class="op">.</span> T.pack</span></code></pre>
+</div>
+</div>
+<p>
+This is a very simple field once created to serve as my own version of a teaser field. As you can see a <code>field</code> is created from a key and a function mapping an item to a string. In this case the item’s body is extracted from a <a href="https://jaspervdj.be/hakyll/tutorials/05-snapshots-feeds.html#snapshots">snapshot</a> of the item’s content. Then <code>length</code> words are taken and returned. (If you are in the actual need of a teaser field I would advice you though to use the <a href="https://jaspervdj.be/hakyll/reference/Hakyll-Web-Template-Context.html#v:teaserField"><code>teaserField</code></a>).
+</p>
+<p>
+Yet what this example demonstate is the integral importance of <code>Item</code>s in Hakyll.
+</p>
+<h4 class="y-header" id="items">
+<span>Items</span><a href="#items" class="anchor las la-anchor" title="items"></a>
+</h4>
+<p>
+<code>Item</code>s are a simple datatypes that wrap a <code>body</code> of some type <code>a</code> (usually <code>String</code>) and an identifier.
+</p>
+<p>
+Most of Hakyll’s functions that deal with content are working with <code>Item</code>s. As seen above <code>Item</code>s can also be stored in snapshots and retrieved later on. Especially in <code>field</code>s <code>Item</code>s contain the content from which the desired <code>field</code> can be derived from.
+</p>
+<hr />
+<p>
+I don’t mean to write an extensive documentation of all the concepts in Hakyll, an complete introductory tutorial as well as links to other peoples takes can be found at Jasper’s (the founder of Hakyll) <a href="https://jaspervdj.be/hakyll/tutorials.html">website</a>.
+</p>
+<p>
+In a follow up article I would like to share a compilation of custom fields that I created or adapted from other blogs.
+</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote">
+<p>
+<a href="rohanjain.in/hakyll-clean-urls/">rohanjain.in/hakyll-clean-urls/</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a>
+</p>
+</li>
+</ol>
+</section></p>
+
+</article>
+
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+<!--[if lt IE 9]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+<![endif]-->
+
+    </div>
+  </main>
+
+
+  <footer class="font-standout text-sm py-8 px-4 text-mutedDark bg-footer dark">
+      <div class="container grid sm:grid-cols-3 gap-8">
+        <div>
+
+            <h3 class="text-emphasizedDark">Contact</h3>
+            <ul class="ml-1 list-none">
+            <li><a href="mailto:contact@ysndr.de" class="text-emphasizedDark no-underline"><i class="las la-envelope-open-text"></i> contact@ysndr.de</a></li>
+            <li><a href="https://linkedin.com/in/yannik-sander" class="text-emphasizedDark no-underline"><i class="lab la-linkedin"></i></svg> yannik-sander</a></li>
+            <li>
+            <a href="https://github.com/ysndr" class="text-emphasizedDark no-underline"><i class="las la-code-branch"></i> ysndr</a></li>
+          </ul>
+
+
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">Legal</h3>
+          <ul class="ml-1 list-none">
+            <li class="inline-flex justify-items-start items-start mb-0">
+              <span class="las la-check-circle block mr-2"></span> No analytics are used here your data is safe :)
+            </li>
+            <li class="inline-flex items-start">
+              <span class="las la-check-circle block mr-2"></span> The content of this blog is licensed under CC0 terms if not otherwise noted</span>
+            </li>
+          </ul>
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">About this blog</h3>
+          <ul class="ml-1 list-none">
+            <li>
+              Built with <i class="las la-code"></i> and <i class="lar la-heart"></i> using <a class="text-emphasizedDark no-underline" href="https://jaspervdj.be/hakyll/">Hakyll</a>
+            </li>
+            <li class="text-muted"><i class="las la-code-branch"></i> last updated: <a class="text-emphasizedDark no-underline" href="https://github.com/ysndr/blog">0633078: fix: render heading as such in pandoc (#34) (2022-01-02 17:53:02 +0200)</a>
+            </li>
+            <li>
+              <a class="no-underline" href="https://builtwithnix.org" rel="nofollow">
+                <img src="https://builtwithnix.org/badge.svg" style="max-width:100%;">
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+  </footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit-icons.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+  <script>
+    window.cookieconsent.initialise({
+    container: document.getElementById("content"),
+    palette:{
+     popup: {background: "#fff"},
+     button: {background: "#aa0000"},
+    },
+    revokable:true,
+    onStatusChange: function(status) {
+     console.log(this.hasConsented() ?
+      'enable cookies' : 'disable cookies');
+    },
+    law: {
+     regionalLaw: false,
+    },
+    location: false,
+   });
+  </script> -->
+</body>
+
+</html>

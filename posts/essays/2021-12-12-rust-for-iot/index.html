@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:creator" content="@_ysndr" />
+  <meta property="og:title" content="y|sndr - Rust as a platform for IoT">
+  <meta property="og:description" content="Analyzing the readiness of the Rust ecosystem for IoT">
+  <meta property="og:image" content="https://unsplash.com/photos/LqKhnDzSF-8/download?ixid=MnwxMjA3fDB8MXxzZWFyY2h8NHx8aW90fHwwfHx8fDE2MzkwNDcwMzQ&w=1920">
+  <meta property="og:url" content="https://blog.ysndr.de/posts/essays/2021-12-12-rust-for-iot/index.html">
+  <title>y|sndr - Rust as a platform for IoT</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css" />
+  <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">  <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="../../../rss.xml" />
+  <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="../../../atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../../../assets/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../assets/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../../assets/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../../assets/images/favicon/site.webmanifest">
+</head>
+
+<body class="flex flex-col overflow-x-hidden text-body text-black leading-normal">
+  <header class="bg-muted font-standout leading-snug">
+
+    <div class="flex flex-col sm:flex-row my-8 container justify-items-center justify-end items-center">
+      <div class="flex flex-col text-right text-emphasis">
+          <h1 class="inline-flex flex-col">Rust as a platform for IoT
+          <small>Analyzing the readiness of the Rust ecosystem for IoT</small>
+          </h1>
+          <span class="text-xs text-muted">
+          
+              Yannik Sander
+              
+          </span>
+      </div>
+      <hr class="hidden sm:block sm:h-24 sm:w-px mx-4 my-4 sm:my-auto min-w-px">
+      <div class="text-sm text-muted sm:w-5/12 md:w-2/5">
+        <ul>
+          <li class="flex">
+            <i class="las la-calendar-day mr-4"></i> December 12, 2021
+          </li>
+          <li class="flex">
+            <i class="las la-stopwatch mr-4"></i> 40 Minutes
+          </li>
+          
+          <li class="flex break-words">
+            <i class="las la-tags mr-4"></i>
+            
+            <span>
+              <a class="text-emphasis" href="../../../tags/technical/">technical</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/rust/">rust</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/IoT/">IoT</a>,
+              
+            <span>
+              <a class="text-emphasis" href="../../../tags/kth/">kth</a>
+              </span>
+          </li>
+          
+          <li class="flex">
+            <i class="las la-code-branch mr-4"></i>
+            <a class="uk-link-muted" href="https://github.com/ysndr/blog/commit/f544721">f544721: Post: rust embedded (#30)</a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+    <hr class="container" />
+
+</header>
+
+
+  <header class="sticky font-standout inset-0 z-50 min-w-full bg-muted text-base">
+  <nav class="container grid grid-cols-3">
+
+
+
+    <div class="flex flex-col">
+      <a class="content-center my-auto text-muted w-max"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M4 6h20 M4 12h20 M4 18h20"></path>
+      </svg><span class="ml-2 uppercase text-xs">Menu</span></a>
+
+
+      <div uk-dropdown class="container hidden">
+            <div class="inset-x-0 absolute container px-8 grid sm:grid-cols-3 sm:gap-8 shadow-lg bg-white text-sm text-muted fill-current stroke-current pb-6">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Who?</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="https://gist.github.com/ysndr/978662957bb9187fd52b2037466e1e34">CV</a></li>
+                  <li><hr></li>
+                  <li>
+                    <ul horizontal>
+                      <li><a href="mailto:contact@ysndr.de"><i class="las la-envelope-open-text"></i></a></li>
+                      <li class="ml-2"><a href="https://linkedin.com/in/yannik-sander"><i class="lab la-linkedin-in"></i></a>
+                      </li>
+                      <li class="ml-2"><a href="https://github.com/ysndr"><i class="lab la-github"></i></a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+             <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="text-black uppercase">What?</li>
+                  <li><a href="https://github.com/ysndr">Projects</a></li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/sam-knn-regressor">sam-knn-regressor</a></li>
+                  <li><a href="https://github.com/ysndr/nixos-config">NixOS Config</a></li>
+                </ul>
+              </div>
+              <hr class="sm:hidden">
+              <div>
+                <ul class="flex flex-col gap-2">
+                  <li class="uppercase text-black">Blog</li>
+                  <li><a href="../../../about">About Me</a></li>
+                  <li><a href="../../../archive">Archive</a></li>
+                  <li class="flex">
+                    <span>
+                      <svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="rss" stroke="currentColor"><circle cx="3.12" cy="16.8" r="1.85"></circle><path fill="none" stroke-width="1.1" d="M1.5,8.2 C1.78,8.18 2.06,8.16 2.35,8.16 C7.57,8.16 11.81,12.37 11.81,17.57 C11.81,17.89 11.79,18.19 11.76,18.5"></path><path fill="none" stroke-width="1.1" d="M1.5,2.52 C1.78,2.51 2.06,2.5 2.35,2.5 C10.72,2.5 17.5,9.24 17.5,17.57 C17.5,17.89 17.49,18.19 17.47,18.5"></path></svg>
+                    </span>
+                    <ul class="items-center ml-2" horizontal>
+                      <li><a href="../../../rss.xml">RSS</a></li>
+                      <li class="ml-4"><a href="../../../atom.xml">Atom</a></li>
+                    </ul>
+                  </li>
+                  <li><hr></li>
+                  <li><a href="https://github.com/ysndr/blog/commit/0633078"><span><svg class="w-4 h-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-svg="git-branch"><circle fill="none" stroke-width="1.2" cx="7" cy="3" r="2"></circle><circle fill="none" stroke-width="1.2" cx="14" cy="6" r="2"></circle><circle fill="none" stroke-width="1.2" cx="7" cy="17" r="2"></circle><path fill="none" stroke-width="2" d="M14,8 C14,10.41 12.43,10.87 10.56,11.25 C9.09,11.54 7,12.06 7,15 L7,5"></path></svg></span>   current rev.: 0633078: fix: render heading as such in pandoc (#34)</a></li>
+                </ul>
+              </div>
+            </div>
+      </div>
+
+    </div>
+
+
+    <div class="uk-navbar-nav uk-flex-1 py-4 align-items-center">
+
+      <a href="../../../" class="flex items-center justify-center">
+          <img src="../../../assets/images/logo-small.svg" alt="y|sndr" class="h-8" />
+        </a>
+
+
+    </div>
+
+
+
+    
+    <div class="flex flex-col items-end md:relative">
+        <a class="content-center uppercase my-auto text-muted w-max">
+          <span class="md:hidden">Content</span> <span class="hidden md:block">Table of Contents</span>
+        </a>
+        <div class="y-toc hidden" uk-drop>
+          <div class="container max-w-full sm:max-w-sm  bg-white p-6 w-full absolute text-muted right-0 shadow-xl rounded-b" uk-scrollspy-nav="closest: li; scroll: true; offset: 85; cls: text-emphasis">
+            <ul class><li><a href="#introduction"><span>Introduction</span><span></span></a><ul class><li><a href="#ubiquitous-computing-and-iot"><span>Ubiquitous Computing and IoT</span><span></span></a><ul class><li><a href="#introduction-to-the-character-of-ubiquitous-computing"><span>Introduction to the character of ubiquitous computing</span><span></span></a><ul class><li><a href="#context-awareness-and-pro-activeness"><span>Context Awareness and Pro-Activeness</span><span></span></a></li><li><a href="#adaptability"><span>Adaptability</span><span></span></a></li><li><a href="#intelligence"><span>Intelligence</span><span></span></a></li><li><a href="#summary-of-the-dimensions-of-ubicomp"><span>Summary of the Dimensions of Ubicomp</span><span></span></a></li></ul></li><li><a href="#the-internet-of-things"><span>The Internet of Things</span><span></span></a></li></ul></li><li><a href="#rust"><span>Rust</span><span></span></a></li></ul></li><li><a href="#the-rust-ecosystem-for-iot"><span>The Rust Ecosystem for IoT</span><span></span></a><ul class><li><a href="#rust-on-microcontrollers"><span>Rust on Microcontrollers</span><span></span></a><ul class><li><a href="#tools"><span>Tools</span><span></span></a></li><li><a href="#abstraction-layers"><span>Abstraction layers</span><span></span></a><ul class><li><a href="#accessing-the-hardware"><span>Accessing the hardware</span><span></span></a></li><li><a href="#abstracting-hardware-functions"><span>Abstracting hardware functions</span><span></span></a></li><li><a href="#section"><span><!--Building on specific devices--></span><span></span></a></li></ul></li><li><a href="#drivers"><span>Drivers</span><span></span></a></li><li><a href="#notable-mentions"><span>Notable Mentions</span><span></span></a></li></ul></li><li><a href="#leaving-microcontrollers"><span>Leaving Microcontrollers</span><span></span></a></li><li><a href="#rust-on-the-edge"><span>Rust on the Edge</span><span></span></a></li></ul></li><li><a href="#rust-as-a-platform"><span>Rust as a platform</span><span></span></a><ul class><li><a href="#today"><span>Today</span><span></span></a><ul class><li><a href="#the-good"><span>The good</span><span></span></a><ul class><li><a href="#performance-and-ergonomics"><span>Performance and Ergonomics (++)</span><span></span></a></li><li><a href="#tools-1"><span>Tools (++)</span><span></span></a></li><li><a href="#frameworks-and-libraries"><span>Frameworks and Libraries (+)</span><span></span></a></li></ul></li><li><a href="#the-bad"><span>The bad</span><span></span></a><ul class><li><a href="#documentation"><span>Documentation (+/±)</span><span></span></a></li><li><a href="#stability"><span>Stability (±)</span><span></span></a></li><li><a href="#framework-interoperability"><span>Framework Interoperability (±)</span><span></span></a></li></ul></li><li><a href="#the-ugly"><span>The ugly</span><span></span></a><ul class><li><a href="#arm--"><span><del>ARM</del> (-)</span><span></span></a></li></ul></li></ul></li><li><a href="#in-the-future"><span>In the future</span><span></span></a><ul class><li><a href="#rust-foundation"><span>Rust Foundation</span><span></span></a></li><li><a href="#embedded-wg"><span>Embedded-WG</span><span></span></a></li><li><a href="#ferrous"><span>Ferrous</span><span></span></a></li><li><a href="#librariestools"><span>Libraries/Tools</span><span></span></a></li></ul></li></ul></li><li><a href="#conclusion"><span>Conclusion</span><span></span></a></li><li><a href="#references"><span>References</span><span></span></a></li></ul>
+          </div>
+        </div>
+    </div>
+    
+
+  </nav>
+
+</header>
+
+
+  <main class="my-8">
+    <div class="container">
+      <section class="relative">
+    
+
+<div class="h-56 sm:h-xl xl:h-2xl bg-cover w-5/6 mx-auto lg:min-w-full xl:w-auto mb-8 xl:-mx-24 rounded-lg relative shadow-2xl overflow-hidden">
+    <img src="https://unsplash.com/photos/LqKhnDzSF-8/download?ixid=MnwxMjA3fDB8MXxzZWFyY2h8NHx8aW90fHwwfHx8fDE2MzkwNDcwMzQ&w=1920" alt="Article image" class="relative w-full h-full object-cover">
+
+    <div class="w-full absolute bottom-0">
+        <div class="relative">
+            <div class="bg-white rounded-full m-2 sm:m-4 float-right p-1" style="line-height: 0;"><i class="las la-copyright"></i></div>
+            <div uk-drop="pos: top-right" class="w-11/12 max-w-sm hidden absolute m-2 p-2 sm:m-4  sm:p-4 ">
+                <div class="bg-white p-6 rounded">
+                    <h4>Credits</h4>
+                    <span class="block text-sm overflow-auto max-w-full">
+                    
+                    Made by Joshua Sortino on <a hrep="https://unsplash.com/photos/LqKhnDzSF-8">Unsplash</a>
+
+                    
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<article class="lg:w-4/5 lg:mx-auto">
+
+    <p class="text-lead text-emphasis italic sm:w-5/6 mx-auto"><i>This essay presents a summary of the Rust ecosystem aiming at applications in IoT and an analysis of its current suitability for new projects at the time of writing in mid-2021.</i></p>
+    <p><div class="uk-alert-primary note box y-fill-horizontal" data-header="Background">
+<div class="header">
+<div>
+<span class="las la-pencil-alt"></span>
+<div class="badge">
+<p>NOTE</p>
+</div>
+</div>
+<div>
+<p>
+Background
+</p>
+</div>
+</div>
+<p>
+This essay was written as part of the ID2012 Ubiquitous Computing Course at KTH Royal Institute of Technology Stockholm.
+</p>
+<p>
+The task was to produce an analytic overview of a topic in the domain of Ubiquitous Computing or IoT. I chose Rust’s application for IoT out of my personal interest in Rust and previous experiences diving into IoT and specifically embedded devices using Rust.
+</p>
+<p>
+The essay was finished and handed in by <strong>May 2021</strong> and reviewing the field today already shows some minor changes. Therefore be warned, the field is evolving quickly and might look better depending on when you will read this.
+</p>
+<p>
+If you want to support my work or reach out feel free under the emails below:
+</p>
+<p>
+<strong>Yannik Sander</strong> (yannik@kth.se / contact@ysndr.de)
+</p>
+<p>
+<em>If you want to use this article, please consult me first. A PDF version is available <a href="../rust-for-iot/Sander_Rust-for-IoT.pdf">here</a></em>
+</p>
+</div>
+<h1 class="y-header" id="introduction">
+<span>Introduction</span><a href="#introduction" class="anchor las la-anchor" title="introduction"></a>
+</h1>
+<p>
+The IoT and Ubiquitous Computing already makes for a large share of software being written today. To prove secure writing such software should be ergonomic while staying performant and efficient, the potential for human error should be minimized.
+</p>
+<p>
+Rust is a young programming language with a lot of promises, including being a viable platform for IoT of Ubiquitous computing. This essay will introduce Ubiquitous Computing and IoT, then, draw a picture of the current Rust ecosystem relevant for these fields and finally analyze how well this ecosystem can provide for the demands of the field.
+</p>
+<h2 class="y-header" id="ubiquitous-computing-and-iot">
+<span>Ubiquitous Computing and IoT</span><a href="#ubiquitous-computing-and-iot" class="anchor las la-anchor" title="ubiquitous-computing-and-iot"></a>
+</h2>
+<h3 class="y-header" id="introduction-to-the-character-of-ubiquitous-computing">
+<span>Introduction to the character of ubiquitous computing</span><a href="#introduction-to-the-character-of-ubiquitous-computing" class="anchor las la-anchor" title="introduction-to-the-character-of-ubiquitous-computing"></a>
+</h3>
+<p>
+The notion of Ubiquitous Computing, often and in the following simply referred to as <strong>Ubicomp</strong>, has been established by Mark Weiser in his 1991 paper envisioning “The Computer for the 21st Century”<span class="citation" data-cites="weiser_computer_nodate"><span class="citation" data-cites="weiser_computer_nodate">[1]</span></span>. In a time where computing was visible, immobile and rear compared to today’s standards, Weiser spoke of a “disappearance” of technology. Surely, he did not speak about a decrease in computing, but the opposite. The disappearance was about the obvious presence of said technology. Weiser predicted a world where computing is omnipresent – <em>ubiquitous</em> – “weaved into everyday life.” On the one hand, it was about the mobility of computers, i.e. being able to take computing everywhere. Yet, this doesn’t cover it completely! Indeed, it was the unintrusive enhancement of people’s life that defined Ubicomp.
+</p>
+<p>
+In the modern day, Ubicomp has become an important part of human-computer interaction (HCI) implementation and research. Especially being aware of the user’s context and acting upon that is an important aspect of Ubicomp relevant to HCI and carrying numerous opportunities for future advancements in computing <span class="citation" data-cites="dey_distributed_2002"><span class="citation" data-cites="dey_distributed_2002">[2]</span></span>. There have been great developments in technology since Weiser formulated the concept of Ubicomp that enable many of his ideas. Poppe et.al. <span class="citation" data-cites="poppe_evaluating_2007"><span class="citation" data-cites="poppe_evaluating_2007">[3]</span></span> pointed out critical developments in this regard.:
+</p>
+<h4 class="y-header" id="context-awareness-and-pro-activeness">
+<span>Context Awareness and Pro-Activeness</span><a href="#context-awareness-and-pro-activeness" class="anchor las la-anchor" title="context-awareness-and-pro-activeness"></a>
+</h4>
+<p>
+Multitudes of sensors both owned (or even worn) by the user or present in the public domain allow the greater possibility to take user context into account. This includes classifying user’s actions, emotions, health and location and allows them to provide services related to that. This might be sports tracking e.g. analytics and recommendations in tennis <span class="citation" data-cites="sharma_wearable_2017"><span class="citation" data-cites="sharma_wearable_2017">[4]</span></span> or granting access to public transport without any interaction, enabled by face detection <span class="citation" data-cites="li_you_2019"><span class="citation" data-cites="li_you_2019">[5]</span></span>. Further, context awareness empowers services to be gradually more proactive, likewise reducing the amount of interaction required by a user, although “mixed-initiative” is said to be more appropriate to HCI. Siri <span class="citation" data-cites="noauthor_use_nodate"><span class="citation" data-cites="noauthor_use_nodate">[6]</span></span> and Google Assistant <span class="citation" data-cites="noauthor_google_nodate"><span class="citation" data-cites="noauthor_google_nodate">[7]</span></span> are examples of such context-sensitive, mixed-initiative services. They provide information when they are queried by a user, most notably facilitating non-physical interaction with distributed devices (i.e. through voice commands handled by a supported client device). They might also present information on their own, based on context and need.
+</p>
+<h4 class="y-header" id="adaptability">
+<span>Adaptability</span><a href="#adaptability" class="anchor las la-anchor" title="adaptability"></a>
+</h4>
+<p>
+<em>Need</em> is interesting on its own. It might mean external factors such as emergency warnings, but often employs a different concept important to Ubiquitous computing, namely, <em>adaptability</em>. Evers et.al.<span class="citation" data-cites="evers_user_2014"><span class="citation" data-cites="evers_user_2014">[8]</span></span> claim that “future computing systems must adjust to the user’s situations, habits, and intentions.” Pro-activeness, as mentioned above, is much more useful, if not only useful, if it supports and anticipates the user’s intentions and develops with their behaviour. As such, it’s imperative to not only collect user context but also user feedback on the actions anticipated.
+</p>
+<h4 class="y-header" id="intelligence">
+<span>Intelligence</span><a href="#intelligence" class="anchor las la-anchor" title="intelligence"></a>
+</h4>
+<p>
+Tangential to the ability to learn from user feedback is the perceived intelligence of a Ubiquitous system. As humans, we are used to expecting decent levels of intelligence in natural interaction with each other. In effect, to be perceived as a <em>natural</em> part of one’s environment, rather than being a tool, ubiquitous technology needs to show intelligence too. Adaptivity and pro-activeness, as discussed before, are some aspects of this. Additionally one might ask for additional criteria such as an ability to reflect and anticipate consequences, improve their behaviour and show diverse strategies as well as <em>natural</em> social competence.
+</p>
+<p>
+Speaking of intelligence, one can discern different types of intelligence by the agent that shows it. Things or machines that display intelligence are typically considered robots. User software becomes a (software) agent or softbot. While softbots (for instance the aforementioned personal agents) can already be integrated into the environment and provide non-physical interaction, going a step further one can also separately distinguish smart environments. These are often referred to as implementations of ambient intelligence. We see intelligence embedded into objects in our environment <span class="citation" data-cites="cook_ambient_2009"><span class="citation" data-cites="cook_ambient_2009">[9]</span></span> such as appliances, thermostats and similar devices. Research might go even further exploring rooms, that sense the user’s presence, can store and prepare different states for different users <span class="citation" data-cites="eliasson_secure_nodate"><span class="citation" data-cites="eliasson_secure_nodate">[10, p. 21]</span></span> and be augmented virtually <span class="citation" data-cites="weiser_computer_nodate"><span class="citation" data-cites="weiser_computer_nodate">[1]</span></span>.
+</p>
+<p>
+In fact, augmented reality was also envisioned by Weiser <span class="citation" data-cites="weiser_computer_nodate"><span class="citation" data-cites="weiser_computer_nodate">[1]</span></span> as part of a ubiquitously computing future. Several projects are pushing the idea of AR implemented in projects of varying comfort in form of the Google Glasses and Microsoft Holo Lens or smartphone-based solutions like Google Lens.
+</p>
+<h4 class="y-header" id="summary-of-the-dimensions-of-ubicomp">
+<span>Summary of the Dimensions of Ubicomp</span><a href="#summary-of-the-dimensions-of-ubicomp" class="anchor las la-anchor" title="summary-of-the-dimensions-of-ubicomp"></a>
+</h4>
+<p>
+Summarizing the nature of Ubiquitous computing one can distinguish advances on <!-- three --> different dimensions. First, implementations of Ubicomp might have varying <em>distance</em> to the user. It can be public domain face detection based access control, or intelligent rooms. Closer to the user there are wearables or smart fabrics. In recent days project like Neuralink <span class="citation" data-cites="pisarchik_novel_2019"><span class="citation" data-cites="pisarchik_novel_2019">[11]</span></span> picture a future with even closer integration of computing. Second, different grades of <em>artificial intelligence</em> are shown. Systems that interact close to the user are supposed to do so naturally, i.e. intelligently. The less direct the interaction the less the requirement for pro-activeness, talking about face detection as an example. Weiser himself coined another dimension, namely <em>size</em>:
+</p>
+<blockquote>
+<p>
+“Inch scale, foot scale and yard scale devices.”
+</p>
+</blockquote>
+<p>
+Computing nowadays can be as big or bigger than smart screens, down to tablet and smartphone/smartwatch size. Yet, even smaller computing is present in our environment. Credit cards, contactless keys, or glucose meters are examples of such smaller and certainly much more transparent areas of computation with medical devices reaching even greater records in smallness.
+</p>
+<p>
+So far, Ubicomp has been mainly described as a form of HCI, providing ways for users to interact more or less directly with a greater service. Ubicomp itself while popular in academics (listing more than 1.5M search results on Google Scholar<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>) hasn’t become nearly as present in the industry and everyday life as a term. Possibly due to its nature being more of a concept without clear and concrete borders as seen above. Instead, the term <em>Internet of Things</em> (IoT) experienced a phase of ubiquity in industry and consumer electronics. What is IoT then?
+</p>
+<h3 class="y-header" id="the-internet-of-things">
+<span>The Internet of Things</span><a href="#the-internet-of-things" class="anchor las la-anchor" title="the-internet-of-things"></a>
+</h3>
+<p>
+While Ubicomp as a concept seems to concentrate more on the connection with humans and the possibilities it offers to them, IoT has a greater impact as a marketing term for connected devices. In a way, it’s a more practical term than Ubicomp. Yet, that does not mean it is a more concrete one. Applications of IoT include Home Automatization, Smart Cities, Media Consumption and Transportation to name a few many of which are also part of Ubicomp. The difference to Ubicomp is that IoT describes <em>actual</em> systems/networks of devices that work together and communicate, as well as their protocols and standards.
+</p>
+<p>
+As shown in an article in <em>Business Horizons</em> <span class="citation" data-cites="lee_internet_2015"><span class="citation" data-cites="lee_internet_2015">[12]</span></span> numerous artefacts are part of the IoT. It is the nature of a system that qualifies it as part of <em>the</em> IoT. Data is produced at one end by wirelessly connected sensors, send over a network, processed by specific middleware running <em>in the cloud</em> and driving IoT based applications.
+</p>
+<p>
+Only considering consumer applications the market for IoT is enormous. Home automation for example has evolved rapidly over the last years, with multiple applications by competing vendors reaching from lighting overheating to property security and more. The great interest in this market led to a substantial fragmentation of the market on nearly every layer of IoT. In the pursuit of standard multiple communication protocols evolved. Nowadays, Zigbee, Z-Wave, Bluetooth LE and WiFi are the dominant standards to build networks<span class="citation" data-cites="elhadi_comparative_2018"><span class="citation" data-cites="elhadi_comparative_2018">[13]</span></span>. Yet, device protocols often remain largely incompatible still.
+</p>
+<p>
+If building on open standards, the entrance to IoT has become quite simple. Hubs provide an interface to compatible connected devices or connect them to cloud-based services. Yet there is little standardization around the interaction between different devices’ specially if coming from different vendors.
+</p>
+<p>
+Looking at industrial contexts, an apparent difference is the predominance of sensors at the bottom of the network becomes apparent. IIoT is characterized by a multitude of wirelessly connected actuators and sensors <span class="citation" data-cites="foukalas_dependable_2019"><span class="citation" data-cites="foukalas_dependable_2019">[14]</span></span>. Unsurprisingly, IIoT generates a lot of data, which needs to be stored and processes or analyzed<span class="citation" data-cites="noauthor_what_nodate"><span class="citation" data-cites="noauthor_what_nodate">[15]</span></span>. This fact strongly motivates cloud computing or even more immediate processing at the <em>edge of the network</em>. <span class="citation" data-cites="noauthor_real-time_nodate"><span class="citation" data-cites="noauthor_real-time_nodate">[16]</span></span>. Additionally, the uniqueness of many applications implies that there are even incompatibilities between systems than in the consumer market.
+</p>
+<p>
+To summarize, IoT consists of three main elements each of which can vary in complexity based on the application as crystallized by Jayavardhana Gubbi in a 2013 paper <span class="citation" data-cites="gubbi_internet_2013"><span class="citation" data-cites="gubbi_internet_2013">[17]</span></span>.
+</p>
+<ol type="1">
+<li>
+<strong>Hardware</strong> is the common term for sensors, actuators and communication drivers
+</li>
+<li>
+<strong>Middleware</strong> provides intermediate analytics and data storage
+</li>
+<li>
+<strong>Presentation</strong> conveys the findings to the end-user
+</li>
+</ol>
+<p>
+One might additionally include <strong>Software</strong>, especially protocols, in the list. In the following, this essay focuses on software related to the first two points.
+</p>
+<h2 class="y-header" id="rust">
+<span>Rust</span><a href="#rust" class="anchor las la-anchor" title="rust"></a>
+</h2>
+<p>
+Rust is a relatively modern programming language that was first introduced in 2010 by Mozilla as a basis for their experimental browser engine Servo<span class="citation" data-cites="graydon_project_nodate"><span class="citation" data-cites="graydon_project_nodate">[18]</span></span> parts of which are now driving the Firefox Browser<span class="citation" data-cites="noauthor_quantum_nodate"><span class="citation" data-cites="noauthor_quantum_nodate">[19]</span></span>. Its trifecta of speed, safety and concurrency caught peoples interest early on. Since the beginning rust strived to provide greater safety through an advanced type system. By design, Rust disallows concurrent mutable access to the same data. Instead, it employs the concepts of data <em>ownership</em> and <em>borrowing</em>. At compile-time, Rust can resolve how long references are used and when they are cleared up. In effect, (modern) Rust does not implement a garbage collector. This and the fact that it is compiled to native code through LLVM put it in the same category as other unmanaged languages such as C/C++ and account for Rust’s performance. The first stable version of Rust was released in 2015<span class="citation" data-cites="noauthor_rustreleasesmd_nodate"><span class="citation" data-cites="noauthor_rustreleasesmd_nodate">[20]</span></span>. Since then public interest grew starkly, due to its promises.
+</p>
+<p>
+By now, Rust has been voted the “most-loved” language since 2016 by developers on StackOverflows yearly survey <span class="citation" data-cites="noauthor_stack_nodate"><span class="citation" data-cites="noauthor_stack_nodate">[21]</span></span>. Its today’s most convincing features are summarized by Jake Goulding<span class="citation" data-cites="goulding_what_2020"><span class="citation" data-cites="goulding_what_2020">[22]</span></span> in a blog post from January 2020. Firstly, its versatile and ergonomic type system enables very practical safety measures, for example, replacing <code>null</code> pointers for more expressive and safe <code>Option&lt;T&gt;</code> types and enforcing the handling of errors through a <code>Result&lt;Error, T&gt;</code>. Additionally, these are also examples of Rust’s capability of algebraic data types. The aforementioned garbage collection model – or the lack thereof – is as well highly appreciated by users of the language as it decreases the applications memory footprint dramatically. The possibility of <em>safe</em> direct memory access has likewise driven Rust to be an aspiring candidate for embedded{@} devices as well as recently becoming an officially supported option for Linux kernel module development<span class="citation" data-cites="noauthor_rust_nodate-2"><span class="citation" data-cites="noauthor_rust_nodate-2">[23]</span></span>, not at last because sticking to Rust’s compiler enforced rules drastically reduces the possibility of segfaults. Segfaults, typically occurring when accessing invalid memory, are by default prevented by Rust’s memory design.
+</p>
+<p>
+Additionally to the language design, Rust has built a thriving ecosystem. Its standard build tool and package manager Cargo<span class="citation" data-cites="noauthor_introduction_nodate"><span class="citation" data-cites="noauthor_introduction_nodate">[24]</span></span> is the pivoting point of this ecosystem. Using cargo one can easily manage dependencies, config feature flags, run tests and much more. It also offers great extensibility through custom commands and built-in integrability with IDEs <span class="citation" data-cites="noauthor_external_nodate"><span class="citation" data-cites="noauthor_external_nodate">[25]</span></span>. Cargo links in and provides tools for publishing libraries on its package library <a href="https://crates.io">crates.io</a><span class="citation" data-cites="noauthor_cratesio_nodate"><span class="citation" data-cites="noauthor_cratesio_nodate">[26]</span></span>. These libraries referred to as <em>crates</em> are considered to be one of Rust’s most important features on their own. Traditional languages such as C/C++ do not have any standard package manager, libraries are typically installed as precompiled binaries that need to be linked at compile time or runtime in case of shared objects. This requires the developer to include header files that are only resolved using a basic preprocessor, install these libraries separately and track/require them using third party tooling with little control over the actual version being used leaving many security issues to be dealt with by the user of the software and OS maintainers. C++ recently added support for modules<span class="citation" data-cites="corob-msft_overview_nodate"><span class="citation" data-cites="corob-msft_overview_nodate">[27]</span></span> solving some problems related to header files but remains fragmented in general. Rust got inspired by more modern and ergonomic solutions of more recent languages such as NPM<span class="citation" data-cites="noauthor_npm_nodate"><span class="citation" data-cites="noauthor_npm_nodate">[28]</span></span>.
+</p>
+<h1 class="y-header" id="the-rust-ecosystem-for-iot">
+<span>The Rust Ecosystem for IoT</span><a href="#the-rust-ecosystem-for-iot" class="anchor las la-anchor" title="the-rust-ecosystem-for-iot"></a>
+</h1>
+<p>
+In the introduction, Rust’s ecosystem was outlined. Focusing on IoT one needs to take a deeper look into the accompanying tools and libraries. This essay will introduce key technologies and concepts that enable the development of IoT devices and related edge computing.
+</p>
+<p>
+When speaking of IoT ARM is by far the leading manufacturer of Chipsets used at the edge of the IoT<span class="citation" data-cites="noauthor_who_2020"><span class="citation" data-cites="noauthor_who_2020">[29]</span></span> and embedded devices such as sensors. As such, to be a viable option to cover the IoT space as a language, support for ARM-based processors is imperative! Hence special focus will lie on ARM support in Rust.
+</p>
+<h2 class="y-header" id="rust-on-microcontrollers">
+<span>Rust on Microcontrollers</span><a href="#rust-on-microcontrollers" class="anchor las la-anchor" title="rust-on-microcontrollers"></a>
+</h2>
+<h3 class="y-header" id="tools">
+<span>Tools</span><a href="#tools" class="anchor las la-anchor" title="tools"></a>
+</h3>
+<p>
+A major component of the ecosystem of a programming language are tools that simplify or automate the development processes. These processes can become highly complex even for rather simple projects. For instance programming, a common microchip, requires a debugger, a connector to the on-chip debugger and the programmer and the build tool to work together. The latter also needs to be configured for the programmed chip. Several tools that have been developed try to shrink the associated learning curve and strive to allow for greater productivity quicker.
+</p>
+<p>
+Being based on LLVM Rust supports a multitude of platforms <span class="citation" data-cites="noauthor_platform_nodate"><span class="citation" data-cites="noauthor_platform_nodate">[30]</span></span> including many ARM platforms. Cargo complements this by offering an interface to cross-compile to foreign architectures. Additionally, rustup<span class="citation" data-cites="noauthor_introduction_nodate-2"><span class="citation" data-cites="noauthor_introduction_nodate-2">[31]</span></span> provides an interface to easily acquire toolchains for these architectures and simplifies keeping track of the fast-paced releases of the Rust language. Combining these tools, cross<span class="citation" data-cites="noauthor_rust-embeddedcross_2021"><span class="citation" data-cites="noauthor_rust-embeddedcross_2021">[32]</span></span> has been developed by the rust-embedded working group which uses isolated docker containers to minimize the efforts required and possible failures of setting up a development environment by providing a managed prepackaged solution. With this running and testing code for different architectures becomes as easy as
+</p>
+<div class="y-fill-horizontal">
+<div id="cb1" class="sourceCode">
+<pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cross test <span class="dt">\</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--target</span> mips64-unknown-linux-gnuabi64</span></code></pre>
+</div>
+</div>
+<p>
+Targeting microcontrollers, in particular, the knurling project <span class="citation" data-cites="noauthor_knurling-rs_nodate"><span class="citation" data-cites="noauthor_knurling-rs_nodate">[33]</span></span> develops tools that make embedded development more seamless. <code>probe-run</code> is a project that integrates downloading binaries to controllers, and running code, as well as connecting debuggers with cargo and can therefore be easily integrated with IDE’s. <code>defmt</code> significantly reduces resource overhead of logging on microchips and has been found to offer a highly integrated debug process <span class="citation" data-cites="noauthor_using_nodate"><span class="citation" data-cites="noauthor_using_nodate">[34]</span></span>.
+</p>
+<h3 class="y-header" id="abstraction-layers">
+<span>Abstraction layers</span><a href="#abstraction-layers" class="anchor las la-anchor" title="abstraction-layers"></a>
+</h3>
+<p>
+Speaking about abstraction layers one must first understand why they are needed. Programming microcontrollers is flooded with hardware-level interaction, unsurprisingly. While rust is capable of doing these accesses, in many cases <em>some</em> of Rusts safety measures need to be disabled. While more is possible in these <code>unsafe</code> environments, obviously one strives to reduce the use of <code>unsafe</code>. Besides safety, ergonomics and compatibility are more reasons to ask for abstractions. Rust is known for its capabilities to bring these virtues to its users in other areas already due to expressive Generics and its trait system. In the context of embedded programming, this has enabled people to create various levels of abstractions on top of the lowest levels of interaction with the hardware.
+</p>
+<h4 class="y-header" id="accessing-the-hardware">
+<span>Accessing the hardware</span><a href="#accessing-the-hardware" class="anchor las la-anchor" title="accessing-the-hardware"></a>
+</h4>
+<p>
+Peripherals on microcontrollers are configured through so-called memory-mapped registers. Manipulating the state of these registers changes how the external connectors to the chip behave, whether they are inputs or outputs, digital or analogue. Also, internal structures can be controlled this way, e.g. timers can be set and reacted upon. Unfortunately, there is no common interface to these registers not only due to the number of different manufacturers but also different chip design and application.
+</p>
+<p>
+While configuration and layout differ, it does not do so undocumented. In fact for long SVD files <span class="citation" data-cites="noauthor_svd_nodate"><span class="citation" data-cites="noauthor_svd_nodate">[35]</span></span> are being made available by manufacturers describing the chip layout formally. In Rust, this is made use of to create so-called <em>peripheral access crates</em> (PAC). Using a <code>svd2rust</code> <span class="citation" data-cites="noauthor_rust-embeddedsvd2rust_2021"><span class="citation" data-cites="noauthor_rust-embeddedsvd2rust_2021">[36]</span></span> one can <em>generate</em> a rust library that implements a <strong>safe interface</strong> to all of the specified registers including context-based functions, such as being able to write or read from pins, or start timers using a method rather than setting bits manually.
+</p>
+<h4 class="y-header" id="abstracting-hardware-functions">
+<span>Abstracting hardware functions</span><a href="#abstracting-hardware-functions" class="anchor las la-anchor" title="abstracting-hardware-functions"></a>
+</h4>
+<p>
+PACs do a great job making raw hardware accessible by Rust in an automated and safe way. Building on top of this, one might perform standard operations such as communicating to peripherals connect to USB, enable timers and so on. While building this functionality from the ground up based on peripheral access, a safer and more portable solution is building on a shared abstraction. Such an abstraction is provided by the <code>embedded_hal</code><span class="citation" data-cites="noauthor_embedded_hal_nodate"><span class="citation" data-cites="noauthor_embedded_hal_nodate">[37]</span></span> crate.
+</p>
+<p>
+The functionality provided by <code>embedded_hal</code> fulfils some important requirements:
+</p>
+<ol type="1">
+<li>
+It is independent of any specific chip
+</li>
+<li>
+Does not make restricting assumptions about how it is used on a specific chip
+</li>
+<li>
+Provides low-cost abstractions that are compassable into higher-order abstractions (note that <code>embedded_hal</code> is still a <em>very</em> low-level abstraction)
+</li>
+<li>
+Stemming from the previous point: Offers sufficient freedom and capabilities to base device-independent drivers upon.
+</li>
+</ol>
+<p>
+Note, that <code>embedded_hal</code> does not implement most of the functionality, but defines interfaces that are eventually implemented for a specific chip or family of devices.
+</p>
+<h4 class="y-header" id="section">
+<span><!--Building on specific devices--></span><a href="#section" class="anchor las la-anchor" title="section"></a>
+</h4>
+<p>
+<!--Device Support-->
+</p>
+<h3 class="y-header" id="drivers">
+<span>Drivers</span><a href="#drivers" class="anchor las la-anchor" title="drivers"></a>
+</h3>
+<p>
+Apart from accessing mere hardware, the most important aspect of embedded development is, as in non-embedded scenarios, processing data, and providing functionality. In the context of IoT data is typically produced by the periphery, and communicated over some network channel, it is still the <em>internet</em> of things. Enabling this, one finds themselves at a gap. So far, the discussed abstractions merely provide hardware access. Yet, communication, in particular, requires conformity to often complex protocols (i.e. IEEE802.11/WLAN<span class="citation" data-cites="noauthor_ieee_2018"><span class="citation" data-cites="noauthor_ieee_2018">[38]</span></span>). Implementations for these protocols readily exist in C, less so in Rust, often because the modems are using more niche platforms, to begin with. Instead of reimplementing the existing C <!--might come--> implementation for those modems, Rust focuses on offloading this functionality. <!--expensive--> Offloading means to employ a second chip running a firmware that drives a communication module and exposing the data access through a firmware specific (serial) interface. Drivers have been implemented for all sorts of such devices and often make use of the aforementioned <code>embedded_hal</code> to be usable from any host device.
+</p>
+<p>
+While serial protocols such as USB, RS232 or i2C can be part of a HAL, data protocols like AT<span class="citation" data-cites="noauthor_hayes_2021"><span class="citation" data-cites="noauthor_hayes_2021">[39]</span></span> are implemented separately. Crates like <code>atat</code><span class="citation" data-cites="noauthor_blackbirdhqatat_2021"><span class="citation" data-cites="noauthor_blackbirdhqatat_2021">[40]</span></span> transparently offer access to these protocols. Building on that, driver crates for popular networking modems are already available. With IoT in mind, we can find drivers for cellular access<span class="citation" data-cites="noauthor_blackbirdhqublox-cellular-rs_2021"><span class="citation" data-cites="noauthor_blackbirdhqublox-cellular-rs_2021">[41]</span></span> or short-range networks<span class="citation" data-cites="noauthor_blackbirdhqublox-short-range-rs_2021"><span class="citation" data-cites="noauthor_blackbirdhqublox-short-range-rs_2021">[42]</span></span> that connect to u-blox<span class="citation" data-cites="noauthor_u-blox_nodate"><span class="citation" data-cites="noauthor_u-blox_nodate">[43]</span></span> devices. The drogue IoT project <span class="citation" data-cites="noauthor_drogue_nodate"><span class="citation" data-cites="noauthor_drogue_nodate">[44]</span></span> not only brings support for common network standards like WiFi or LoRaWAN but also abstracts these to a transparent network interface, such that from Rust each of these network gateways can be used the same way providing TCP/UDP sockets. Building on this network abstraction the project also implements an MQTT and HTTP client.
+</p>
+<h3 class="y-header" id="notable-mentions">
+<span>Notable Mentions</span><a href="#notable-mentions" class="anchor las la-anchor" title="notable-mentions"></a>
+</h3>
+<p>
+LoRaWAN<span class="citation" data-cites="noauthor_what_nodate"><span class="citation" data-cites="noauthor_what_nodate">[15]</span></span> is known for its application as the basis for IoT. Especially The Things Network<span class="citation" data-cites="noauthor_things_nodate"><span class="citation" data-cites="noauthor_things_nodate">[45]</span></span> plays a major role in pushing LoRa by providing a shared infrastructure that is energy efficient, yet reliant, open and secure. Incidentally, crates to create clients to this network already exist.
+</p>
+<h2 class="y-header" id="leaving-microcontrollers">
+<span>Leaving Microcontrollers</span><a href="#leaving-microcontrollers" class="anchor las la-anchor" title="leaving-microcontrollers"></a>
+</h2>
+<p>
+At this point, Rust’s support for microcontrollers was comprehensively presented… Although a lot of the IoT is implemented on the smallest of processors, often one has more resources to spare. Devices that could be described as “raspberry pi sized,” can run a supported operating system (e.g. GNU/Linux) on a higher architecture, such as <code>aarch64</code>. Consequently, they profit from full Rust-Support. These offer more versatile tools and capabilities to connect to complex technologies such as Bluetooth, or processing greater amounts of data, such as camera feeds.
+</p>
+<h2 class="y-header" id="rust-on-the-edge">
+<span>Rust on the Edge</span><a href="#rust-on-the-edge" class="anchor las la-anchor" title="rust-on-the-edge"></a>
+</h2>
+<p>
+In recent years WebAssembly <span class="citation" data-cites="noauthor_webassembly_nodate"><span class="citation" data-cites="noauthor_webassembly_nodate">[46]</span></span> (WASM) has been growing as an OS-independent platform, meant to run programs in web-browsers at near-native speed in secure sandboxes. Rust as a language has been pushing this development forward, by language support and tooling. Not only have the three biggest freestanding WASM runtimes adopted Rust as their implementing language<span class="citation" data-cites="noauthor_wasmeriowasmer_2021"><span class="citation" data-cites="noauthor_wasmeriowasmer_2021">[49]</span></span>, but also there have evolved standard tools to integrate WASM into your JavaScript Codebase <span class="citation" data-cites="noauthor_rustwasmwasm-pack_2021"><span class="citation" data-cites="noauthor_rustwasmwasm-pack_2021">[50]</span></span> and library support to narrow the gap between the Rust/WASM world and the JavaScript runtime<span class="citation" data-cites="noauthor_rustwasmwasm-bindgen_2021"><span class="citation" data-cites="noauthor_rustwasmwasm-bindgen_2021">[51]</span></span>.
+</p>
+<p>
+Companies like <em>fastly</em> and <em>Cloudflare</em> have developed services that facilitate this platform to offer easy entrance to Edge Computing. Cloudflare Workers <span class="citation" data-cites="noauthor_cloudflare_nodate"><span class="citation" data-cites="noauthor_cloudflare_nodate">[52]</span></span> offers the infrastructure for reliable functions on the web that can act as an ingress point for IoT devices. Workers run code compiled to WebAssembly which makes them a ready target for Rust.
+</p>
+<h1 class="y-header" id="rust-as-a-platform">
+<span>Rust as a platform</span><a href="#rust-as-a-platform" class="anchor las la-anchor" title="rust-as-a-platform"></a>
+</h1>
+<p>
+In the previous section, a multitude of applications and capabilities of the Rust Language has been presented. While the ecosystem is large, it is important to also analyze it with an eye on qualitative factors to come up with a convincing conclusion about the usability of Rust as a Platform for IoT today. As rust is still evolving, many things will still improve. This essay aims to summarize the current developments and make an educated guess where Rust is heading.
+</p>
+<h2 class="y-header" id="today">
+<span>Today</span><a href="#today" class="anchor las la-anchor" title="today"></a>
+</h2>
+<p>
+Rust is known for assessing its performance in many areas publicly in the form of “are we X yet” websites<span class="citation" data-cites="noauthor_areweyet_nodate"><span class="citation" data-cites="noauthor_areweyet_nodate">[54]</span></span>. Unfortunately, for the domain of embedded/IoT, the community has not yet started such a project. Yet, as that form has proven very informative, this essay will adopt a similar approach.
+</p>
+<dl>
+<dt>
+++
+</dt>
+<dd>
+Rust has stable and mature support. You can use Rust for this
+</dd>
+<dt>
++
+</dt>
+<dd>
+Rust offers some support/development. Think twice.
+</dd>
+<dt>
+±
+</dt>
+<dd>
+Ideas are there but little has evolved from it.
+</dd>
+<dt>
+-
+</dt>
+<dd>
+Close to nothing has been developed. You are on your own, not recommended to use Rust here.
+</dd>
+</dl>
+<h3 class="y-header" id="the-good">
+<span>The good</span><a href="#the-good" class="anchor las la-anchor" title="the-good"></a>
+</h3>
+<p>
+In some regards, rust can already shine, although it might need some polish in some places. Especially the strong features of Rust, tooling and performance, can shine too in the IoT context.
+</p>
+<h4 class="y-header" id="performance-and-ergonomics">
+<span>Performance and Ergonomics (++)</span><a href="#performance-and-ergonomics" class="anchor las la-anchor" title="performance-and-ergonomics"></a>
+</h4>
+<p>
+One of the strongest points to make about Rust is probably its performance. This does not mean solely its runtime performance but also its development process.
+</p>
+<p>
+Rust is often hailed for the high-level elements that make it look and act like a general-purpose language in many regards. At the same time, it embraces the concept of “Zero-Cost Abstractions” that let it produce highly optimized code without accepting drawbacks on its high-level features.
+</p>
+<p>
+Yet in areas where every byte counts, with rust one, has to trust on the optimizer to produce sufficiently small binaries. Which becomes harder given how easy it is to add dependencies to a project. Projects exist to help monitor the size of binaries but the main problem remains.
+</p>
+<p>
+Looking at it in another way, given how high-level rust can be, memory accesses are not as obvious as they are with C. Clearly, this can cause unexpected problems in performance, especially on microcontrollers with limited memory speeds.
+</p>
+<h4 class="y-header" id="tools-1">
+<span>Tools (++)</span><a href="#tools-1" class="anchor las la-anchor" title="tools-1"></a>
+</h4>
+<p>
+Rust is known for its great tooling. This doesn’t stop in the world of embedded systems and IoT. For one, Rust is pioneering the world of WebAssembly. Additionally, the entry into Embedded systems is made greatly easier given the rust tooling.
+</p>
+<p>
+As we saw with the abstractions above, embedded Rust does not exclude the possibility to use cargo and its package management. In fact, it even provides a measure to tell whether a library can run on embedded devices or not, precisely as long as it does not use the standard library that is built on top of specific operating systems. Such crates are marked as <code>#[no_std]</code>. It doesn’t stop there. We saw projects automatizing the whole process of downloading binaries and running/debugging them through standard cargo invocations that integrate well with IDEs.
+</p>
+<p>
+Of course, not everything is perfect in this regard area yet. As a lot of Rust’s tooling is automatized, as a user one faces a rather high-level view of the process. While this can be desirable, it reduces the account one has to tell what parts are causing errors. Also, due to abstraction over multiple interfaces, the functionality provided might be less than what would theoretically be possible using those tools directly, at which point using Rust might become more of a burden as configuring these tools to fit Rust might not be trivial in every case.
+</p>
+<p>
+A similar thing can be said about Rust for Edge Computing using WebAssembly. We have seen it as the driving language for modern runtimes and offering rich library support<span class="citation" data-cites="noauthor_webassembly_nodate-1"><span class="citation" data-cites="noauthor_webassembly_nodate-1">[55]</span></span>. As such given its tools, it is easy to integrate them into existing platforms or important in the domain of Edge Computing write high performant workers in it.
+</p>
+<h4 class="y-header" id="frameworks-and-libraries">
+<span>Frameworks and Libraries (+)</span><a href="#frameworks-and-libraries" class="anchor las la-anchor" title="frameworks-and-libraries"></a>
+</h4>
+<p>
+The presentation shed light on some of the most influential projects. While on the WASM front Rust has already developed a mature environment. In the space of embedded devices, libraries while bringing support for many devices, do not enjoy the same kinds of maturity and maintenance.
+</p>
+<p>
+The <code>embedded-hal</code> is a great leap toward a unified API on microcontrollers and is already heavily used. Yet, many projects have implemented drivers independently or base on incompatible versions. Drivers are generally added more as an implementation to tick the boxes for a specific use case and therefore do usually not cover the available functionality.
+</p>
+<p>
+<code>drogue-wifi</code> for instance implements a driver for the WiFi breakout board ESP8266. Yet, while the target chip is capable of a whole range of functionality, the driver only implements a limited subset of that such that it fits the drogue project. More extensive support would be desirable to use rust more ergonomically and ease the development.
+</p>
+<h3 class="y-header" id="the-bad">
+<span>The bad</span><a href="#the-bad" class="anchor las la-anchor" title="the-bad"></a>
+</h3>
+<p>
+As a comparatively young language, especially compared to its contenders in the embedded world, naturally, Rust has a set of drawbacks mainly connected to its development pace and lack of maturity and experience in the industry.
+</p>
+<h4 class="y-header" id="documentation">
+<span>Documentation (+/±)</span><a href="#documentation" class="anchor las la-anchor" title="documentation"></a>
+</h4>
+<p>
+Generally, Rust is known for its great documentation. There is even specialized tooling around it. Rustdoc<span class="citation" data-cites="noauthor_what_nodate-2"><span class="citation" data-cites="noauthor_what_nodate-2">[56]</span></span> is the standard tool to generate documentation from rust source code. Docs.rs<span class="citation" data-cites="noauthor_docsrs_nodate"><span class="citation" data-cites="noauthor_docsrs_nodate">[57]</span></span> adds to this hosting documentation for the whole crates.io index of packages. The fact that all documentation is entangled this tightly is a major win to the whole community and aids development dramatically.
+</p>
+<p>
+Rust has also evolved the mdBook<span class="citation" data-cites="noauthor_mdbook_nodate"><span class="citation" data-cites="noauthor_mdbook_nodate">[58]</span></span> tool. It is used throughout the rust community to assemble more high-level documentation and tutorials. For embedded the rust Community has published multiple of these books that aim to introduce programming Rust for low power hardware. Unfortunately, while covering the basics, once diverting from these or using newer technologies the amount of documentation is very sparse. At that point, it is mostly up to the developer of certain libraries to provide decent documentation. Yet, often development is faster than documentation, leading to outdated tutorials and examples. Additionally, many parts of the rust ecosystem are still mostly documented through blog posts. Although this is certainly not a bad thing in itself, as it shows that the interest is big, it is difficult to tell the recency or relevance of such articles. Likewise, there is little being written about how different projects are supposed to work together.
+</p>
+<h4 class="y-header" id="stability">
+<span>Stability (±)</span><a href="#stability" class="anchor las la-anchor" title="stability"></a>
+</h4>
+<p>
+As mentioned earlier, incompatibility especially at the abstraction level can be a problem. Indeed, <code>embedded-hal</code> is still considered unstable and while sticking to a semantic versioning protocol, must still be considered to break existing code without previous warning. Consequently, this means that the whole ecosystem around it is at most as stable as the abstraction layer they built upon. In reality, most libraries are yet to be considered incidental, meaning they were built to fit a need of someone at some time and are therefore not actively maintained or feature complete.
+</p>
+<p>
+A few projects trying to build a stable foundation for certain functional units, such as the IoT network/cloud project <code>drogue</code>. Still, the interfaces that come to existence due to these projects aim foremost for internal compatibility.
+</p>
+<h4 class="y-header" id="framework-interoperability">
+<span>Framework Interoperability (±)</span><a href="#framework-interoperability" class="anchor las la-anchor" title="framework-interoperability"></a>
+</h4>
+<p>
+Extending on the internal compatibility, it would be desirable to have projects interoperate cleanly. The aforementioned stability issues and fragmented ecosystem can often not be equalized by the overarching abstraction layer.
+</p>
+<p>
+Moreover, documentation to integrate one library within the other is often hard to find as well. RTIC<span class="citation" data-cites="noauthor_preface_nodate"><span class="citation" data-cites="noauthor_preface_nodate">[59]</span></span> for example promises to provide a framework that works concurrently by managing interrupts and resources. Yet, it brings in a very different way to set up projects that complicate how to get started with the whole system especially as examples are scarce here too.
+</p>
+<h3 class="y-header" id="the-ugly">
+<span>The ugly</span><a href="#the-ugly" class="anchor las la-anchor" title="the-ugly"></a>
+</h3>
+<p>
+Lastly, some tasks are so far virtually impossible to achieve with Rust or require a lot of work to be invested by the user.
+</p>
+<h4 class="y-header" id="arm--">
+<span><del>ARM</del> (-)</span><a href="#arm--" class="anchor las la-anchor" title="arm--"></a>
+</h4>
+<p>
+We have seen that on ARM Rust offers great support. Indeed the stm32-rs group, for example, tries to provide embedded-has implementations for all chips manufactured by STM. Other ARM vendors have similar good support.
+</p>
+<p>
+It is once one asks to write software for other architectures. First, they are limited by support for these architectures of the LLVM backend. The popular IoT platform Arduino for instance runs on AVR based chips which require a fork of LLVM to be programmed for In Rust. Extensa, the architecture employed by the ESP8266/ESP32 chips also requires additional care. These reasons drive the current disinterest in writing software for these chips (as it is not possible or difficult) which in turn affects the motivation to bring support for the platforms to Rust in the first place.
+</p>
+<table>
+<caption>
+Summary of Rust’s ecosystem today
+</caption>
+<thead>
+<tr class="header">
+<th>
+Ecosystem element
+</th>
+<th>
+Maturity
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>
+Performance and Ergonomics
+</td>
+<td>
+++
+</td>
+</tr>
+<tr class="even">
+<td>
+Tools
+</td>
+<td>
+++
+</td>
+</tr>
+<tr class="odd">
+<td>
+Frameworks and Libraries
+</td>
+<td>
++
+</td>
+</tr>
+<tr class="even">
+<td>
+Documentation (Rust)
+</td>
+<td>
++
+</td>
+</tr>
+<tr class="odd">
+<td>
+Documentation (Libraries)
+</td>
+<td>
+±
+</td>
+</tr>
+<tr class="even">
+<td>
+Stability
+</td>
+<td>
+±
+</td>
+</tr>
+<tr class="odd">
+<td>
+Framework Interoperability
+</td>
+<td>
+±
+</td>
+</tr>
+<tr class="even">
+<td>
+Architecture Support (not ARM)
+</td>
+<td>
+-
+</td>
+</tr>
+</tbody>
+</table>
+<h2 class="y-header" id="in-the-future">
+<span>In the future</span><a href="#in-the-future" class="anchor las la-anchor" title="in-the-future"></a>
+</h2>
+<p>
+Today, Rust’s ecosystem is not all roses. A lot of things are missing still. Yet, observing the community fundamental steps are being taken. Looking at the future there are a few clear indicators that Rust will become a growing influence for not and ubiquitous computing.
+</p>
+<h3 class="y-header" id="rust-foundation">
+<span>Rust Foundation</span><a href="#rust-foundation" class="anchor las la-anchor" title="rust-foundation"></a>
+</h3>
+<p>
+More generically, the advent of the Rust Foundation <span class="citation" data-cites="noauthor_laying_nodate"><span class="citation" data-cites="noauthor_laying_nodate">[60]</span></span> will eventually also benefit the embedded section of the language. With greater structural organization and backing from industry-leading companies such as Google and Amazon, Microsoft, Huawei and Facebook, Rust manifests itself as a credible choice.
+</p>
+<h3 class="y-header" id="embedded-wg">
+<span>Embedded-WG</span><a href="#embedded-wg" class="anchor las la-anchor" title="embedded-wg"></a>
+</h3>
+<p>
+The embedded working group has been mentioned throughout this essay. They have proven themselves as the originators of remarkable work that has brought rust a long way. Its projects will for sure continue to improve the experience of embedded development in Rust.
+</p>
+<h3 class="y-header" id="ferrous">
+<span>Ferrous</span><a href="#ferrous" class="anchor las la-anchor" title="ferrous"></a>
+</h3>
+<p>
+Ferrous Systems, the leading force behind the excellent knurling project, is committed to further invest in Rusts embedded future. Ferrous already contributes to the Rust Open Source community in many ways, and with knurling still being a young project, its influence in the embedded world is still to be expanded.
+</p>
+<h3 class="y-header" id="librariestools">
+<span>Libraries/Tools</span><a href="#librariestools" class="anchor las la-anchor" title="librariestools"></a>
+</h3>
+<p>
+Finally, with more companies and individuals committing to Rust as their language of choice, albeit its current pitfalls will eventually populate the language with more helpful libraries and tools. Especially, once fundamental libraries such as the <code>embedded-hal</code> a point of stability, libraries building on these are expected to follow.
+</p>
+<p>
+Taking into account WebAssembly, we see that with its adoption in all major browsers and the stabilization of its specification, WASM is there to stay. Rust has been influencing its development a lot until today
+</p>
+<h1 class="y-header" id="conclusion">
+<span>Conclusion</span><a href="#conclusion" class="anchor las la-anchor" title="conclusion"></a>
+</h1>
+<p>
+Throughout this essay, the domain of Ubiquitous Computing and IoT has been described in detail. Building on that the programming language Rust has been closely examined on its capabilities to fulfil the needs of this field. We have seen which infrastructure drives Rust’s support of embedded programming, how WebAssembly enables Rust to play a leading role as a language to implement functions on the Edge. Apart from this descriptive part, we put the available ecosystem into perspective, pointing out its strengths and current weaknesses.
+</p>
+<p>
+Finally, we can conclude that Rust is perfectly capable of doing specific tasks, in the area of Embedded Computing and more so on higher levels of the Internet of Things, such as lightweight computing on the edge and the implementation of backend services. Yet, it shows that Rust is a fairly recent language. As such parts of its ecosystem, relevant to IoT, are still evolving, lack even some significant foundations and are far from stable. For early adopters and the generally curious Rust still offers the foundations on which one can build their own solutions, albeit without providing the maturity of decades of development. On the bright side, we see several companies like Drogue, Ferrous Systems and other independent groups, doing exactly that. Crucial foundations are in active development and promise a brighter future for Rust.
+</p>
+<p>
+Condensing this essay into one sentence
+</p>
+<blockquote>
+<p>
+Rust shows the potential to become the IoT platform of choice in the future, providing speed, ergonomics and safety, but does not show the maturity to be readily used as such without thorough consideration.
+</p>
+</blockquote>
+<p>
+… Wow! You made it until here. Thank you a lot for your time and interest. If you have any thoughts about this post after all, please feel free to reach out to me.
+</p>
+<h1 class="y-header" id="references">
+<span>References</span><a href="#references" class="anchor las la-anchor" title="references"></a>
+</h1>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote">
+<p>
+May 4th, 2021<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a>
+</p>
+</li>
+</ol>
+</section>
+<div class="box y-fill-horizontal info">
+<div class="header">
+<div>
+<span class="las la-book"></span>
+<div class="badge">
+References
+</div>
+</div>
+</div>
+<div id="refs" class="references csl-bib-body" role="doc-bibliography">
+<div id="ref-weiser_computer_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[1] </div><div class="csl-right-inline">M. Weiser, <span>“The <span>Computer</span> for the 21st <span>Century</span>,”</span> p. 8.</div>
+</div>
+<div id="ref-dey_distributed_2002" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[2] </div><div class="csl-right-inline">A. Dey, J. Mankoff, G. Abowd, and S. Carter, <span>“Distributed mediation of ambiguous context in aware environments,”</span> in <em>Proceedings of the 15th annual <span>ACM</span> symposium on <span>User</span> interface software and technology</em>, Oct. 2002, pp. 121–130. doi: <a href="https://doi.org/10.1145/571985.572003">10.1145/571985.572003</a>.</div>
+</div>
+<div id="ref-poppe_evaluating_2007" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[3] </div><div class="csl-right-inline">R. Poppe, R. Rienks, and B. van Dijk, <span>“Evaluating the <span>Future</span> of <span>HCI</span>: <span>Challenges</span> for the <span>Evaluation</span> of <span>Emerging Applications</span>,”</span> in <em>Artifical <span>Intelligence</span> for <span>Human Computing</span></em>, 2007, pp. 234–250. doi: <a href="https://doi.org/10.1007/978-3-540-72348-6_12">10.1007/978-3-540-72348-6_12</a>.</div>
+</div>
+<div id="ref-sharma_wearable_2017" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[4] </div><div class="csl-right-inline">M. Sharma, R. Srivastava, A. Anand, D. Prakash, and L. Kaligounder, <span>“Wearable motion sensor based phasic analysis of tennis serve for performance feedback,”</span> in <em>2017 <span>IEEE International Conference</span> on <span>Acoustics</span>, <span>Speech</span> and <span>Signal Processing</span> (<span>ICASSP</span>)</em>, Mar. 2017, pp. 5945–5949. doi: <a href="https://doi.org/10.1109/ICASSP.2017.7953297">10.1109/ICASSP.2017.7953297</a>.</div>
+</div>
+<div id="ref-li_you_2019" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[5] </div><div class="csl-right-inline">T. Li, <span>“You will soon be able to pay your subway fare with your face in <span>China</span>,”</span> Mar. 13, 2019. <a href="https://www.scmp.com/tech/innovation/article/3001306/you-can-soon-pay-your-subway-ride-scanning-your-face-china">https://www.scmp.com/tech/innovation/article/3001306/you-can-soon-pay-your-subway-ride-scanning-your-face-china</a> (accessed May 04, 2021).</div>
+</div>
+<div id="ref-noauthor_use_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[6] </div><div class="csl-right-inline"><span>“Use <span>Siri</span> on all your <span>Apple</span> devices.”</span> <a href="https://support.apple.com/en-us/HT204389">https://support.apple.com/en-us/HT204389</a> (accessed May 04, 2021).</div>
+</div>
+<div id="ref-noauthor_google_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[7] </div><div class="csl-right-inline"><span>“Google <span>Assistant</span>.”</span> <a href="https://developers.google.com/assistant">https://developers.google.com/assistant</a> (accessed May 04, 2021).</div>
+</div>
+<div id="ref-evers_user_2014" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[8] </div><div class="csl-right-inline">C. Evers, R. Kniewel, K. Geihs, and L. Schmidt, <span>“The user in the loop: <span>Enabling</span> user participation for self-adaptive applications,”</span> <em>Future Generation Computer Systems</em>, vol. 34, pp. 110–123, May 2014, doi: <a href="https://doi.org/10.1016/j.future.2013.12.010">10.1016/j.future.2013.12.010</a>.</div>
+</div>
+<div id="ref-cook_ambient_2009" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[9] </div><div class="csl-right-inline">D. J. Cook, J. C. Augusto, and V. R. Jakkula, <span>“Ambient intelligence: <span>Technologies</span>, applications, and opportunities,”</span> <em>Pervasive and Mobile Computing</em>, vol. 5, no. 4, pp. 277–298, Aug. 2009, doi: <a href="https://doi.org/10.1016/j.pmcj.2009.04.001">10.1016/j.pmcj.2009.04.001</a>.</div>
+</div>
+<div id="ref-eliasson_secure_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[10] </div><div class="csl-right-inline">E. Eliasson, <span>“Secure <span>Internet Telephony</span>: <span>Design</span>, <span>Implementation</span>, and <span>Performance Measurements</span>,”</span> p. 80.</div>
+</div>
+<div id="ref-pisarchik_novel_2019" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[11] </div><div class="csl-right-inline">A. N. Pisarchik, V. A. Maksimenko, and A. E. Hramov, <span>“From <span>Novel Technology</span> to <span>Novel Applications</span>: <span>Comment</span> on <span>‘<span>An Integrated Brain-Machine Interface Platform With Thousands</span> of <span>Channels</span>’</span> by <span>Elon Musk</span> and <span>Neuralink</span>,”</span> <em>Journal of Medical Internet Research</em>, vol. 21, no. 10, p. e16356, Oct. 2019, doi: <a href="https://doi.org/10.2196/16356">10.2196/16356</a>.</div>
+</div>
+<div id="ref-lee_internet_2015" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[12] </div><div class="csl-right-inline">I. Lee and K. Lee, <span>“The <span>Internet</span> of <span>Things</span> (<span>IoT</span>): <span>Applications</span>, investments, and challenges for enterprises,”</span> <em>Business Horizons</em>, vol. 58, no. 4, pp. 431–440, Jul. 2015, doi: <a href="https://doi.org/10.1016/j.bushor.2015.03.008">10.1016/j.bushor.2015.03.008</a>.</div>
+</div>
+<div id="ref-elhadi_comparative_2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[13] </div><div class="csl-right-inline">S. Elhadi, A. Marzak, N. Sael, and S. Merzouk, <span>“Comparative <span>Study</span> of <span>IoT Protocols</span>,”</span> <span>Social Science Research Network</span>, <span>Rochester, NY</span>, SSRN Scholarly Paper ID 3186315, May 2018. doi: <a href="https://doi.org/10.2139/ssrn.3186315">10.2139/ssrn.3186315</a>.</div>
+</div>
+<div id="ref-foukalas_dependable_2019" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[14] </div><div class="csl-right-inline">F. Foukalas, P. Pop, F. Theoleyre, C. A. Boano, and C. Buratti, <span>“Dependable <span>Wireless Industrial IoT Networks</span>: <span>Recent Advances</span> and <span>Open Challenges</span>,”</span> in <em>2019 <span>IEEE European Test Symposium</span> (<span>ETS</span>)</em>, May 2019, pp. 1–10. doi: <a href="https://doi.org/10.1109/ETS.2019.8791551">10.1109/ETS.2019.8791551</a>.</div>
+</div>
+<div id="ref-noauthor_what_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[15] </div><div class="csl-right-inline"><span>“What <span>Edge Computing Means</span> for <span>Infrastructure</span> and <span>Operations Leaders</span>.”</span> <a href="https:////www.gartner.com/smarterwithgartner/what-edge-computing-means-for-infrastructure-and-operations-leaders/">//www.gartner.com/smarterwithgartner/what-edge-computing-means-for-infrastructure-and-operations-leaders/</a> (accessed May 06, 2021).</div>
+</div>
+<div id="ref-noauthor_real-time_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[16] </div><div class="csl-right-inline"><span>“Real-<span>Time Distributed Computing</span> at <span>Network Edges</span> for <span>Large Scale Industrial IoT Networks</span>.”</span> <a href="https://ieeexplore.ieee.org/abstract/document/8495797?casa_token=CHZD9tpi9_cAAAAA:saG8dFLJX9KMntLMllGoBLn5JZWpOs8cAv0sJu9oPZINmQ3qzV5ecEDQzByUTTupjNtl_MkOfRc">https://ieeexplore.ieee.org/abstract/document/8495797?casa_token=CHZD9tpi9_cAAAAA:saG8dFLJX9KMntLMllGoBLn5JZWpOs8cAv0sJu9oPZINmQ3qzV5ecEDQzByUTTupjNtl_MkOfRc</a> (accessed May 04, 2021).</div>
+</div>
+<div id="ref-gubbi_internet_2013" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[17] </div><div class="csl-right-inline">J. Gubbi, R. Buyya, S. Marusic, and M. Palaniswami, <span>“Internet of <span>Things</span> (<span>IoT</span>): <span>A</span> vision, architectural elements, and future directions,”</span> <em>Future Generation Computer Systems</em>, vol. 29, no. 7, pp. 1645–1660, Sep. 2013, doi: <a href="https://doi.org/10.1016/j.future.2013.01.010">10.1016/j.future.2013.01.010</a>.</div>
+</div>
+<div id="ref-graydon_project_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[18] </div><div class="csl-right-inline">graydon, <span>“Project <span>Servo</span>.”</span> Available: <a href="http://venge.net/graydon/talks/intro-talk-2.pdf">http://venge.net/graydon/talks/intro-talk-2.pdf</a></div>
+</div>
+<div id="ref-noauthor_quantum_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[19] </div><div class="csl-right-inline"><span>“Quantum - <span>MozillaWiki</span>.”</span> <a href="https://wiki.mozilla.org/Quantum">https://wiki.mozilla.org/Quantum</a> (accessed May 13, 2021).</div>
+</div>
+<div id="ref-noauthor_rustreleasesmd_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[20] </div><div class="csl-right-inline"><span>“Rust/<span>RELEASES</span>.md at master · rust-lang/rust.”</span> <a href="https://github.com/rust-lang/rust/blob/master/RELEASES.md">https://github.com/rust-lang/rust/blob/master/RELEASES.md</a> (accessed May 13, 2021).</div>
+</div>
+<div id="ref-noauthor_stack_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[21] </div><div class="csl-right-inline"><span>“Stack <span>Overflow Developer Survey</span> 2020.”</span> <a href="https://insights.stackoverflow.com/survey/2020/?utm_source=social-share&amp;utm_medium=social&amp;utm_campaign=dev-survey-2020">https://insights.stackoverflow.com/survey/2020/?utm_source=social-share&amp;utm_medium=social&amp;utm_campaign=dev-survey-2020</a> (accessed May 03, 2021).</div>
+</div>
+<div id="ref-goulding_what_2020" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[22] </div><div class="csl-right-inline">J. Goulding, <span>“What is <span>Rust</span> and why is it so popular?”</span> Jan. 20, 2020. <a href="https://stackoverflow.blog/2020/01/20/what-is-rust-and-why-is-it-so-popular/">https://stackoverflow.blog/2020/01/20/what-is-rust-and-why-is-it-so-popular/</a> (accessed May 13, 2021).</div>
+</div>
+<div id="ref-noauthor_rust_nodate-2" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[23] </div><div class="csl-right-inline"><span>“Rust in the <span>Linux</span> kernel.”</span> <a href="https://security.googleblog.com/2021/04/rust-in-linux-kernel.html">https://security.googleblog.com/2021/04/rust-in-linux-kernel.html</a> (accessed May 04, 2021).</div>
+</div>
+<div id="ref-noauthor_introduction_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[24] </div><div class="csl-right-inline"><span>“Introduction - <span>Discovery</span>.”</span> <a href="https://docs.rust-embedded.org/discovery/">https://docs.rust-embedded.org/discovery/</a> (accessed May 04, 2021).</div>
+</div>
+<div id="ref-noauthor_external_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[25] </div><div class="csl-right-inline"><span>“External <span>Tools</span> - <span>The Cargo Book</span>.”</span> <a href="https://doc.rust-lang.org/cargo/reference/external-tools.html">https://doc.rust-lang.org/cargo/reference/external-tools.html</a> (accessed May 13, 2021).</div>
+</div>
+<div id="ref-noauthor_cratesio_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[26] </div><div class="csl-right-inline"><span>“Crates.io: <span>Rust Package Registry</span>.”</span> <a href="https://crates.io/">https://crates.io/</a> (accessed May 05, 2021).</div>
+</div>
+<div id="ref-corob-msft_overview_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[27] </div><div class="csl-right-inline">corob-msft, <span>“Overview of modules in <span>C</span>++.”</span> <a href="https://docs.microsoft.com/en-us/cpp/cpp/modules-cpp">https://docs.microsoft.com/en-us/cpp/cpp/modules-cpp</a> (accessed May 05, 2021).</div>
+</div>
+<div id="ref-noauthor_npm_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[28] </div><div class="csl-right-inline"><span>“Npm.”</span> <a href="https://www.npmjs.com/">https://www.npmjs.com/</a> (accessed May 05, 2021).</div>
+</div>
+<div id="ref-noauthor_who_2020" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[29] </div><div class="csl-right-inline"><span>“Who is the <span>World</span>’s <span>Leading IoT Chipmaker</span>?”</span> Sep. 13, 2020. <a href="https://www.nanalyze.com/2020/09/worlds-leading-iot-chipmaker/">https://www.nanalyze.com/2020/09/worlds-leading-iot-chipmaker/</a> (accessed May 05, 2021).</div>
+</div>
+<div id="ref-noauthor_platform_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[30] </div><div class="csl-right-inline"><span>“Platform <span>Support</span> - <span>The</span> rustc book.”</span> <a href="https://doc.rust-lang.org/nightly/rustc/platform-support.html">https://doc.rust-lang.org/nightly/rustc/platform-support.html</a> (accessed May 05, 2021).</div>
+</div>
+<div id="ref-noauthor_introduction_nodate-2" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[31] </div><div class="csl-right-inline"><span>“Introduction - <span>The</span> rustup book.”</span> <a href="https://rust-lang.github.io/rustup/">https://rust-lang.github.io/rustup/</a> (accessed May 06, 2021).</div>
+</div>
+<div id="ref-noauthor_rust-embeddedcross_2021" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[32] </div><div class="csl-right-inline"><em>Rust-embedded/cross</em>. <span>Rust Embedded</span>, 2021. Accessed: May 13, 2021. [Online]. Available: <a href="https://github.com/rust-embedded/cross">https://github.com/rust-embedded/cross</a></div>
+</div>
+<div id="ref-noauthor_knurling-rs_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[33] </div><div class="csl-right-inline"><span>“Knurling-rs.”</span> <a href="https://knurling.ferrous-systems.com/">https://knurling.ferrous-systems.com/</a> (accessed May 13, 2021).</div>
+</div>
+<div id="ref-noauthor_using_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[34] </div><div class="csl-right-inline"><span>“Using <span>GDB</span> and defmt to debug embedded programs.”</span> <a href="https://ferrous-systems.com/blog/gdb-and-defmt/">https://ferrous-systems.com/blog/gdb-and-defmt/</a> (accessed May 06, 2021).</div>
+</div>
+<div id="ref-noauthor_svd_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[35] </div><div class="csl-right-inline"><span>“<span>SVD Description</span> (*.svd) <span>Format</span>.”</span> <a href="https://www.keil.com/pack/doc/CMSIS/SVD/html/svd_Format_pg.html">https://www.keil.com/pack/doc/CMSIS/SVD/html/svd_Format_pg.html</a> (accessed May 06, 2021).</div>
+</div>
+<div id="ref-noauthor_rust-embeddedsvd2rust_2021" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[36] </div><div class="csl-right-inline"><em>Rust-embedded/Svd2rust</em>. <span>Rust Embedded</span>, 2021. Accessed: May 13, 2021. [Online]. Available: <a href="https://github.com/rust-embedded/svd2rust">https://github.com/rust-embedded/svd2rust</a></div>
+</div>
+<div id="ref-noauthor_embedded_hal_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[37] </div><div class="csl-right-inline"><span>“Embedded_hal - <span>Rust</span>.”</span> <a href="https://docs.rs/embedded-hal/0.2.5/embedded_hal/">https://docs.rs/embedded-hal/0.2.5/embedded_hal/index.html</a> (accessed May 06, 2021).</div>
+</div>
+<div id="ref-noauthor_ieee_2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[38] </div><div class="csl-right-inline"><span>“<span>IEEE Standard</span> for <span>Information</span> technology–<span>Telecommunications</span> and information exchange between systems <span>Local</span> and metropolitan area network–<span>Specific</span> requirements <span>Part</span> 11: <span>Wireless LAN Medium Access Control</span> (<span>MAC</span>) and <span>Physical Layer</span> (<span>PHY</span>) <span>Specifications Amendment</span> 5: <span>Preassociation Discovery</span>,”</span> <em>IEEE Std 802.11aq-2018 (Amendment to IEEE Std 802.11-2016 as amended by IEEE Std 802.11ai-2016, IEEE Std 802.11ah-2016, IEEE Std 802.11aj-2018, and IEEE Std 802.11ak-2018)</em>, pp. 1–69, Aug. 2018, doi: <a href="https://doi.org/10.1109/IEEESTD.2018.8457463">10.1109/IEEESTD.2018.8457463</a>.</div>
+</div>
+<div id="ref-noauthor_hayes_2021" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[39] </div><div class="csl-right-inline"><span>“Hayes command set,”</span> <em>Wikipedia</em>. May 04, 2021. Accessed: May 06, 2021. [Online]. Available: <a href="https://en.wikipedia.org/w/index.php?title=Hayes_command_set&amp;oldid=1021310741">https://en.wikipedia.org/w/index.php?title=Hayes_command_set&amp;oldid=1021310741</a></div>
+</div>
+<div id="ref-noauthor_blackbirdhqatat_2021" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[40] </div><div class="csl-right-inline"><em><span>BlackbirdHQ</span>/atat</em>. <span>Blackbird</span>, 2021. Accessed: May 13, 2021. [Online]. Available: <a href="https://github.com/BlackbirdHQ/atat">https://github.com/BlackbirdHQ/atat</a></div>
+</div>
+<div id="ref-noauthor_blackbirdhqublox-cellular-rs_2021" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[41] </div><div class="csl-right-inline"><em><span>BlackbirdHQ</span>/ublox-cellular-rs</em>. <span>Blackbird</span>, 2021. Accessed: May 06, 2021. [Online]. Available: <a href="https://github.com/BlackbirdHQ/ublox-cellular-rs">https://github.com/BlackbirdHQ/ublox-cellular-rs</a></div>
+</div>
+<div id="ref-noauthor_blackbirdhqublox-short-range-rs_2021" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[42] </div><div class="csl-right-inline"><em><span>BlackbirdHQ</span>/ublox-short-range-rs</em>. <span>Blackbird</span>, 2021. Accessed: May 06, 2021. [Online]. Available: <a href="https://github.com/BlackbirdHQ/ublox-short-range-rs">https://github.com/BlackbirdHQ/ublox-short-range-rs</a></div>
+</div>
+<div id="ref-noauthor_u-blox_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[43] </div><div class="csl-right-inline"><span>“U-blox.”</span> <a href="https://www.u-blox.com/en">https://www.u-blox.com/en</a> (accessed May 06, 2021).</div>
+</div>
+<div id="ref-noauthor_drogue_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[44] </div><div class="csl-right-inline"><span>“Drogue <span>IoT</span>.”</span> <a href="https://github.com/drogue-iot">https://github.com/drogue-iot</a> (accessed May 13, 2021).</div>
+</div>
+<div id="ref-noauthor_things_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[45] </div><div class="csl-right-inline"><span>“The <span>Things Network</span>.”</span> <a href="https://thethingsnetwork.org/">https://thethingsnetwork.org/</a> (accessed May 06, 2021).</div>
+</div>
+<div id="ref-noauthor_webassembly_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[46] </div><div class="csl-right-inline"><span>“<span>WebAssembly</span>.”</span> <a href="https://webassembly.org/">https://webassembly.org/</a> (accessed May 10, 2021).</div>
+</div>
+<div id="ref-noauthor_wasmeriowasmer_2021" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[47] </div><div class="csl-right-inline"><em>Wasmerio/wasmer</em>. <span>Wasmer</span>, 2021. Accessed: May 13, 2021. [Online]. Available: <a href="https://github.com/wasmerio/wasmer">https://github.com/wasmerio/wasmer</a></div>
+</div>
+<div id="ref-noauthor_bytecodealliancewasmtime_2021" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[48] </div><div class="csl-right-inline"><em>Bytecodealliance/wasmtime</em>. <span>Bytecode Alliance</span>, 2021. Accessed: May 13, 2021. [Online]. Available: <a href="https://github.com/bytecodealliance/wasmtime">https://github.com/bytecodealliance/wasmtime</a></div>
+</div>
+<div id="ref-noauthor_bytecodealliancelucet_2021" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[49] </div><div class="csl-right-inline"><em>Bytecodealliance/lucet</em>. <span>Bytecode Alliance</span>, 2021. Accessed: May 13, 2021. [Online]. Available: <a href="https://github.com/bytecodealliance/lucet">https://github.com/bytecodealliance/lucet</a></div>
+</div>
+<div id="ref-noauthor_rustwasmwasm-pack_2021" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[50] </div><div class="csl-right-inline"><em>Rustwasm/wasm-pack</em>. <span>Rust and WebAssembly</span>, 2021. Accessed: May 13, 2021. [Online]. Available: <a href="https://github.com/rustwasm/wasm-pack">https://github.com/rustwasm/wasm-pack</a></div>
+</div>
+<div id="ref-noauthor_rustwasmwasm-bindgen_2021" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[51] </div><div class="csl-right-inline"><em>Rustwasm/wasm-bindgen</em>. <span>Rust and WebAssembly</span>, 2021. Accessed: May 13, 2021. [Online]. Available: <a href="https://github.com/rustwasm/wasm-bindgen">https://github.com/rustwasm/wasm-bindgen</a></div>
+</div>
+<div id="ref-noauthor_cloudflare_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[52] </div><div class="csl-right-inline"><span>“Cloudflare <span>Workers</span>®.”</span> <a href="https://workers.cloudflare.com/">https://workers.cloudflare.com/</a> (accessed May 10, 2021).</div>
+</div>
+<div id="ref-noauthor_areweyet_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[53] </div><div class="csl-right-inline"><span>“Areweyet - <span>MozillaWiki</span>.”</span> <a href="https://wiki.mozilla.org/Areweyet">https://wiki.mozilla.org/Areweyet</a> (accessed May 13, 2021).</div>
+</div>
+<div id="ref-noauthor_are_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[54] </div><div class="csl-right-inline"><span>“Are we web yet? <span>Yes</span>, and it’s freaking fast!”</span> <a href="https://www.arewewebyet.org/">https://www.arewewebyet.org/</a> (accessed May 13, 2021).</div>
+</div>
+<div id="ref-noauthor_webassembly_nodate-1" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[55] </div><div class="csl-right-inline"><span>“<span>WebAssembly</span> » <span>AWWY</span>?”</span> <a href="https://www.arewewebyet.org/topics/webassembly/">https://www.arewewebyet.org/topics/webassembly/</a> (accessed May 10, 2021).</div>
+</div>
+<div id="ref-noauthor_what_nodate-2" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[56] </div><div class="csl-right-inline"><span>“What is rustdoc? - <span>The</span> rustdoc book.”</span> <a href="https://doc.rust-lang.org/rustdoc/">https://doc.rust-lang.org/rustdoc/index.html</a> (accessed May 10, 2021).</div>
+</div>
+<div id="ref-noauthor_docsrs_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[57] </div><div class="csl-right-inline"><span>“Docs.rs.”</span> <a href="https://docs.rs/">https://docs.rs/</a> (accessed May 10, 2021).</div>
+</div>
+<div id="ref-noauthor_mdbook_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[58] </div><div class="csl-right-inline"><span>“<span class="nocase">mdBook</span> - <span class="nocase">mdBook Documentation</span>.”</span> <a href="https://rust-lang.github.io/mdBook/">https://rust-lang.github.io/mdBook/</a> (accessed May 10, 2021).</div>
+</div>
+<div id="ref-noauthor_preface_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[59] </div><div class="csl-right-inline"><span>“Preface - <span class="nocase">Real-Time Interrupt-driven Concurrency</span>.”</span> <a href="https://rtic.rs/0.5/book/en/">https://rtic.rs/0.5/book/en/</a> (accessed May 10, 2021).</div>
+</div>
+<div id="ref-noauthor_laying_nodate" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[60] </div><div class="csl-right-inline"><span>“Laying the foundation for <span>Rust</span>’s future | <span>Rust Blog</span>.”</span> <a href="https://blog.rust-lang.org/2020/08/18/laying-the-foundation-for-rusts-future.html">https://blog.rust-lang.org/2020/08/18/laying-the-foundation-for-rusts-future.html</a> (accessed May 03, 2021).</div>
+</div>
+</div>
+</div></p>
+
+</article>
+
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+<!--[if lt IE 9]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+<![endif]-->
+
+    </div>
+  </main>
+
+
+  <footer class="font-standout text-sm py-8 px-4 text-mutedDark bg-footer dark">
+      <div class="container grid sm:grid-cols-3 gap-8">
+        <div>
+
+            <h3 class="text-emphasizedDark">Contact</h3>
+            <ul class="ml-1 list-none">
+            <li><a href="mailto:contact@ysndr.de" class="text-emphasizedDark no-underline"><i class="las la-envelope-open-text"></i> contact@ysndr.de</a></li>
+            <li><a href="https://linkedin.com/in/yannik-sander" class="text-emphasizedDark no-underline"><i class="lab la-linkedin"></i></svg> yannik-sander</a></li>
+            <li>
+            <a href="https://github.com/ysndr" class="text-emphasizedDark no-underline"><i class="las la-code-branch"></i> ysndr</a></li>
+          </ul>
+
+
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">Legal</h3>
+          <ul class="ml-1 list-none">
+            <li class="inline-flex justify-items-start items-start mb-0">
+              <span class="las la-check-circle block mr-2"></span> No analytics are used here your data is safe :)
+            </li>
+            <li class="inline-flex items-start">
+              <span class="las la-check-circle block mr-2"></span> The content of this blog is licensed under CC0 terms if not otherwise noted</span>
+            </li>
+          </ul>
+        </div>
+        <div class="mt-4 sm:mt-0">
+
+          <h3 class="text-emphasizedDark">About this blog</h3>
+          <ul class="ml-1 list-none">
+            <li>
+              Built with <i class="las la-code"></i> and <i class="lar la-heart"></i> using <a class="text-emphasizedDark no-underline" href="https://jaspervdj.be/hakyll/">Hakyll</a>
+            </li>
+            <li class="text-muted"><i class="las la-code-branch"></i> last updated: <a class="text-emphasizedDark no-underline" href="https://github.com/ysndr/blog">0633078: fix: render heading as such in pandoc (#34) (2022-01-02 17:53:02 +0200)</a>
+            </li>
+            <li>
+              <a class="no-underline" href="https://builtwithnix.org" rel="nofollow">
+                <img src="https://builtwithnix.org/badge.svg" style="max-width:100%;">
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+  </footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.2.0/js/uikit-icons.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+  <script>
+    window.cookieconsent.initialise({
+    container: document.getElementById("content"),
+    palette:{
+     popup: {background: "#fff"},
+     button: {background: "#aa0000"},
+    },
+    revokable:true,
+    onStatusChange: function(status) {
+     console.log(this.hasConsented() ?
+      'enable cookies' : 'disable cookies');
+    },
+    law: {
+     regionalLaw: false,
+    },
+    location: false,
+   });
+  </script> -->
+</body>
+
+</html>
